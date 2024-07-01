@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.rosenzest.electric.mapper.UserDeviceMapper">
+
+	<select id="getUserDeviceList" parameterType="Long" resultType="com.rosenzest.electric.entity.DetectDevice">
+		select d.id, d.detect_id, d.detect_name, d.device_id, d.type, d.name, d.calibration_date, d.create_by, d.create_time, d.update_by, d.update_time, d.is_expired 
+        from user_device u left join detect_device d on u.device_id = d.id where u.user_id = #{userId}
+	</select>
+</mapper>

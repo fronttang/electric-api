@@ -1,0 +1,8 @@
+/.idea/
+/.settings/
+/logs/
+.settings
+.classpath
+.project
+/target/
+/xmzy-model-generator.iml

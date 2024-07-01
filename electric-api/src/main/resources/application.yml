@@ -1,0 +1,76 @@
+#端口號
+server:
+  port: 8083
+#項目名
+spring:
+  profiles:
+    active: $[spring.profile.active] #此处由maven的环境选择决定
+  application:
+    name: electric-Api
+    #數據源
+  datasource:
+    dynamic:
+      enabled: false
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://127.0.0.1:3306/dat?serverTimezone=Asia/Shanghai&useSSL=false&useUnicode=true&characterEncoding=UTF-8
+    username: root
+    password: password
+  #时间日期格式化
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+  main:
+    allow-bean-definition-overriding: true
+
+  #redis
+  redis:
+    host: localhost
+    lettuce:
+      pool:
+        # 连接池最大连接数(使用负数表示没有限制)
+        max-active: 100
+        # 连接池中的最大空闲连接
+        max-idle: 20
+        # 连接池最大阻塞等待时间（使用负数表示没有限制）
+        max-wait: 30000
+        # 连接池中的最小空闲连接
+        min-idle: 0
+    port: 6379
+    # 连接超时
+    timeout: 3000
+  servlet:
+    multipart:
+      max-file-size: 3MB
+      max-request-size: 3MB
+
+#雪花算法配置
+SnowFlake:
+  dataCenterID: 1
+  machineID: 2
+
+#mybatis
+mybatis:
+  configuration:
+    cache-enabled: true
+    lazy-loading-enabled: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    map-underscore-to-camel-case: true
+    use-generated-keys: true
+  mapper-locations: classpath*:/mapper/**/*Mapper.xml
+  type-aliases-package: com.rosenzest.**.entity
+
+mybatis-plus:
+  mapper-locations: classpath*:/mapper/**/*Mapper.xml
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+#pagehelper
+pagehelper:
+  helper-dialect: mysql
+  page-size-zero: true
+  params: count=countSql
+  reasonable: true
+  support-methods-arguments: true
+
+#token配置
+token:

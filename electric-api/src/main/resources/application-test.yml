@@ -1,0 +1,24 @@
+server:
+  port: 8083
+  
+spring:
+  application:
+    name: electric-Api
+  
+  datasource:
+    url: jdbc:mysql://10.206.16.13:3306/dat?serverTimezone=Asia/Shanghai&useSSL=false&useUnicode=true&characterEncoding=UTF-8
+    username: root
+    password: DAT@TestMysql147
+
+  redis:
+    host: 10.206.16.13
+    port: 6379
+    password: DAT@TestRedis147
+
+  servlet:
+    multipart: 
+      max-file-size: 3MB
+      max-request-size: 3MB
+
+#token配置
+token: 

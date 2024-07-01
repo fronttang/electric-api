@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.rosenzest.electric.mapper.OwnerUnitMapper">
+
+
+	<select id="queryInitialList" parameterType="com.rosenzest.electric.dto.OwnerUnitQueryDto" resultType="com.rosenzest.electric.vo.InitialOwnerUnitVo" >
+		select o.id, o.name, o.layers,
+		(select count(1) from owner_unit_area a where a.unit_id = o.id and a.type = '2') as doors, 
+		(select count(1) from ( select ua.id, (select count(1) from owner_unit_area_danger d where d.unit_area_id = ua.id) as dangers from owner_unit_area ua where ua.unit_id = o.id ) t where t.dangers>0) as households,
+		o.project_id,o.initial_test_status as status
+		from owner_unit o left join project_area p on (o.area = p.id and o.project_id = p.project_id)
+		where o.project_id = #{projectId} 
+		
+		<if test="district != null and district != ''">
+			and p.district = #{district}
+		</if>
+		<if test="street != null and street != ''">
+			and p.street = #{street}
+		</if>
+		<if test="community != null and community != ''">
+			and p.community = #{community}
+		</if>
+		<if test="hamlet != null and hamlet != ''">
+			and p.hamlet = #{hamlet}
+		</if>
+		<if test="status != null and status != ''">
+			and p.initial_test_status = #{status}
+		</if>
+		order by o.id asc
+	</select>
+</mapper>

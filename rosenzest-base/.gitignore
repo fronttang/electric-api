@@ -1,0 +1,9 @@
+/.idea/
+/.settings/
+/logs/
+.settings
+.classpath
+.project
+/target/
+/xmzy-base.iml
+/xmzy-base (1) (com.xmzy).iml
