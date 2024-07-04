@@ -27,7 +27,7 @@ public class ProjectVo {
     /**
      * 项目类型
      */
-	@ApiModelProperty("项目类型")
+	@ApiModelProperty("项目类型,见字典:project_type")
     private String type;
 
     /**

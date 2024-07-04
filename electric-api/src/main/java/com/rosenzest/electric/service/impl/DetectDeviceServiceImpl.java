@@ -10,6 +10,8 @@ import com.rosenzest.electric.mapper.DetectDeviceMapper;
 import com.rosenzest.electric.service.IDetectDeviceService;
 import com.rosenzest.model.base.service.ModelBaseServiceImpl;
 
+import cn.hutool.core.util.StrUtil;
+
 /**
  * <p>
  * 检测设备 服务实现类
@@ -22,18 +24,13 @@ import com.rosenzest.model.base.service.ModelBaseServiceImpl;
 public class DetectDeviceServiceImpl extends ModelBaseServiceImpl<DetectDeviceMapper, DetectDevice> implements IDetectDeviceService {
 
 	@Override
-	public List<DetectDevice> getByDetectId(Long detectId) {
+	public List<DetectDevice> getByDetectId(Long detectId, String type) {
 		
 		LambdaQueryWrapper<DetectDevice> queryWrapper = new LambdaQueryWrapper<DetectDevice>();
 		queryWrapper.eq(DetectDevice::getDetectId, detectId);
-		return this.baseMapper.selectList(queryWrapper);
-	}
-
-	@Override
-	public List<DetectDevice> getByDetectIdAndType(Long detectId, String type) {
-		LambdaQueryWrapper<DetectDevice> queryWrapper = new LambdaQueryWrapper<DetectDevice>();
-		queryWrapper.eq(DetectDevice::getDetectId, detectId);
-		queryWrapper.eq(DetectDevice::getType, type);
+		if(StrUtil.isNotBlank(type)) {
+			queryWrapper.eq(DetectDevice::getType, type);
+		}
 		return this.baseMapper.selectList(queryWrapper);
 	}
 

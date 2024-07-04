@@ -19,13 +19,16 @@ import com.rosenzest.model.base.service.ModelBaseServiceImpl;
  * @since 2024-06-29
  */
 @Service
-public class IntuitiveDetectDataServiceImpl extends ModelBaseServiceImpl<IntuitiveDetectDataMapper, IntuitiveDetectData> implements IIntuitiveDetectDataService {
+public class IntuitiveDetectDataServiceImpl extends ModelBaseServiceImpl<IntuitiveDetectDataMapper, IntuitiveDetectData>
+		implements IIntuitiveDetectDataService {
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public List<IntuitiveDetectData> getByDetectId(Long titleId) {
 		LambdaQueryWrapper<IntuitiveDetectData> queryWrapper = new LambdaQueryWrapper<IntuitiveDetectData>();
 		queryWrapper.eq(IntuitiveDetectData::getDetectTitle, titleId);
 		queryWrapper.eq(IntuitiveDetectData::getView, "1");
+		queryWrapper.orderByAsc(IntuitiveDetectData::getWeights);
 		return this.baseMapper.selectList(queryWrapper);
 	}
 

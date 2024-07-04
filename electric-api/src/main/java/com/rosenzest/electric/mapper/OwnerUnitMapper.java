@@ -5,6 +5,7 @@ import java.util.List;
 import com.rosenzest.electric.dto.OwnerUnitQueryDto;
 import com.rosenzest.electric.entity.OwnerUnit;
 import com.rosenzest.electric.vo.InitialOwnerUnitVo;
+import com.rosenzest.electric.vo.OwnerUnitVo;
 import com.rosenzest.model.base.mapper.ModelBaseMapper;
 
 /**
@@ -18,5 +19,7 @@ import com.rosenzest.model.base.mapper.ModelBaseMapper;
 public interface OwnerUnitMapper extends ModelBaseMapper<OwnerUnit> {
 
 	List<InitialOwnerUnitVo> queryInitialList(OwnerUnitQueryDto query);
+
+	OwnerUnitVo getOwnerUnitById(Long unitId);
 
 }

@@ -15,8 +15,6 @@ import com.rosenzest.model.base.service.IModelBaseService;
  */
 public interface IDetectDeviceService extends IModelBaseService<DetectDevice> {
 
-	List<DetectDevice> getByDetectId(Long detectId);
-
-	List<DetectDevice> getByDetectIdAndType(Long detectId, String type);
+	List<DetectDevice> getByDetectId(Long detectId, String type);
 
 }

@@ -1,5 +1,7 @@
 package com.rosenzest.electric.mapper;
 
+import java.util.List;
+
 import com.rosenzest.electric.entity.Project;
 import com.rosenzest.model.base.mapper.ModelBaseMapper;
 
@@ -12,5 +14,7 @@ import com.rosenzest.model.base.mapper.ModelBaseMapper;
  * @since 2024-06-27
  */
 public interface ProjectMapper extends ModelBaseMapper<Project> {
+
+	List<Project> getProjectByWorkerId(Long userId);
 
 }

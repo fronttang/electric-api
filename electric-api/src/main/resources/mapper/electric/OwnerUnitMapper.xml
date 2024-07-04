@@ -6,26 +6,38 @@
 	<select id="queryInitialList" parameterType="com.rosenzest.electric.dto.OwnerUnitQueryDto" resultType="com.rosenzest.electric.vo.InitialOwnerUnitVo" >
 		select o.id, o.name, o.layers,
 		(select count(1) from owner_unit_area a where a.unit_id = o.id and a.type = '2') as doors, 
-		(select count(1) from ( select ua.id, (select count(1) from owner_unit_area_danger d where d.unit_area_id = ua.id) as dangers from owner_unit_area ua where ua.unit_id = o.id ) t where t.dangers>0) as households,
-		o.project_id,o.initial_test_status as status
-		from owner_unit o left join project_area p on (o.area = p.id and o.project_id = p.project_id)
-		where o.project_id = #{projectId} 
+		(select count(1) from ( select ua.id, (select count(1) from owner_unit_danger d where d.unit_area_id = ua.id) as dangers from owner_unit_area ua where ua.unit_id = o.id ) t where t.dangers>0) as households,
+		o.project_id, CASE WHEN r.initial_test_status is null THEN 0 ELSE r.initial_test_status END as status 
+		from owner_unit o 
+		left join owner_unit_report r on r.unit_id = o.id 
+		where o.project_id = #{projectId} and o.type=#{type}
 		
 		<if test="district != null and district != ''">
-			and p.district = #{district}
+			and o.district = #{district}
 		</if>
 		<if test="street != null and street != ''">
-			and p.street = #{street}
+			and o.street = #{street}
 		</if>
 		<if test="community != null and community != ''">
-			and p.community = #{community}
+			and o.community = #{community}
 		</if>
 		<if test="hamlet != null and hamlet != ''">
-			and p.hamlet = #{hamlet}
+			and o.hamlet = #{hamlet}
 		</if>
 		<if test="status != null and status != ''">
-			and p.initial_test_status = #{status}
+			and r.initial_test_status = #{status}
+		</if>
+		<if test="keyword != null and keyword != ''">
+			and (o.name like concat('%', #{keyword}, '%') or o.address like concat('%', #{keyword}, '%'))
 		</if>
 		order by o.id asc
+	</select>
+	
+	<select id="getOwnerUnitById" parameterType="Long" resultType="com.rosenzest.electric.vo.OwnerUnitVo">
+		select u.id,u.code,u.name,u.type,u.detect_id,u.detect_name,u.project_id,u.project_name,
+		u.entrust,u.address,u.contact,u.phone,u.acreage,u.layers,u.door_number,u.nature,u.test_start_date,u.test_end_date,
+		u.test_content,r.initial_test_no,r.again_test_no,r.again_test_data,u.panorama_pic,
+		u.district,u.street,u.community,u.hamlet 
+		from owner_unit u left join owner_unit_report r on u.id = r.unit_id where u.id=#{unitId}
 	</select>
 </mapper>

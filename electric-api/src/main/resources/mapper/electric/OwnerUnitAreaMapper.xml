@@ -3,9 +3,12 @@
 <mapper namespace="com.rosenzest.electric.mapper.OwnerUnitAreaMapper">
 
 	<select id="queryUnitAreaByType" resultType="com.rosenzest.electric.vo.OwnerUnitAreaVo">
-		select a.id, a.unit_id, a.name, a.floor, a.type,
-		(select count(1) from owner_unit_area_danger d where d.unit_area_id =a.id and d.unit_id = a.unit_id) as dangers 
+		select a.id, a.unit_id, a.building_id, a.name, a.floor, a.type, a.remark,
+		(select count(1) from owner_unit_danger d where d.unit_area_id =a.id and d.unit_id = a.unit_id) as dangers 
 		from owner_unit_area a where a.unit_id = #{unitId}
+		<if test="buildingId != null and buildingId != ''">
+			and a.building_id = #{buildingId}
+		</if>
 		<if test="type != null and type != ''">
 			and a.type = #{type}
 		</if>

@@ -2,4 +2,8 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.rosenzest.electric.mapper.ProjectMapper">
 
+	<select id="getProjectByWorkerId" parameterType="Long" resultType="com.rosenzest.electric.entity.Project">
+		select id, name, type, detect_id, detect_name, household_rate, template_id from project p 
+		where  exists (select project_id from project_worker w where w.project_id = p.id and w.user_id = #{userId} and w.bind_type = '1' )
+	</select>
 </mapper>

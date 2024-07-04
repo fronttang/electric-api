@@ -1,9 +1,11 @@
 package com.rosenzest.electric.entity;
 
-import com.baomidou.mybatisplus.annotation.IdType;
 import java.util.Date;
+
+import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.rosenzest.model.base.entity.BaseEntity;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -13,269 +15,253 @@ import lombok.EqualsAndHashCode;
  * </p>
  *
  * @author fronttang
- * @since 2024-06-28
+ * @since 2024-07-04
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class OwnerUnit extends BaseEntity<OwnerUnit> {
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    /**
-     * ID
-     */
-    @TableId(value = "id", type = IdType.AUTO)
-    private Long id;
+	/**
+	 * ID
+	 */
+	@TableId(value = "id", type = IdType.AUTO)
+	private Long id;
 
-    /**
-     * 名称
-     */
-    private String name;
+	/**
+	 * 楼栋编码
+	 */
+	private String code;
 
-    /**
-     * 业主单元类型
-     */
-    private String type;
+	/**
+	 * 名称
+	 */
+	private String name;
 
-    /**
-     * 检测单位ID
-     */
-    private Long detectId;
+	/**
+	 * 业主单元类型,同项目类型
+	 */
+	private String type;
 
-    /**
-     * 检测单位名称
-     */
-    private String detectName;
+	/**
+	 * 检测单位ID
+	 */
+	private Long detectId;
 
-    /**
-     * 项目ID
-     */
-    private Long projectId;
+	/**
+	 * 检测单位名称
+	 */
+	private String detectName;
 
-    /**
-     * 项目名称
-     */
-    private String projectName;
+	/**
+	 * 项目ID
+	 */
+	private Long projectId;
 
-    /**
-     * 区域
-     */
-    private Long area;
+	/**
+	 * 项目名称
+	 */
+	private String projectName;
 
-    /**
-     * 委托单位
-     */
-    private String entrust;
+	/**
+	 * 区域
+	 */
+	private Long area;
 
-    /**
-     * 管理员
-     */
-    private Long manager;
+	/**
+	 * 区县
+	 */
+	private String district;
 
-    /**
-     * 网格员
-     */
-    private Long gridman;
+	/**
+	 * 街道
+	 */
+	private String street;
 
-    /**
-     * 检测地址
-     */
-    private String address;
+	/**
+	 * 社区
+	 */
+	private String community;
 
-    /**
-     * 联系人/负责人/业主
-     */
-    private String contact;
+	/**
+	 * 村
+	 */
+	private String hamlet;
 
-    /**
-     * 联系电话
-     */
-    private String phone;
+	/**
+	 * 委托单位
+	 */
+	private String entrust;
 
-    /**
-     * 建筑面积
-     */
-    private String acreage;
+	/**
+	 * 管理员
+	 */
+	private Long manager;
 
-    /**
-     * 建筑层数
-     */
-    private Integer layers;
+	/**
+	 * 网格员
+	 */
+	private Long gridman;
 
-    /**
-     * 建筑使用性质
-     */
-    private String nature;
+	/**
+	 * 检测地址
+	 */
+	private String address;
 
-    /**
-     * 检测开始时间
-     */
-    private Date testStartDate;
+	/**
+	 * 联系人/负责人/业主
+	 */
+	private String contact;
 
-    /**
-     * 检测结束时间
-     */
-    private Date testEndDate;
+	/**
+	 * 联系电话
+	 */
+	private String phone;
 
-    /**
-     * 检测起止日期
-     */
-    private String testDate;
+	/**
+	 * 建筑面积
+	 */
+	private String acreage;
 
-    /**
-     * 检测内容
-     */
-    private String testContent;
+	/**
+	 * 建筑层数
+	 */
+	private Integer layers;
 
-    /**
-     * 户数
-     */
-    private Integer doorNumber;
+	/**
+	 * 建筑使用性质
+	 */
+	private String nature;
 
-    /**
-     * 楼栋长
-     */
-    private String buildman;
+	/**
+	 * 检测开始时间
+	 */
+	private Date testStartDate;
 
-    /**
-     * 单位类型
-     */
-    private String unitType;
+	/**
+	 * 检测结束时间
+	 */
+	private Date testEndDate;
 
-    /**
-     * 负责人
-     */
-    private String incharge;
+	/**
+	 * 检测起止日期
+	 */
+	private String testDate;
 
-    /**
-     * 场所类型
-     */
-    private String venueType;
+	/**
+	 * 检测内容
+	 */
+	private String testContent;
 
-    /**
-     * 经营范围
-     */
-    private String businessScope;
+	/**
+	 * 户数
+	 */
+	private Integer doorNumber;
 
-    /**
-     * 消防安全负责人
-     */
-    private String safetyIncharge;
+	/**
+	 * 楼栋长
+	 */
+	private String buildman;
 
-    /**
-     * 消防安全负责人电话
-     */
-    private String safetyInchargePhone;
+	/**
+	 * 单位类型
+	 */
+	private String unitType;
 
-    /**
-     * 消防安全管理人
-     */
-    private String safetyManager;
+	/**
+	 * 负责人
+	 */
+	private String incharge;
 
-    /**
-     * 消防安全管理人电话
-     */
-    private String safetyManagerPhone;
+	/**
+	 * 场所类型
+	 */
+	private String venueType;
 
-    /**
-     * 高风险类型
-     */
-    private String highRiskType;
+	/**
+	 * 经营范围
+	 */
+	private String businessScope;
 
-    /**
-     * 员工人数
-     */
-    private Integer staffs;
+	/**
+	 * 消防安全负责人
+	 */
+	private String safetyIncharge;
 
-    /**
-     * 有无证照
-     */
-    private String licence;
+	/**
+	 * 消防安全负责人电话
+	 */
+	private String safetyInchargePhone;
 
-    /**
-     * 消防安全重点单位
-     */
-    private String safetyKeyUnit;
+	/**
+	 * 消防安全管理人
+	 */
+	private String safetyManager;
 
-    /**
-     * 充电站类型
-     */
-    private String stationType;
+	/**
+	 * 消防安全管理人电话
+	 */
+	private String safetyManagerPhone;
 
-    /**
-     * 轮次
-     */
-    private Integer rounds;
+	/**
+	 * 高风险类型
+	 */
+	private String highRiskType;
 
-    /**
-     * 检测模块
-     */
-    private String detectModule;
+	/**
+	 * 员工人数
+	 */
+	private Integer staffs;
 
-    /**
-     * 运营单位
-     */
-    private String operating;
+	/**
+	 * 有无证照
+	 */
+	private String licence;
 
-    /**
-     * 物业类型
-     */
-    private String propertyType;
+	/**
+	 * 消防安全重点单位
+	 */
+	private String safetyKeyUnit;
 
-    /**
-     * 物业类型名称(物业类型为其他时输入)
-     */
-    private String propertyName;
+	/**
+	 * 充电站类型
+	 */
+	private String stationType;
 
-    /**
-     * 全景图
-     */
-    private String panoramaPic;
+	/**
+	 * 轮次
+	 */
+	private Integer rounds;
 
-    /**
-     * 点位图
-     */
-    private String stationPic;
+	/**
+	 * 检测模块
+	 */
+	private String detectModule;
 
-    /**
-     * 是否开启隐患通知单
-     */
-    private String isDangerNotice;
+	/**
+	 * 运营单位
+	 */
+	private String operating;
 
-    /**
-     * 是否完成入户率
-     */
-    private String isHouseholdRate;
+	/**
+	 * 物业类型
+	 */
+	private String propertyType;
 
-    /**
-     * 无法检测
-     */
-    private String isTest;
+	/**
+	 * 物业类型名称(物业类型为其他时输入)
+	 */
+	private String propertyName;
 
-    /**
-     * 无法检测原因
-     */
-    private String isTestReason;
+	/**
+	 * 全景图
+	 */
+	private String panoramaPic;
 
-    /**
-     * 初检编号
-     */
-    private String initialTestNo;
-
-    /**
-     * 复检编号
-     */
-    private String againTestNo;
-
-    /**
-     * 初检状态
-     */
-    private String initialTestStatus;
-
-    /**
-     * 复检状态
-     */
-    private String againTestStatus;
-
+	/**
+	 * 点位图
+	 */
+	private String stationPic;
 
 }

@@ -60,14 +60,14 @@ public class SysUserServiceImpl extends ModelBaseServiceImpl<SysUserMapper, SysU
 		String userName = login.getUserName();
 		SysUser user = getByUserName(userName);
 		if (user != null) {
-			
-			// 平台用户不允许登录
-			if(UserType.SYSTEM.code().equalsIgnoreCase(user.getUserType())) {
+
+			// TODO 只能 工作人员/电力设计/售电账号 登录APP
+			if (!UserType.WORKER.code().equalsIgnoreCase(user.getUserType())) {
 				throw new BusinessException(ElectricErrorCode.VERIFICATION_ERROR);
 			}
 
 			BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-			//匹配密码
+			// 匹配密码
 			if (passwordEncoder.matches(login.getPassword(), user.getPassword())) {
 				String token = generateToken(user, TerminalType.APP);
 				return getLoginVo(user, token);
@@ -115,6 +115,7 @@ public class SysUserServiceImpl extends ModelBaseServiceImpl<SysUserMapper, SysU
 		payload.setType(user.getUserType());
 		payload.setTerminal(terminalType.code());
 		payload.setDetectId(user.getDetectId());
+		payload.setName(user.getNickName());
 		String token = JwtTokenUtil.generateToken(payload);
 
 		// 用户token及用户信息缓存

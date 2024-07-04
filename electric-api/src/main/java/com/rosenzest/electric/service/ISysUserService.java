@@ -17,6 +17,7 @@ public interface ISysUserService extends IModelBaseService<SysUser> {
 
 	/**
 	 * 用户登录
+	 * 
 	 * @param login
 	 * @return
 	 */

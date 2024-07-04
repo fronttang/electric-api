@@ -11,32 +11,35 @@ import lombok.NoArgsConstructor;
 @ApiModel
 @NoArgsConstructor
 public class InitialOwnerUnitSettingDto {
-	
+
 	@ApiModelProperty("业主单元ID")
 	@NotNull(message = "业主单元ID不能为空")
 	private Long id;
 
+	@ApiModelProperty("楼栋ID")
+	private Long buildingId;
+
 	/**
-     * 是否开启隐患通知单
-     */
+	 * 是否开启隐患通知单
+	 */
 	@ApiModelProperty("是否开启隐患通知单 0否 1是")
-    private String isDangerNotice = "0";
+	private String isDangerNotice = "0";
 
-    /**
-     * 是否完成入户率
-     */
+	/**
+	 * 是否完成入户率
+	 */
 	@ApiModelProperty("是否完成入户率 0否 1是")
-    private String isHouseholdRate = "0";
+	private String isHouseholdRate = "0";
 
-    /**
-     * 无法检测
-     */
+	/**
+	 * 无法检测
+	 */
 	@ApiModelProperty("是否无法检测 0否 1是")
-    private String isTest;
+	private String isTest;
 
-    /**
-     * 无法检测原因
-     */
+	/**
+	 * 无法检测原因
+	 */
 	@ApiModelProperty("无法检测原因")
-    private String isTestReason;
+	private String isTestReason;
 }

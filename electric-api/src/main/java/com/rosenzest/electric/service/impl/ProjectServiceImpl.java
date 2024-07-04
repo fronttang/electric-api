@@ -28,4 +28,9 @@ public class ProjectServiceImpl extends ModelBaseServiceImpl<ProjectMapper, Proj
 		return this.baseMapper.selectList(queryWrapper);
 	}
 
+	@Override
+	public List<Project> getProjectByWorkerId(Long userId) {
+		return this.baseMapper.getProjectByWorkerId(userId);
+	}
+
 }

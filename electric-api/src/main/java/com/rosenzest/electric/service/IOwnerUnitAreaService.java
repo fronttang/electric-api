@@ -8,7 +8,7 @@ import com.rosenzest.model.base.service.IModelBaseService;
 
 /**
  * <p>
- *  服务类
+ * 服务类
  * </p>
  *
  * @author fronttang
@@ -16,6 +16,6 @@ import com.rosenzest.model.base.service.IModelBaseService;
  */
 public interface IOwnerUnitAreaService extends IModelBaseService<OwnerUnitArea> {
 
-	List<OwnerUnitAreaVo> queryUnitAreaByType(Long unitId, String type);
+	List<OwnerUnitAreaVo> queryUnitAreaByType(Long unitId, Long buildingId, String type);
 
 }

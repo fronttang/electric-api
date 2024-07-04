@@ -10,7 +10,7 @@ import com.rosenzest.model.base.mapper.ModelBaseMapper;
 
 /**
  * <p>
- *  Mapper 接口
+ * Mapper 接口
  * </p>
  *
  * @author fronttang
@@ -18,6 +18,7 @@ import com.rosenzest.model.base.mapper.ModelBaseMapper;
  */
 public interface OwnerUnitAreaMapper extends ModelBaseMapper<OwnerUnitArea> {
 
-	List<OwnerUnitAreaVo> queryUnitAreaByType(@Param("unitId") Long unitId, @Param("type") String type);
+	List<OwnerUnitAreaVo> queryUnitAreaByType(@Param("unitId") Long unitId, @Param("buildingId") Long buildingId,
+			@Param("type") String type);
 
 }

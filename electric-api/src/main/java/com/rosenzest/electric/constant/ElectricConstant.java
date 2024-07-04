@@ -51,6 +51,14 @@ public class ElectricConstant {
 		BUSINESS_DICT_TYPES.add("initial_test_status");
 		// 复检状态
 		BUSINESS_DICT_TYPES.add("again_test_status");
+		// 业主单元区域类型
+		BUSINESS_DICT_TYPES.add("owner_unit_area_type");
+		// B类表标题
+		BUSINESS_DICT_TYPES.add("detect_table_b");
+		// 隐患等级（充电站）
+		BUSINESS_DICT_TYPES.add("hazard_level_charging_station");
+		// 隐患等级（高风险）
+		BUSINESS_DICT_TYPES.add("hazard_level_high");
 	}
 	
 	

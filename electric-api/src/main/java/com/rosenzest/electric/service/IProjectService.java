@@ -20,4 +20,11 @@ public interface IProjectService extends IModelBaseService<Project> {
 	 * @return
 	 */
 	List<Project> getProjectByDetectId(Long detectId);
+
+	/**
+	 * 根据工作人员查询项目
+	 * @param userId
+	 * @return
+	 */
+	List<Project> getProjectByWorkerId(Long userId);
 }

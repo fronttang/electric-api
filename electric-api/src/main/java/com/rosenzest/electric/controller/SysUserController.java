@@ -20,6 +20,7 @@ import com.rosenzest.electric.dto.LoginDto;
 import com.rosenzest.electric.dto.UserDeviceDto;
 import com.rosenzest.electric.entity.DetectDevice;
 import com.rosenzest.electric.entity.Project;
+import com.rosenzest.electric.enums.UserType;
 import com.rosenzest.electric.service.IDetectDeviceService;
 import com.rosenzest.electric.service.IProjectService;
 import com.rosenzest.electric.service.ISysUserService;
@@ -89,11 +90,8 @@ public class SysUserController extends ServerBaseController {
 		LoginUser loginUser = getLoginUser();
 		
 		DetectDevice device = detectDeviceService.getById(data.getDeviceId());
-		if(device == null) {
+		if(device == null || device.getDetectId() != loginUser.getDetectId()) {
 			throw new BusinessException(400, "仪器不存在");
-		}
-		if(device.getDetectId() != loginUser.getDetectId()){
-			throw new BusinessException(400, "仪器ID不对");
 		}
 		userDeviceService.saveUserDevice(loginUser.getUserId(), data);
 		
@@ -110,11 +108,19 @@ public class SysUserController extends ServerBaseController {
 		if (detectId == null) {
 			return Result.SUCCESS();
 		}
-
-		List<Project> projects = projectService.getProjectByDetectId(detectId);
-
-		List<ProjectVo> projectVoList = BeanUtils.copyList(projects, ProjectVo.class);
-
-		return Result.SUCCESS(projectVoList);
+		
+		if(UserType.WORKER.code().equalsIgnoreCase(loginUser.getType())) {
+		
+			List<Project> projects = projectService.getProjectByWorkerId(loginUser.getUserId());
+			
+			//List<Project> projects = projectService.getProjectByDetectId(detectId);
+	
+			List<ProjectVo> projectVoList = BeanUtils.copyList(projects, ProjectVo.class);
+	
+			return Result.SUCCESS(projectVoList);
+		} else {
+			
+			return Result.SUCCESS();
+		}
 	}
 }
