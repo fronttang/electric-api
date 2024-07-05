@@ -5,15 +5,16 @@ import org.springframework.stereotype.Service;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.rosenzest.electric.dto.AreaDto;
+import com.rosenzest.electric.entity.OwnerUnit;
 import com.rosenzest.electric.entity.ProjectWorker;
 import com.rosenzest.electric.entity.ProjectWorkerArea;
+import com.rosenzest.electric.enums.ProjectWorkerAreaRoleType;
 import com.rosenzest.electric.enums.ProjectWorkerType;
 import com.rosenzest.electric.mapper.ProjectWorkerMapper;
+import com.rosenzest.electric.service.IOwnerUnitService;
 import com.rosenzest.electric.service.IProjectWorkerAreaService;
 import com.rosenzest.electric.service.IProjectWorkerService;
 import com.rosenzest.model.base.service.ModelBaseServiceImpl;
-
-import cn.hutool.core.util.StrUtil;
 
 /**
  * <p>
@@ -30,6 +31,9 @@ public class ProjectWorkerServiceImpl extends ModelBaseServiceImpl<ProjectWorker
 	@Autowired
 	private IProjectWorkerAreaService workerAreaService;
 
+	@Autowired
+	private IOwnerUnitService ownerUnitService;
+
 	@Override
 	public ProjectWorker getProjectWorker(Long projectId, Long userId, String bindType) {
 		LambdaQueryWrapper<ProjectWorker> queryWrapper = new LambdaQueryWrapper<ProjectWorker>();
@@ -41,7 +45,7 @@ public class ProjectWorkerServiceImpl extends ModelBaseServiceImpl<ProjectWorker
 	}
 
 	@Override
-	public boolean checkWorkerAreaRole(Long projectId, Long userId, String type, AreaDto area) {
+	public boolean checkWorkerAreaRole(Long projectId, Long userId, ProjectWorkerAreaRoleType type, AreaDto area) {
 
 		// 查workerId;
 		ProjectWorker projectWorker = this.getProjectWorker(projectId, userId, ProjectWorkerType.INSPECTOR.code());
@@ -50,20 +54,37 @@ public class ProjectWorkerServiceImpl extends ModelBaseServiceImpl<ProjectWorker
 
 			LambdaQueryWrapper<ProjectWorkerArea> queryWrapper = new LambdaQueryWrapper<ProjectWorkerArea>();
 			queryWrapper.eq(ProjectWorkerArea::getWorkerId, projectWorker.getId());
-			if (StrUtil.isNotBlank(area.getDistrict())) {
-				queryWrapper.eq(ProjectWorkerArea::getDistrict, area.getDistrict());
-			}
-			if (StrUtil.isNotBlank(area.getStreet())) {
-				queryWrapper.eq(ProjectWorkerArea::getStreet, area.getStreet());
-			}
-			if (StrUtil.isNotBlank(area.getCommunity())) {
-				queryWrapper.eq(ProjectWorkerArea::getCommunity, area.getCommunity());
-			}
-			if (StrUtil.isNotBlank(area.getHamlet())) {
-				queryWrapper.eq(ProjectWorkerArea::getHamlet, area.getHamlet());
-			}
-			return workerAreaService.count() > 0;
+			queryWrapper.eq(ProjectWorkerArea::getType, type.code());
+			queryWrapper.eq(ProjectWorkerArea::getDistrict, area.getDistrict());
+			queryWrapper.eq(ProjectWorkerArea::getStreet, area.getStreet());
+			queryWrapper.eq(ProjectWorkerArea::getCommunity, area.getCommunity());
+			queryWrapper.eq(ProjectWorkerArea::getHamlet, area.getHamlet());
+
+			return workerAreaService.count(queryWrapper) > 0;
 		}
+		return false;
+	}
+
+	@Override
+	public boolean checkWorkerAreaRole(Long projectId, Long userId, ProjectWorkerAreaRoleType type, Long unitId) {
+
+		OwnerUnit ownerUnit = ownerUnitService.getById(unitId);
+
+		return checkWorkerAreaRole(ownerUnit, userId, type);
+	}
+
+	@Override
+	public boolean checkWorkerAreaRole(OwnerUnit unit, Long userId, ProjectWorkerAreaRoleType type) {
+		if (unit != null) {
+			AreaDto area = new AreaDto();
+			area.setDistrict(unit.getDistrict());
+			area.setStreet(unit.getStreet());
+			area.setCommunity(unit.getCommunity());
+			area.setHamlet(unit.getHamlet());
+
+			return this.checkWorkerAreaRole(unit.getProjectId(), userId, type, area);
+		}
+
 		return false;
 	}
 

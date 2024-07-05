@@ -17,30 +17,33 @@ import com.rosenzest.base.constant.SystemConstants;
 @Component
 public class ModelMetaObjectHandler implements MetaObjectHandler {
 
-    @Override
-    public void insertFill(MetaObject metaObject) {
+	@Override
+	public void insertFill(MetaObject metaObject) {
 
-        this.strictInsertFill(metaObject, "CREATE_TIME", Date.class, new Date());
-        this.strictInsertFill(metaObject, "createTime", Date.class, new Date());
+		this.strictInsertFill(metaObject, "CREATE_TIME", Date.class, new Date());
+		this.strictInsertFill(metaObject, "createTime", Date.class, new Date());
 
-        this.strictInsertFill(metaObject, "CREATE_BY", String.class, SystemConstants.SYSTEM_OPERATOR);
-        this.strictInsertFill(metaObject, "createBy", String.class, SystemConstants.SYSTEM_OPERATOR);
+		this.strictInsertFill(metaObject, "CREATE_BY", String.class, SystemConstants.SYSTEM_OPERATOR);
+		this.strictInsertFill(metaObject, "createBy", String.class, SystemConstants.SYSTEM_OPERATOR);
 
-        this.strictInsertFill(metaObject, "CRE_DTE", Date.class, new Date());
-        this.strictInsertFill(metaObject, "creDte", Date.class, new Date());
-    }
+		this.strictInsertFill(metaObject, "CRE_DTE", Date.class, new Date());
+		this.strictInsertFill(metaObject, "creDte", Date.class, new Date());
 
-    @Override
-    public void updateFill(MetaObject metaObject) {
+		this.strictInsertFill(metaObject, "UPDATE_TIME", Date.class, new Date());
+		this.strictInsertFill(metaObject, "updateTime", Date.class, new Date());
+	}
 
-        this.strictUpdateFill(metaObject, "UPDATE_TIME", Date.class, new Date());
-        this.strictUpdateFill(metaObject, "updateTime", Date.class, new Date());
+	@Override
+	public void updateFill(MetaObject metaObject) {
 
-        this.strictUpdateFill(metaObject, "UPDATE_BY", String.class, SystemConstants.SYSTEM_OPERATOR);
-        this.strictUpdateFill(metaObject, "updateBy", String.class, SystemConstants.SYSTEM_OPERATOR);
+		this.strictUpdateFill(metaObject, "UPDATE_TIME", Date.class, new Date());
+		this.strictUpdateFill(metaObject, "updateTime", Date.class, new Date());
 
-        this.strictUpdateFill(metaObject, "UPD_DTE", Date.class, new Date());
-        this.strictUpdateFill(metaObject, "updDte", Date.class, new Date());
-    }
+		this.strictUpdateFill(metaObject, "UPDATE_BY", String.class, SystemConstants.SYSTEM_OPERATOR);
+		this.strictUpdateFill(metaObject, "updateBy", String.class, SystemConstants.SYSTEM_OPERATOR);
+
+		this.strictUpdateFill(metaObject, "UPD_DTE", Date.class, new Date());
+		this.strictUpdateFill(metaObject, "updDte", Date.class, new Date());
+	}
 
 }

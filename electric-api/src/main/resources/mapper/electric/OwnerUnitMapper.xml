@@ -4,13 +4,19 @@
 
 
 	<select id="queryInitialList" parameterType="com.rosenzest.electric.dto.OwnerUnitQueryDto" resultType="com.rosenzest.electric.vo.InitialOwnerUnitVo" >
-		select o.id, o.name, o.layers,
+		select o.id, o.name, o.layers,o.district,o.street,o.community,o.hamlet,a.dict_label as district_name,b.dict_label as street_name,c.dict_label as community_name,d.dict_label as hamlet_name,
 		(select count(1) from owner_unit_area a where a.unit_id = o.id and a.type = '2') as doors, 
 		(select count(1) from ( select ua.id, (select count(1) from owner_unit_danger d where d.unit_area_id = ua.id) as dangers from owner_unit_area ua where ua.unit_id = o.id ) t where t.dangers>0) as households,
 		o.project_id, CASE WHEN r.initial_test_status is null THEN 0 ELSE r.initial_test_status END as status 
-		from owner_unit o 
-		left join owner_unit_report r on r.unit_id = o.id 
+		
+		from owner_unit o left join owner_unit_report r on r.unit_id = o.id 
+		left join sys_dict_data a on (o.district = a.dict_value and a.dict_type='district' and a.project_id = #{projectId})
+		left join sys_dict_data b on (o.street = b.dict_value and b.dict_type='street' and b.project_id = #{projectId})
+		left join sys_dict_data c on (o.community = c.dict_value and c.dict_type='community' and c.project_id = #{projectId})
+		left join sys_dict_data d on (o.hamlet = d.dict_value and d.dict_type='hamlet' and d.project_id = #{projectId})
+		
 		where o.project_id = #{projectId} and o.type=#{type}
+		and exists (select w.id from project_worker_area w where w.worker_id = #{workerId} and w.district = o.district and w.street = o.street and w.community = o.community and w.hamlet = o.hamlet )
 		
 		<if test="district != null and district != ''">
 			and o.district = #{district}

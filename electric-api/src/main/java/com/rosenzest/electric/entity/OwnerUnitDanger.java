@@ -1,8 +1,14 @@
 package com.rosenzest.electric.entity;
 
+import java.util.Date;
+
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 import com.rosenzest.model.base.entity.BaseEntity;
+import com.rosenzest.model.base.type.JsonObjectTypeHandler;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -13,10 +19,11 @@ import lombok.EqualsAndHashCode;
  * </p>
  *
  * @author fronttang
- * @since 2024-07-04
+ * @since 2024-07-05
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
+@TableName(autoResultMap = true)
 public class OwnerUnitDanger extends BaseEntity<OwnerUnitDanger> {
 
 	private static final long serialVersionUID = 1L;
@@ -46,6 +53,21 @@ public class OwnerUnitDanger extends BaseEntity<OwnerUnitDanger> {
 	 * 隐患ID
 	 */
 	private Long dangerId;
+
+	/**
+	 * 检测表ID
+	 */
+	private Long formId;
+
+	/**
+	 * 检测表编号
+	 */
+	private String formCode;
+
+	/**
+	 * 检测表类型A/B/C
+	 */
+	private String type;
 
 	/**
 	 * 隐患等级
@@ -80,7 +102,7 @@ public class OwnerUnitDanger extends BaseEntity<OwnerUnitDanger> {
 	/**
 	 * 检测图
 	 */
-	private String testPicture;
+	private String detectPic;
 
 	/**
 	 * 整改未通过原因
@@ -101,5 +123,16 @@ public class OwnerUnitDanger extends BaseEntity<OwnerUnitDanger> {
 	 * 检测员ID
 	 */
 	private Long inspectorId;
+
+	/**
+	 * 初检时间
+	 */
+	private Date initialTime;
+
+	/**
+	 * B类表数据
+	 */
+	@TableField(typeHandler = JsonObjectTypeHandler.class)
+	private JSONObject formb;
 
 }

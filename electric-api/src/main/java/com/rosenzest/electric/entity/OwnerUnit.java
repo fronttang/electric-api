@@ -15,7 +15,7 @@ import lombok.EqualsAndHashCode;
  * </p>
  *
  * @author fronttang
- * @since 2024-07-04
+ * @since 2024-07-05
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -263,5 +263,15 @@ public class OwnerUnit extends BaseEntity<OwnerUnit> {
 	 * 点位图
 	 */
 	private String stationPic;
+
+	/**
+	 * 门牌号照片
+	 */
+	private String houseNoPic;
+
+	/**
+	 * 现场检测图
+	 */
+	private String inspectionPic;
 
 }

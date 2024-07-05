@@ -23,9 +23,9 @@ public class OwnerUnitAreaServiceImpl extends ModelBaseServiceImpl<OwnerUnitArea
 		implements IOwnerUnitAreaService {
 
 	@Override
-	public List<OwnerUnitAreaVo> queryUnitAreaByType(Long unitId, Long buildingId, String type) {
+	public List<OwnerUnitAreaVo> queryUnitAreaByType(Long unitId, Long buildingId, String type, String keyword) {
 
-		return this.baseMapper.queryUnitAreaByType(unitId, buildingId, type);
+		return this.baseMapper.queryUnitAreaByType(unitId, buildingId, type, keyword);
 	}
 
 }

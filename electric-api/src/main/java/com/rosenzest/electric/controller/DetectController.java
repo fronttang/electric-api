@@ -4,35 +4,26 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import javax.validation.Valid;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.rosenzest.base.Result;
 import com.rosenzest.base.util.BeanUtils;
-import com.rosenzest.electric.dto.UnitAreaDangerDto;
 import com.rosenzest.electric.entity.IntuitiveDetect;
 import com.rosenzest.electric.entity.IntuitiveDetectDanger;
 import com.rosenzest.electric.entity.IntuitiveDetectData;
-import com.rosenzest.electric.entity.OwnerUnitDanger;
 import com.rosenzest.electric.entity.Project;
 import com.rosenzest.electric.service.IDetectTemplateBService;
 import com.rosenzest.electric.service.IIntuitiveDetectDangerService;
 import com.rosenzest.electric.service.IIntuitiveDetectDataService;
 import com.rosenzest.electric.service.IIntuitiveDetectService;
-import com.rosenzest.electric.service.IOwnerUnitDangerService;
 import com.rosenzest.electric.service.IProjectService;
 import com.rosenzest.electric.vo.DetectDataDangerVo;
 import com.rosenzest.electric.vo.DetectDataVo;
 import com.rosenzest.electric.vo.DetectTableVo;
-import com.rosenzest.electric.vo.UnitAreaDangerVo;
 import com.rosenzest.server.base.controller.ServerBaseController;
 
 import cn.hutool.core.collection.CollUtil;
@@ -58,9 +49,6 @@ public class DetectController extends ServerBaseController {
 
 	@Autowired
 	private IIntuitiveDetectDangerService detectDangerService;
-
-	@Autowired
-	private IOwnerUnitDangerService unitDangerService;
 
 	@ApiOperation(tags = "检测表", value = "项目检测表列表")
 	@GetMapping("/table/{projectId}")
@@ -107,44 +95,6 @@ public class DetectController extends ServerBaseController {
 			});
 			return Result.SUCCESS(results);
 		}
-		return Result.SUCCESS();
-	}
-
-	@ApiOperation(tags = "检测表", value = "隐患列表（公共区域/户）")
-	@GetMapping("/area/danger/{unitAreaId}")
-	public Result<List<UnitAreaDangerVo>> areaDangerList(Long unitAreaId) {
-
-		List<OwnerUnitDanger> areaDangers = unitDangerService.getByUnitAreaId(unitAreaId);
-		List<UnitAreaDangerVo> results = BeanUtils.copyList(areaDangers, UnitAreaDangerVo.class);
-
-		return Result.SUCCESS(results);
-	}
-
-	@ApiOperation(tags = "检测表", value = "添加/修改隐患（公共区域/户）")
-	@PostMapping("/area/danger")
-	public Result<?> saveAreaDanger(@RequestBody @Valid UnitAreaDangerDto danger) {
-
-		if (danger.getDangerId() != null) {
-			IntuitiveDetectDanger detectDanger = detectDangerService.getById(danger.getDangerId());
-			if (detectDanger != null) {
-				danger.setLevel(detectDanger.getLevel());
-				danger.setDescription(detectDanger.getDescription());
-				danger.setSuggestions(detectDanger.getSuggestions());
-			}
-		}
-		OwnerUnitDanger areaDanger = new OwnerUnitDanger();
-		BeanUtils.copyProperties(danger, areaDanger);
-		unitDangerService.saveOrUpdate(areaDanger);
-
-		return Result.SUCCESS();
-	}
-
-	@ApiOperation(tags = "检测表", value = "删除隐患（公共区域/户）")
-	@DeleteMapping("/area/danger/{dangerId}")
-	public Result<?> deleteAreaDanger(@PathVariable Long dangerId) {
-
-		unitDangerService.removeById(dangerId);
-
 		return Result.SUCCESS();
 	}
 }

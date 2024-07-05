@@ -13,12 +13,17 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.rosenzest.base.LoginUser;
 import com.rosenzest.base.Result;
+import com.rosenzest.base.util.BeanUtils;
+import com.rosenzest.electric.entity.Project;
 import com.rosenzest.electric.entity.ProjectWorker;
 import com.rosenzest.electric.entity.ProjectWorkerArea;
 import com.rosenzest.electric.enums.ProjectWorkerType;
+import com.rosenzest.electric.enums.UserType;
+import com.rosenzest.electric.service.IProjectService;
 import com.rosenzest.electric.service.IProjectWorkerAreaService;
 import com.rosenzest.electric.service.IProjectWorkerService;
 import com.rosenzest.electric.vo.ProjectAreaVo;
+import com.rosenzest.electric.vo.ProjectVo;
 import com.rosenzest.server.base.controller.ServerBaseController;
 
 import cn.hutool.core.collection.CollUtil;
@@ -34,10 +39,13 @@ import io.swagger.annotations.ApiOperation;
  * @author fronttang
  * @since 2024-06-27
  */
-@Api(tags = "项目管理")
+@Api(tags = "项目")
 @RestController
 @RequestMapping("/project")
 public class ProjectController extends ServerBaseController {
+
+	@Autowired
+	private IProjectService projectService;
 
 	@Autowired
 	private IProjectWorkerService projectWorkerService;
@@ -45,7 +53,7 @@ public class ProjectController extends ServerBaseController {
 	@Autowired
 	private IProjectWorkerAreaService projectWorkerAreaService;
 
-	@ApiOperation(tags = "项目管理", value = "项目区域")
+	@ApiOperation(tags = "项目", value = "用户项目区域")
 	@GetMapping("/area/list/{projectId}")
 	public Result<List<ProjectAreaVo>> list(@PathVariable Long projectId) {
 
@@ -117,5 +125,31 @@ public class ProjectController extends ServerBaseController {
 
 		List<ProjectAreaVo> result = new ArrayList<ProjectAreaVo>(districtMap.values());
 		return Result.SUCCESS(result);
+	}
+
+	@ApiOperation(tags = "项目", value = "用户项目列表")
+	@GetMapping("/project/list")
+	public Result<List<ProjectVo>> projectList() {
+
+		LoginUser loginUser = getLoginUser();
+		Long detectId = loginUser.getDetectId();
+
+		if (detectId == null) {
+			return Result.SUCCESS();
+		}
+
+		if (UserType.WORKER.code().equalsIgnoreCase(loginUser.getType())) {
+
+			List<Project> projects = projectService.getProjectByWorkerId(loginUser.getUserId());
+
+			// List<Project> projects = projectService.getProjectByDetectId(detectId);
+
+			List<ProjectVo> projectVoList = BeanUtils.copyList(projects, ProjectVo.class);
+
+			return Result.SUCCESS(projectVoList);
+		} else {
+
+			return Result.SUCCESS();
+		}
 	}
 }

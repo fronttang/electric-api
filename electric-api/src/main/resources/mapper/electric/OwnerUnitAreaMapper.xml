@@ -12,6 +12,9 @@
 		<if test="type != null and type != ''">
 			and a.type = #{type}
 		</if>
+		<if test="keyword != null and keyword != ''">
+			and a.name like concat('%', #{keyword}, '%')
+		</if>
 	</select>
 
 </mapper>

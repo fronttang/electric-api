@@ -1,6 +1,5 @@
 package com.rosenzest.electric.controller;
 
-
 import java.util.List;
 
 import javax.validation.Valid;
@@ -19,15 +18,11 @@ import com.rosenzest.base.util.BeanUtils;
 import com.rosenzest.electric.dto.LoginDto;
 import com.rosenzest.electric.dto.UserDeviceDto;
 import com.rosenzest.electric.entity.DetectDevice;
-import com.rosenzest.electric.entity.Project;
-import com.rosenzest.electric.enums.UserType;
 import com.rosenzest.electric.service.IDetectDeviceService;
-import com.rosenzest.electric.service.IProjectService;
 import com.rosenzest.electric.service.ISysUserService;
 import com.rosenzest.electric.service.IUserDeviceService;
 import com.rosenzest.electric.vo.DeviceVo;
 import com.rosenzest.electric.vo.LoginVo;
-import com.rosenzest.electric.vo.ProjectVo;
 import com.rosenzest.server.base.controller.ServerBaseController;
 
 import io.swagger.annotations.Api;
@@ -45,82 +40,53 @@ import io.swagger.annotations.ApiOperation;
 @RequestMapping("/user")
 @Api(tags = "用户相关")
 public class SysUserController extends ServerBaseController {
-	
+
 	@Autowired
 	private ISysUserService sysUserService;
-	
+
 	@Autowired
 	private IUserDeviceService userDeviceService;
-	
-	@Autowired
-	private IProjectService projectService;
-	
+
 	@Autowired
 	private IDetectDeviceService detectDeviceService;
 
 	/**
-     * 账号密码登录
-     *
-     * @return
-     */
+	 * 账号密码登录
+	 *
+	 * @return
+	 */
 	@ApiOperation(tags = "用户相关", value = "用户登录")
-    @PostMapping("/login")
-    public Result<LoginVo> login(@RequestBody @Valid LoginDto login) {
-        LoginVo loginVo = sysUserService.login(login);
-        if (loginVo == null) {
-            return Result.ERROR();
-        }
-        return Result.SUCCESS(loginVo);
-    }
-	
+	@PostMapping("/login")
+	public Result<LoginVo> login(@RequestBody @Valid LoginDto login) {
+		LoginVo loginVo = sysUserService.login(login);
+		if (loginVo == null) {
+			return Result.ERROR();
+		}
+		return Result.SUCCESS(loginVo);
+	}
+
 	@ApiOperation(tags = "用户相关", value = "用户仪器列表")
 	@GetMapping("/device/list")
 	public Result<List<DeviceVo>> userDeviceList() {
 		LoginUser loginUser = getLoginUser();
-		
+
 		List<DetectDevice> userDevices = userDeviceService.getUserDeviceList(loginUser.getUserId());
 		List<DeviceVo> devices = BeanUtils.copyList(userDevices, DeviceVo.class);
-		
+
 		return Result.SUCCESS(devices);
 	}
-	
+
 	@ApiOperation(tags = "用户相关", value = "用户仪器设置")
 	@PostMapping("/device/setting")
 	public Result<?> userDeviceSet(@RequestBody @Valid UserDeviceDto data) {
 		LoginUser loginUser = getLoginUser();
-		
+
 		DetectDevice device = detectDeviceService.getById(data.getDeviceId());
-		if(device == null || device.getDetectId() != loginUser.getDetectId()) {
+		if (device == null || device.getDetectId() != loginUser.getDetectId()) {
 			throw new BusinessException(400, "仪器不存在");
 		}
 		userDeviceService.saveUserDevice(loginUser.getUserId(), data);
-		
+
 		return Result.SUCCESS();
-	}
-	
-	@ApiOperation(tags = "用户相关", value = "用户项目列表")
-	@GetMapping("/project/list")
-	public Result<List<ProjectVo>> projectList() {
-
-		LoginUser loginUser = getLoginUser();
-		Long detectId = loginUser.getDetectId();
-
-		if (detectId == null) {
-			return Result.SUCCESS();
-		}
-		
-		if(UserType.WORKER.code().equalsIgnoreCase(loginUser.getType())) {
-		
-			List<Project> projects = projectService.getProjectByWorkerId(loginUser.getUserId());
-			
-			//List<Project> projects = projectService.getProjectByDetectId(detectId);
-	
-			List<ProjectVo> projectVoList = BeanUtils.copyList(projects, ProjectVo.class);
-	
-			return Result.SUCCESS(projectVoList);
-		} else {
-			
-			return Result.SUCCESS();
-		}
 	}
 }

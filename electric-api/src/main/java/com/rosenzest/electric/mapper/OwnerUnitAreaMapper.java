@@ -19,6 +19,6 @@ import com.rosenzest.model.base.mapper.ModelBaseMapper;
 public interface OwnerUnitAreaMapper extends ModelBaseMapper<OwnerUnitArea> {
 
 	List<OwnerUnitAreaVo> queryUnitAreaByType(@Param("unitId") Long unitId, @Param("buildingId") Long buildingId,
-			@Param("type") String type);
+			@Param("type") String type, @Param("keyword") String keyword);
 
 }

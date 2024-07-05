@@ -14,17 +14,16 @@ import lombok.ToString;
 @EqualsAndHashCode(callSuper = true)
 @ApiModel
 @NoArgsConstructor
-public class OwnerUnitQueryDto extends PageQueryDto {
+public class OwnerUnitQueryDto extends PageQuery {
 
-	@ApiModelProperty("项目ID")
+	@ApiModelProperty(value = "项目ID", required = true)
 	@NotNull(message = "项目ID不能为空")
 	private Long projectId;
 
 	@ApiModelProperty("类型,见字典:project_type")
-	@NotNull(message = "类型不能为空")
 	private String type;
 
-	@ApiModelProperty("状态")
+	@ApiModelProperty("状态,见字典:initial_test_status")
 	private String status;
 
 	/** 区县 */
@@ -45,4 +44,6 @@ public class OwnerUnitQueryDto extends PageQueryDto {
 
 	@ApiModelProperty("名称/地址")
 	private String keyword;
+
+	private Long workerId;
 }

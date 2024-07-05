@@ -16,6 +16,6 @@ import com.rosenzest.model.base.service.IModelBaseService;
  */
 public interface IOwnerUnitAreaService extends IModelBaseService<OwnerUnitArea> {
 
-	List<OwnerUnitAreaVo> queryUnitAreaByType(Long unitId, Long buildingId, String type);
+	List<OwnerUnitAreaVo> queryUnitAreaByType(Long unitId, Long buildingId, String type, String keyword);
 
 }

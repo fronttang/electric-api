@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Data
 @ApiModel
 @NoArgsConstructor
-public class PageQueryDto {
+public class PageQuery {
 
 	private int page = SystemConstants.DEFAULT_PAGE;
 	
