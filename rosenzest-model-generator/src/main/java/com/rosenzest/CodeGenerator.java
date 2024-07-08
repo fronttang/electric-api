@@ -145,7 +145,7 @@ public class CodeGenerator {
 				"UPD_BR", "UPD_BK", "CREATE_TIME", "CREATE_BY", "UPDATE_TIME", "UPDATE_BY");
 		// strategy.setInclude(scanner("表名，多个英文逗号分割").split(","));
 		strategy.setInclude("owner_unit", "owner_unit_danger", "owner_unit_building", "owner_unit_area",
-				"owner_unit_report");
+				"owner_unit_report", "owner_unit_danger_log", "owner_unit_report_log");
 		// strategy.setTablePrefix("xm_");
 		strategy.setControllerMappingHyphenStyle(true);
 		// strategy.setTablePrefix(pc.getModuleName() + "_");

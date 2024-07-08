@@ -29,6 +29,12 @@ public class UnitAreaDangerDto {
 	private Long unitId;
 
 	/**
+	 * 楼栋ID
+	 */
+	@ApiModelProperty("楼栋ID")
+	private Long buildingId;
+
+	/**
 	 * 单元区域ID
 	 */
 	@ApiModelProperty("公共区域/户ID")

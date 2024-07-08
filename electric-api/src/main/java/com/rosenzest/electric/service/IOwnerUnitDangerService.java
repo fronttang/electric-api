@@ -2,9 +2,15 @@ package com.rosenzest.electric.service;
 
 import java.util.List;
 
+import javax.validation.Valid;
+
+import com.rosenzest.electric.dto.DangerNotPassDto;
+import com.rosenzest.electric.dto.DangerPassDto;
+import com.rosenzest.electric.dto.OwnerUnitAgainDangerQuery;
 import com.rosenzest.electric.dto.OwnerUnitDangerQuery;
 import com.rosenzest.electric.dto.UnitAreaDangerQuery;
 import com.rosenzest.electric.entity.OwnerUnitDanger;
+import com.rosenzest.electric.vo.OwnerUnitAgainDangerVo;
 import com.rosenzest.electric.vo.OwnerUnitDangerVo;
 import com.rosenzest.model.base.service.IModelBaseService;
 
@@ -27,5 +33,15 @@ public interface IOwnerUnitDangerService extends IModelBaseService<OwnerUnitDang
 	Integer countByUnitId(Long unitId);
 
 	List<OwnerUnitDanger> selectByCondition(UnitAreaDangerQuery query);
+
+	boolean saveOrUpdateDanger(OwnerUnitDanger danger);
+
+	boolean removeDanger(OwnerUnitDanger danger);
+
+	List<OwnerUnitAgainDangerVo> queryOwnerUnitAgainDanger(OwnerUnitAgainDangerQuery query);
+
+	boolean pass(DangerPassDto data);
+
+	boolean notPass(@Valid DangerNotPassDto data);
 
 }

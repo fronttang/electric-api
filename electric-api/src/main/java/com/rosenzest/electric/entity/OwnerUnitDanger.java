@@ -2,13 +2,9 @@ package com.rosenzest.electric.entity;
 
 import java.util.Date;
 
-import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
 import com.rosenzest.model.base.entity.BaseEntity;
-import com.rosenzest.model.base.type.JsonObjectTypeHandler;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -19,11 +15,10 @@ import lombok.EqualsAndHashCode;
  * </p>
  *
  * @author fronttang
- * @since 2024-07-05
+ * @since 2024-07-08
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
-@TableName(autoResultMap = true)
 public class OwnerUnitDanger extends BaseEntity<OwnerUnitDanger> {
 
 	private static final long serialVersionUID = 1L;
@@ -95,21 +90,6 @@ public class OwnerUnitDanger extends BaseEntity<OwnerUnitDanger> {
 	private String dangerPic;
 
 	/**
-	 * 整改图
-	 */
-	private String rectificationPic;
-
-	/**
-	 * 检测图
-	 */
-	private String detectPic;
-
-	/**
-	 * 整改未通过原因
-	 */
-	private String reason;
-
-	/**
 	 * 状态
 	 */
 	private String status;
@@ -132,7 +112,41 @@ public class OwnerUnitDanger extends BaseEntity<OwnerUnitDanger> {
 	/**
 	 * B类表数据
 	 */
-	@TableField(typeHandler = JsonObjectTypeHandler.class)
-	private JSONObject formb;
+	private String formb;
+
+	/**
+	 * 整改员
+	 */
+	private String rectification;
+
+	/**
+	 * 整改时间
+	 */
+	private Date rectificationDate;
+
+	/**
+	 * 复检员
+	 */
+	private String reviewer;
+
+	/**
+	 * 复检时间
+	 */
+	private Date reviewerDate;
+
+	/**
+	 * 整改图
+	 */
+	private String rectificationPic;
+
+	/**
+	 * 整改未通过原因
+	 */
+	private String reason;
+
+	/**
+	 * 检测图
+	 */
+	private String detectPic;
 
 }

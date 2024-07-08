@@ -1,5 +1,6 @@
 package com.rosenzest.electric.service.impl;
 
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,16 +12,20 @@ import com.github.pagehelper.PageHelper;
 import com.rosenzest.base.LoginUser;
 import com.rosenzest.base.PageList;
 import com.rosenzest.base.util.BeanUtils;
+import com.rosenzest.electric.dto.OwnerUnitAgainQueryDto;
 import com.rosenzest.electric.dto.OwnerUnitDto;
 import com.rosenzest.electric.dto.OwnerUnitQueryDto;
 import com.rosenzest.electric.entity.OwnerUnit;
 import com.rosenzest.electric.entity.OwnerUnitReport;
 import com.rosenzest.electric.entity.Project;
 import com.rosenzest.electric.enums.InitialInspectionStatus;
+import com.rosenzest.electric.enums.ReExaminationStatus;
+import com.rosenzest.electric.enums.UnitReportType;
 import com.rosenzest.electric.mapper.OwnerUnitMapper;
 import com.rosenzest.electric.service.IOwnerUnitReportService;
 import com.rosenzest.electric.service.IOwnerUnitService;
 import com.rosenzest.electric.service.IProjectService;
+import com.rosenzest.electric.vo.AgainOwnerUnitVo;
 import com.rosenzest.electric.vo.InitialOwnerUnitVo;
 import com.rosenzest.electric.vo.OwnerUnitVo;
 import com.rosenzest.model.base.service.ModelBaseServiceImpl;
@@ -78,21 +83,46 @@ public class OwnerUnitServiceImpl extends ModelBaseServiceImpl<OwnerUnitMapper, 
 
 		this.saveOrUpdate(unit);
 
-		OwnerUnitReport report = ownerUnitReportService.getReportByUnitIdAndBuildingId(unit.getId(), null);
+		// 初检报告
+		OwnerUnitReport report = ownerUnitReportService.getReportByUnitIdAndBuildingIdAndType(unit.getId(), null,
+				UnitReportType.INITIAL);
 		if (report == null) {
 			report = new OwnerUnitReport();
 		}
 		report.setUnitId(unit.getId());
-		report.setAgainTestData(data.getAgainTestData());
-		report.setAgainTestNo(data.getAgainTestNo());
-		report.setInitialTestNo(data.getInitialTestNo());
-		report.setInitialTestStatus(InitialInspectionStatus.CHECKING.code());
+		report.setType(UnitReportType.INITIAL.code());
+		report.setCode(data.getInitialTestNo());
+		report.setDetectData(new Date());
+		report.setDetectStatus(InitialInspectionStatus.CHECKING.code());
 		report.setInspector(loginUser.getName());
 		report.setInspectorId(loginUser.getUserId());
 
+		// 复检报告
+		OwnerUnitReport againReport = ownerUnitReportService.getReportByUnitIdAndBuildingIdAndType(unit.getId(), null,
+				UnitReportType.AGAIN);
+		if (againReport == null) {
+			againReport = new OwnerUnitReport();
+		}
+		againReport.setUnitId(unit.getId());
+		againReport.setType(UnitReportType.AGAIN.code());
+		againReport.setCode(data.getAgainTestNo());
+		againReport.setDetectData(data.getAgainTestData());
+		againReport.setDetectStatus(ReExaminationStatus.RECTIFIED.code());
+		againReport.setInspector(loginUser.getName());
+		againReport.setInspectorId(loginUser.getUserId());
+
+		ownerUnitReportService.saveOrUpdate(againReport);
 		ownerUnitReportService.saveOrUpdate(report);
 
 		return true;
+	}
+
+	@Override
+	public List<AgainOwnerUnitVo> queryAginList(OwnerUnitAgainQueryDto query, PageList pageList) {
+		Page<AgainOwnerUnitVo> startPage = PageHelper.startPage(pageList.getPageNum(), pageList.getPageSize());
+		List<AgainOwnerUnitVo> list = this.baseMapper.queryAginList(query);
+		pageList.setTotalNum(startPage.getTotal());
+		return list;
 	}
 
 }

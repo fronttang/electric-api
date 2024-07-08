@@ -87,24 +87,6 @@ public class UnitAreaDangerVo {
 	private String dangerPic;
 
 	/**
-	 * 整改图
-	 */
-	@ApiModelProperty("整改图")
-	private String rectificationPic;
-
-	/**
-	 * 检测图
-	 */
-	@ApiModelProperty("检测图")
-	private String detectPic;
-
-	/**
-	 * 整改未通过原因
-	 */
-	@ApiModelProperty("整改未通过原因")
-	private String reason;
-
-	/**
 	 * 状态
 	 */
 	@ApiModelProperty("状态,同字典复检状态：again_test_status")

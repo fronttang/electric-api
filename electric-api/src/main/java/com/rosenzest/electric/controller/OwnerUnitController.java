@@ -21,25 +21,35 @@ import com.rosenzest.base.Result;
 import com.rosenzest.base.exception.BusinessException;
 import com.rosenzest.base.util.BeanUtils;
 import com.rosenzest.base.util.SnowFlakeUtil;
+import com.rosenzest.electric.dto.DangerNotPassDto;
+import com.rosenzest.electric.dto.DangerPassDto;
 import com.rosenzest.electric.dto.InitialOwnerUnitSettingDto;
+import com.rosenzest.electric.dto.OwnerUnitAgainDangerQuery;
+import com.rosenzest.electric.dto.OwnerUnitAgainQueryDto;
 import com.rosenzest.electric.dto.OwnerUnitDangerQuery;
 import com.rosenzest.electric.dto.OwnerUnitDto;
 import com.rosenzest.electric.dto.OwnerUnitQueryDto;
 import com.rosenzest.electric.entity.OwnerUnit;
 import com.rosenzest.electric.entity.OwnerUnitBuilding;
+import com.rosenzest.electric.entity.OwnerUnitDangerLog;
 import com.rosenzest.electric.entity.OwnerUnitReport;
 import com.rosenzest.electric.entity.Project;
 import com.rosenzest.electric.entity.ProjectWorker;
 import com.rosenzest.electric.enums.InitialInspectionStatus;
 import com.rosenzest.electric.enums.ProjectWorkerAreaRoleType;
 import com.rosenzest.electric.enums.ProjectWorkerType;
+import com.rosenzest.electric.enums.UnitReportType;
 import com.rosenzest.electric.service.IOwnerUnitBuildingService;
+import com.rosenzest.electric.service.IOwnerUnitDangerLogService;
 import com.rosenzest.electric.service.IOwnerUnitDangerService;
 import com.rosenzest.electric.service.IOwnerUnitReportService;
 import com.rosenzest.electric.service.IOwnerUnitService;
 import com.rosenzest.electric.service.IProjectService;
 import com.rosenzest.electric.service.IProjectWorkerService;
+import com.rosenzest.electric.vo.AgainOwnerUnitVo;
 import com.rosenzest.electric.vo.InitialOwnerUnitVo;
+import com.rosenzest.electric.vo.OwnerUnitAgainDangerVo;
+import com.rosenzest.electric.vo.OwnerUnitDangerLogVo;
 import com.rosenzest.electric.vo.OwnerUnitDangerVo;
 import com.rosenzest.electric.vo.OwnerUnitVo;
 import com.rosenzest.server.base.controller.ServerBaseController;
@@ -71,6 +81,9 @@ public class OwnerUnitController extends ServerBaseController {
 	@Autowired
 	private IOwnerUnitDangerService ownerUnitDangerService;
 
+	@Autowired
+	private IOwnerUnitDangerLogService dangerLogService;
+
 	@ApiOperation(tags = "业主单元(城中村/工业园)", value = "业主单元列表(初检)")
 	@PostMapping("/initial/list")
 	public ListResult<InitialOwnerUnitVo> list(@RequestBody @Valid OwnerUnitQueryDto query) {
@@ -92,6 +105,31 @@ public class OwnerUnitController extends ServerBaseController {
 
 		PageList pageList = new PageList(query.getPage(), query.getPageSize());
 		unitList = ownerUnitService.queryInitialList(query, pageList);
+
+		return ListResult.SUCCESS(pageList.getTotalNum(), unitList);
+	}
+
+	@ApiOperation(tags = "业主单元(城中村/工业园)", value = "业主单元列表(复检)")
+	@PostMapping("/again/list")
+	public ListResult<AgainOwnerUnitVo> listAgain(@RequestBody @Valid OwnerUnitAgainQueryDto query) {
+
+		List<AgainOwnerUnitVo> unitList = new ArrayList<AgainOwnerUnitVo>();
+		Project project = projectService.getById(query.getProjectId());
+		if (project == null) {
+			return ListResult.SUCCESS(0L, unitList);
+		}
+		query.setType(project.getType());
+
+		ProjectWorker projectWorker = projectWorkerService.getProjectWorker(query.getProjectId(), getUserId(),
+				ProjectWorkerType.INSPECTOR.code());
+		if (projectWorker == null) {
+			return ListResult.SUCCESS(0L, unitList);
+		}
+
+		query.setWorkerId(projectWorker.getId());
+
+		PageList pageList = new PageList(query.getPage(), query.getPageSize());
+		unitList = ownerUnitService.queryAginList(query, pageList);
 
 		return ListResult.SUCCESS(pageList.getTotalNum(), unitList);
 	}
@@ -120,12 +158,13 @@ public class OwnerUnitController extends ServerBaseController {
 			}
 		}
 
-		OwnerUnitReport report = ownerUnitReportService.getReportByUnitIdAndBuildingId(data.getId(),
-				data.getBuildingId());
+		OwnerUnitReport report = ownerUnitReportService.getReportByUnitIdAndBuildingIdAndType(data.getId(),
+				data.getBuildingId(), UnitReportType.INITIAL);
 
 		if (report == null) {
 			report = new OwnerUnitReport();
 		}
+		report.setType(UnitReportType.INITIAL.code());
 		report.setInspector(loginUser.getName());
 		report.setInspectorId(loginUser.getUserId());
 		report.setUnitId(data.getId());
@@ -136,20 +175,19 @@ public class OwnerUnitController extends ServerBaseController {
 		report.setIsTestReason(data.getIsTestReason());
 
 		if ("1".equalsIgnoreCase(data.getIsHouseholdRate())) {
-			report.setInitialTestStatus(InitialInspectionStatus.FINISH.code());
+			report.setDetectStatus(InitialInspectionStatus.FINISH.code());
 		} else if ("1".equalsIgnoreCase(data.getIsTest())) {
-			report.setInitialTestStatus(InitialInspectionStatus.UNABLE_TO_DETECT.code());
+			report.setDetectStatus(InitialInspectionStatus.UNABLE_TO_DETECT.code());
 		} else {
-			report.setInitialTestStatus(InitialInspectionStatus.CHECKING.code());
+			report.setDetectStatus(InitialInspectionStatus.CHECKING.code());
 		}
 
 		// 没有初检编号的随机生成一个 TODO
-		if (StrUtil.isBlank(report.getInitialTestNo())) {
-			report.setInitialTestNo(SnowFlakeUtil.uniqueString());
+		if (StrUtil.isBlank(report.getCode())) {
+			report.setCode(SnowFlakeUtil.uniqueString());
 		}
 
-		boolean save = ownerUnitReportService.saveOrUpdate(report);
-		if (save) {
+		if (ownerUnitReportService.saveOrUpdate(report)) {
 			return Result.SUCCESS();
 		} else {
 			return Result.ERROR();
@@ -215,11 +253,51 @@ public class OwnerUnitController extends ServerBaseController {
 
 	@ApiOperation(tags = "业主单元(城中村/工业园)", value = "隐患汇总列表")
 	@PostMapping("/danger")
-	public Result<List<OwnerUnitDangerVo>> dangerList(@RequestBody OwnerUnitDangerQuery query) {
+	public Result<List<OwnerUnitDangerVo>> dangerList(@RequestBody @Valid OwnerUnitDangerQuery query) {
 
-		//
 		List<OwnerUnitDangerVo> dangers = ownerUnitDangerService.queryOwnerUnitDanger(query);
 
 		return Result.SUCCESS(dangers);
+	}
+
+	@ApiOperation(tags = "业主单元(城中村/工业园)", value = "隐患列表(复检)")
+	@PostMapping("/again/danger")
+	public Result<List<OwnerUnitAgainDangerVo>> againDangerList(@RequestBody @Valid OwnerUnitAgainDangerQuery query) {
+
+		List<OwnerUnitAgainDangerVo> dangers = ownerUnitDangerService.queryOwnerUnitAgainDanger(query);
+
+		return Result.SUCCESS(dangers);
+	}
+
+	@ApiOperation(tags = "业主单元(城中村/工业园)", value = "通过")
+	@PostMapping("/danger/pass")
+	public Result<?> pass(@RequestBody @Valid DangerPassDto data) {
+
+		if (ownerUnitDangerService.pass(data)) {
+			return Result.SUCCESS();
+		} else {
+			return Result.ERROR();
+		}
+	}
+
+	@ApiOperation(tags = "业主单元(城中村/工业园)", value = "不通过/无法检测")
+	@PostMapping("/danger/notPass")
+	public Result<?> notPass(@RequestBody @Valid DangerNotPassDto data) {
+
+		if (ownerUnitDangerService.notPass(data)) {
+			return Result.SUCCESS();
+		} else {
+			return Result.ERROR();
+		}
+	}
+
+	@ApiOperation(tags = "业主单元(城中村/工业园)", value = "检测记录")
+	@GetMapping("/danger/log/{dangerId}")
+	public Result<List<OwnerUnitDangerLogVo>> dangerLogs(@PathVariable Long dangerId) {
+
+		List<OwnerUnitDangerLog> dangerLogs = dangerLogService.listByDangerId(dangerId);
+
+		List<OwnerUnitDangerLogVo> result = BeanUtils.copyList(dangerLogs, OwnerUnitDangerLogVo.class);
+		return Result.SUCCESS(result);
 	}
 }

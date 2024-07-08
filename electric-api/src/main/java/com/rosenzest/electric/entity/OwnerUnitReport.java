@@ -13,7 +13,7 @@ import lombok.EqualsAndHashCode;
  * </p>
  *
  * @author fronttang
- * @since 2024-07-04
+ * @since 2024-07-08
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -57,29 +57,24 @@ public class OwnerUnitReport extends BaseEntity<OwnerUnitReport> {
 	private String isTestReason;
 
 	/**
-	 * 初检编号
+	 * 报告类型1初检,2复检
 	 */
-	private String initialTestNo;
+	private String type;
 
 	/**
-	 * 复检编号
+	 * 报告编号
 	 */
-	private String againTestNo;
+	private String code;
 
 	/**
-	 * 复检时间
+	 * 检测时间
 	 */
-	private Date againTestData;
+	private Date detectData;
 
 	/**
-	 * 初检状态
+	 * 检测状态
 	 */
-	private String initialTestStatus;
-
-	/**
-	 * 复检状态
-	 */
-	private String againTestStatus;
+	private String detectStatus;
 
 	/**
 	 * 检测员
@@ -90,5 +85,10 @@ public class OwnerUnitReport extends BaseEntity<OwnerUnitReport> {
 	 * 检测员ID
 	 */
 	private Long inspectorId;
+
+	/**
+	 * 报告状态
+	 */
+	private String status;
 
 }

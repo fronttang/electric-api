@@ -2,4 +2,13 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.rosenzest.electric.mapper.OwnerUnitReportMapper">
 
+	<select id="selectReportDetectStatus" parameterType="Long" resultType="com.rosenzest.electric.dto.ReportDetectStatusDto">
+		select (CASE r.status WHEN '0' then r.dangers else 0 end) as rectifications,
+	(CASE r.status WHEN '1' then r.dangers else 0 end) as reexaminations,
+	(CASE r.status WHEN '2' then r.dangers else 0 end) as finishs,
+	(select count(1) from owner_unit_danger t where t.unit_id = o.id ) as dangers 
+	from owner_unit o 
+	left join (select ud.unit_id, ud.status, count(1) as dangers from owner_unit_danger ud group by ud.unit_id, ud.status) r on r.unit_id = o.id
+	where o.id = #{unitId} limit 1
+	</select>
 </mapper>

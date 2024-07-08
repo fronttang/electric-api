@@ -26,11 +26,16 @@ import com.rosenzest.electric.entity.IntuitiveDetectDanger;
 import com.rosenzest.electric.entity.OwnerUnit;
 import com.rosenzest.electric.entity.OwnerUnitArea;
 import com.rosenzest.electric.entity.OwnerUnitDanger;
+import com.rosenzest.electric.entity.OwnerUnitReport;
 import com.rosenzest.electric.enums.DetectFormB;
+import com.rosenzest.electric.enums.InitialInspectionStatus;
 import com.rosenzest.electric.enums.ProjectWorkerAreaRoleType;
+import com.rosenzest.electric.enums.ReExaminationStatus;
+import com.rosenzest.electric.enums.UnitReportType;
 import com.rosenzest.electric.service.IIntuitiveDetectDangerService;
 import com.rosenzest.electric.service.IOwnerUnitAreaService;
 import com.rosenzest.electric.service.IOwnerUnitDangerService;
+import com.rosenzest.electric.service.IOwnerUnitReportService;
 import com.rosenzest.electric.service.IOwnerUnitService;
 import com.rosenzest.electric.service.IProjectWorkerService;
 import com.rosenzest.electric.vo.OwnerUnitAreaVo;
@@ -62,6 +67,9 @@ public class OwnerUnitAreaController extends ServerBaseController {
 
 	@Autowired
 	private IProjectWorkerService projectWorkerService;
+
+	@Autowired
+	private IOwnerUnitReportService unitReportService;
 
 	@ApiOperation(tags = "公共区域/户(城中村/工业园)", value = "公共区域/户列表")
 	@ApiImplicitParams({ @ApiImplicitParam(name = "type", required = false, value = "类型,见字典:owner_unit_area_type"),
@@ -161,6 +169,13 @@ public class OwnerUnitAreaController extends ServerBaseController {
 			return Result.ERROR(400, "无操作权限");
 		}
 
+		// 检测业主单元报告状态
+		OwnerUnitReport report = unitReportService.getReportByUnitIdAndBuildingIdAndType(danger.getId(), null,
+				UnitReportType.INITIAL);
+		if (report != null && InitialInspectionStatus.FINISH.code().equalsIgnoreCase(report.getDetectStatus())) {
+			return Result.ERROR(400, "业主单元已完成初检");
+		}
+
 		if (danger.getDangerId() != null) {
 			IntuitiveDetectDanger detectDanger = detectDangerService.getById(danger.getDangerId());
 			if (detectDanger != null) {
@@ -183,6 +198,13 @@ public class OwnerUnitAreaController extends ServerBaseController {
 			}
 		}
 
+		if (danger.getId() != null) {
+			OwnerUnitDanger dbDanger = unitDangerService.getById(danger.getId());
+			if (ReExaminationStatus.FINISH.code().equalsIgnoreCase(dbDanger.getStatus())) {
+				return Result.ERROR(400, "隐患已整改完成");
+			}
+		}
+
 		OwnerUnitDanger areaDanger = new OwnerUnitDanger();
 		BeanUtils.copyProperties(danger, areaDanger);
 
@@ -190,7 +212,7 @@ public class OwnerUnitAreaController extends ServerBaseController {
 		areaDanger.setInspectorId(loginUser.getUserId());
 		areaDanger.setInitialTime(new Date());
 
-		if (unitDangerService.saveOrUpdate(areaDanger)) {
+		if (unitDangerService.saveOrUpdateDanger(areaDanger)) {
 			return Result.SUCCESS();
 		} else {
 			return Result.ERROR();
@@ -205,6 +227,11 @@ public class OwnerUnitAreaController extends ServerBaseController {
 		if (danger == null) {
 			return Result.ERROR(400, "无操作权限");
 		}
+
+		if (ReExaminationStatus.FINISH.code().equalsIgnoreCase(danger.getStatus())) {
+			return Result.ERROR(400, "隐患已整改完成");
+		}
+
 		// 检查工作人员权限
 		OwnerUnit ownerUnit = ownerUnitService.getById(danger.getUnitId());
 		if (ownerUnit == null) {
@@ -215,10 +242,11 @@ public class OwnerUnitAreaController extends ServerBaseController {
 			return Result.ERROR(400, "无操作权限");
 		}
 
-		if (unitDangerService.removeById(dangerId)) {
+		if (unitDangerService.removeDanger(danger)) {
 			return Result.SUCCESS();
 		} else {
 			return Result.ERROR();
 		}
 	}
+
 }
