@@ -11,6 +11,11 @@ import lombok.NoArgsConstructor;
 public class ReportDetectStatusDto {
 
 	/**
+	 * 业主单元ID
+	 */
+	private Long unitId;
+
+	/**
 	 * 总隐患数
 	 */
 	@ApiModelProperty("总隐患数")

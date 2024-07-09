@@ -32,6 +32,12 @@ public class OwnerUnitAreaDto {
 	private String name;
 
 	/**
+	 * 楼栋ID
+	 */
+	@ApiModelProperty("楼栋ID")
+	private Long buildingId;
+
+	/**
 	 * 楼层
 	 */
 	@ApiModelProperty("楼层")

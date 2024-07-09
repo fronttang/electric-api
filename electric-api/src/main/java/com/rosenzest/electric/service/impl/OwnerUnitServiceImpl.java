@@ -12,14 +12,14 @@ import com.github.pagehelper.PageHelper;
 import com.rosenzest.base.LoginUser;
 import com.rosenzest.base.PageList;
 import com.rosenzest.base.util.BeanUtils;
-import com.rosenzest.electric.dto.OwnerUnitAgainQueryDto;
+import com.rosenzest.electric.dto.OwnerUnitAgainQuery;
 import com.rosenzest.electric.dto.OwnerUnitDto;
-import com.rosenzest.electric.dto.OwnerUnitQueryDto;
+import com.rosenzest.electric.dto.OwnerUnitQuery;
 import com.rosenzest.electric.entity.OwnerUnit;
 import com.rosenzest.electric.entity.OwnerUnitReport;
 import com.rosenzest.electric.entity.Project;
 import com.rosenzest.electric.enums.InitialInspectionStatus;
-import com.rosenzest.electric.enums.ReExaminationStatus;
+import com.rosenzest.electric.enums.ReviewStatus;
 import com.rosenzest.electric.enums.UnitReportType;
 import com.rosenzest.electric.mapper.OwnerUnitMapper;
 import com.rosenzest.electric.service.IOwnerUnitReportService;
@@ -51,7 +51,7 @@ public class OwnerUnitServiceImpl extends ModelBaseServiceImpl<OwnerUnitMapper, 
 	private IOwnerUnitReportService ownerUnitReportService;
 
 	@Override
-	public List<InitialOwnerUnitVo> queryInitialList(OwnerUnitQueryDto query, PageList pageList) {
+	public List<InitialOwnerUnitVo> queryInitialList(OwnerUnitQuery query, PageList pageList) {
 
 		Page<InitialOwnerUnitVo> startPage = PageHelper.startPage(pageList.getPageNum(), pageList.getPageSize());
 		List<InitialOwnerUnitVo> list = this.baseMapper.queryInitialList(query);
@@ -84,8 +84,7 @@ public class OwnerUnitServiceImpl extends ModelBaseServiceImpl<OwnerUnitMapper, 
 		this.saveOrUpdate(unit);
 
 		// 初检报告
-		OwnerUnitReport report = ownerUnitReportService.getReportByUnitIdAndBuildingIdAndType(unit.getId(), null,
-				UnitReportType.INITIAL);
+		OwnerUnitReport report = ownerUnitReportService.getReportByUnitIdAndType(unit.getId(), UnitReportType.INITIAL);
 		if (report == null) {
 			report = new OwnerUnitReport();
 		}
@@ -98,16 +97,16 @@ public class OwnerUnitServiceImpl extends ModelBaseServiceImpl<OwnerUnitMapper, 
 		report.setInspectorId(loginUser.getUserId());
 
 		// 复检报告
-		OwnerUnitReport againReport = ownerUnitReportService.getReportByUnitIdAndBuildingIdAndType(unit.getId(), null,
-				UnitReportType.AGAIN);
+		OwnerUnitReport againReport = ownerUnitReportService.getReportByUnitIdAndType(unit.getId(),
+				UnitReportType.REVIEW);
 		if (againReport == null) {
 			againReport = new OwnerUnitReport();
 		}
 		againReport.setUnitId(unit.getId());
-		againReport.setType(UnitReportType.AGAIN.code());
+		againReport.setType(UnitReportType.REVIEW.code());
 		againReport.setCode(data.getAgainTestNo());
 		againReport.setDetectData(data.getAgainTestData());
-		againReport.setDetectStatus(ReExaminationStatus.RECTIFIED.code());
+		againReport.setDetectStatus(ReviewStatus.RECTIFIED.code());
 		againReport.setInspector(loginUser.getName());
 		againReport.setInspectorId(loginUser.getUserId());
 
@@ -118,7 +117,7 @@ public class OwnerUnitServiceImpl extends ModelBaseServiceImpl<OwnerUnitMapper, 
 	}
 
 	@Override
-	public List<AgainOwnerUnitVo> queryAginList(OwnerUnitAgainQueryDto query, PageList pageList) {
+	public List<AgainOwnerUnitVo> queryAginList(OwnerUnitAgainQuery query, PageList pageList) {
 		Page<AgainOwnerUnitVo> startPage = PageHelper.startPage(pageList.getPageNum(), pageList.getPageSize());
 		List<AgainOwnerUnitVo> list = this.baseMapper.queryAginList(query);
 		pageList.setTotalNum(startPage.getTotal());

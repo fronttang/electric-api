@@ -16,9 +16,6 @@ public class InitialOwnerUnitSettingDto {
 	@NotNull(message = "业主单元ID不能为空")
 	private Long id;
 
-	@ApiModelProperty("楼栋ID")
-	private Long buildingId;
-
 	/**
 	 * 是否开启隐患通知单
 	 */

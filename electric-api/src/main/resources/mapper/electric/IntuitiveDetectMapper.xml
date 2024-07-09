@@ -2,4 +2,25 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.rosenzest.electric.mapper.IntuitiveDetectMapper">
 
+	<select id="getFormDangers" resultType="Integer">
+		select count(1) as dangers from owner_unit_danger d 
+		where d.form_id = #{formId} and d.unit_id = #{unitId} 
+		<if test="unitAreaId != null">
+			and d.unit_area_id = #{unitAreaId}
+		</if>
+		<if test="buildingId != null">
+			and d.building_id = #{buildingId}
+		</if>
+	</select>
+	
+	<select id="getFormbDangers" resultType="Integer">
+		select count(1) as dangers from owner_unit_danger d 
+		where d.form_code = #{code} and d.unit_id = #{unitId} 
+		<if test="unitAreaId != null">
+			and d.unit_area_id = #{unitAreaId}
+		</if>
+		<if test="buildingId != null">
+			and d.building_id = #{buildingId}
+		</if>
+	</select>
 </mapper>

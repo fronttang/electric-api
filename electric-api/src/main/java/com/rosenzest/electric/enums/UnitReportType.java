@@ -12,7 +12,15 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum UnitReportType implements IEnum<UnitReportType> {
 
-	INITIAL("1", "初检"), AGAIN("2", "复检"),
+	/**
+	 * 初检
+	 */
+	INITIAL("1", "初检"),
+
+	/**
+	 * 复检
+	 */
+	REVIEW("2", "复检"),
 
 	;
 

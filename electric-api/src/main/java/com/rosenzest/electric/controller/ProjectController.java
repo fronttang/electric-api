@@ -128,7 +128,7 @@ public class ProjectController extends ServerBaseController {
 	}
 
 	@ApiOperation(tags = "项目", value = "用户项目列表")
-	@GetMapping("/project/list")
+	@GetMapping("/list")
 	public Result<List<ProjectVo>> projectList() {
 
 		LoginUser loginUser = getLoginUser();

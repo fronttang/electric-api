@@ -3,7 +3,7 @@
 <mapper namespace="com.rosenzest.electric.mapper.DetectTemplateBMapper">
 
 
-	<select id="getTableBByTemplateId" resultType="com.rosenzest.electric.vo.DetectTableVo">
+	<select id="getTableBByTemplateId" resultType="com.rosenzest.electric.vo.DetectFormVo">
 		select d.dict_label as name, 'B' as type, tb.bid as code 
 		from detect_template_b tb left join sys_dict_data d on ( d.dict_value = tb.bid and d.dict_type = 'detect_table_b' )
 		where tb.template_id = #{templateId} and tb.type = #{type} 

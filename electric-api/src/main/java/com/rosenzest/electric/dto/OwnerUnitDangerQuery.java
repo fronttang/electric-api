@@ -17,6 +17,12 @@ public class OwnerUnitDangerQuery {
 	private Long unitId;
 
 	/**
+	 * 楼栋ID
+	 */
+	@ApiModelProperty("楼栋ID")
+	private Long buildingId;
+
+	/**
 	 * 初检时间
 	 */
 	@ApiModelProperty("初检时间,格式yyyy-MM-dd")

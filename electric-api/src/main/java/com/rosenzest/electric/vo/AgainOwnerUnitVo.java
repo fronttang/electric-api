@@ -51,7 +51,7 @@ public class AgainOwnerUnitVo {
 	/**
 	 * 状态
 	 */
-	@ApiModelProperty("状态,见字典初检状态：again_test_status")
+	@ApiModelProperty("状态,见字典复检状态：again_test_status")
 	private String status;
 
 	/**

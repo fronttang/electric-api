@@ -2,4 +2,22 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.rosenzest.electric.mapper.OwnerUnitBuildingMapper">
 
+
+	<select id="queryInitialList" parameterType="com.rosenzest.electric.dto.OwnerUnitBuildingQuery" resultType="com.rosenzest.electric.vo.InitialOwnerUnitBuildingVo" >
+		select t.* from (select b.id,b.name,b.type,b.unit_id,r.`status`,
+		(select count(1) from owner_unit_area a where a.unit_id = b.unit_id and a.building_id = b.id ) as doors,
+		(select count(1) from owner_unit_danger ud where ud.unit_id = b.unit_id and ud.building_id = b.id) as dangers,
+		(select count(1) from ( select ua.id, (select count(1) from owner_unit_danger d where d.unit_area_id = ua.id) as dangers from owner_unit_area ua where ua.unit_id = b.unit_id and ua.building_id = b.id ) t where t.dangers>0) as households
+		from owner_unit_building b 
+		left join owner_unit_report r on (r.unit_id = b.unit_id and r.building_id = b.id)
+		) t where 1=1
+		<if test="status != null and status != ''">
+			and t.status = #{status}
+		</if>
+		<if test="keyword != null and keyword != ''">
+			and t.name like concat('%', #{keyword}, '%')
+		</if>
+		order by t.id asc
+	</select>
+	
 </mapper>

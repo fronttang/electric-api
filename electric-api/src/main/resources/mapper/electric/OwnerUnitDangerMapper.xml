@@ -9,6 +9,7 @@
 		left join owner_unit u on u.id = d.unit_id 
 		left join owner_unit_area ua on ua.id = d.unit_area_id
 		where d.unit_id = #{unitId}
+		<if test="buildingId != null"> and d.building_id = #{buildingId} </if>
 		<if test="date != null and date != ''"> and date(d.initial_time) = #{date} </if>
 		<if test="keyword != null and keyword != ''">
 			and (

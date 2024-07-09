@@ -19,13 +19,24 @@ import com.rosenzest.model.base.service.ModelBaseServiceImpl;
  * @since 2024-06-29
  */
 @Service
-public class IntuitiveDetectServiceImpl extends ModelBaseServiceImpl<IntuitiveDetectMapper, IntuitiveDetect> implements IIntuitiveDetectService {
+public class IntuitiveDetectServiceImpl extends ModelBaseServiceImpl<IntuitiveDetectMapper, IntuitiveDetect>
+		implements IIntuitiveDetectService {
 
 	@Override
 	public List<IntuitiveDetect> getIntuitiveDetectByTemplateId(Long templateId) {
 		LambdaQueryWrapper<IntuitiveDetect> queryWrapper = new LambdaQueryWrapper<IntuitiveDetect>();
 		queryWrapper.eq(IntuitiveDetect::getTemplateId, templateId);
 		return this.baseMapper.selectList(queryWrapper);
+	}
+
+	@Override
+	public Integer getFormDangers(Long formId, Long unitId, Long unitAreaId, Long buildingId) {
+		return this.baseMapper.getFormDangers(formId, unitId, unitAreaId, buildingId);
+	}
+
+	@Override
+	public Integer getFormbDangers(String code, Long unitId, Long unitAreaId, Long buildingId) {
+		return this.baseMapper.getFormbDangers(code, unitId, unitAreaId, buildingId);
 	}
 
 }

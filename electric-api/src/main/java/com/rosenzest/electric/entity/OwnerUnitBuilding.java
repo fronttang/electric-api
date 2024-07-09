@@ -1,5 +1,7 @@
 package com.rosenzest.electric.entity;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.rosenzest.model.base.entity.BaseEntity;
 
 import lombok.Data;
@@ -22,6 +24,7 @@ public class OwnerUnitBuilding extends BaseEntity<OwnerUnitBuilding> {
 	/**
 	 * ID
 	 */
+	@TableId(value = "id", type = IdType.AUTO)
 	private Long id;
 
 	/**
@@ -35,7 +38,7 @@ public class OwnerUnitBuilding extends BaseEntity<OwnerUnitBuilding> {
 	private String name;
 
 	/**
-	 * 类型配电房/宿舍楼
+	 * 类型配电房/宿舍楼/其他
 	 */
 	private String type;
 
@@ -43,5 +46,25 @@ public class OwnerUnitBuilding extends BaseEntity<OwnerUnitBuilding> {
 	 * 宿舍楼户数
 	 */
 	private Long doors;
+
+	/**
+	 * 状态
+	 */
+	private String status;
+
+	/**
+	 * 是否完成入户率1是0否
+	 */
+	private String isHouseholdRate;
+
+	/**
+	 * 是否无法检测1是0否
+	 */
+	private String isTest;
+
+	/**
+	 * 无法检测原因
+	 */
+	private String isTestReason;
 
 }

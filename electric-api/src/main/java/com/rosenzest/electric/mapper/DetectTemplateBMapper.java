@@ -5,7 +5,7 @@ import java.util.List;
 import org.apache.ibatis.annotations.Param;
 
 import com.rosenzest.electric.entity.DetectTemplateB;
-import com.rosenzest.electric.vo.DetectTableVo;
+import com.rosenzest.electric.vo.DetectFormVo;
 import com.rosenzest.model.base.mapper.ModelBaseMapper;
 
 /**
@@ -18,6 +18,6 @@ import com.rosenzest.model.base.mapper.ModelBaseMapper;
  */
 public interface DetectTemplateBMapper extends ModelBaseMapper<DetectTemplateB> {
 
-	List<DetectTableVo> getTableBByTemplateId(@Param("templateId") Long templateId, @Param("type") String type);
+	List<DetectFormVo> getTableBByTemplateId(@Param("templateId") Long templateId, @Param("type") String type);
 
 }

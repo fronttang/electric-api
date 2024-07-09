@@ -194,4 +194,16 @@ public class OwnerUnitVo {
 	@ApiModelProperty("村")
 	private String hamlet;
 
+	/**
+	 * 温度
+	 */
+	@ApiModelProperty("温度")
+	private String temperature;
+
+	/**
+	 * 湿度
+	 */
+	@ApiModelProperty("湿度")
+	private String humidity;
+
 }

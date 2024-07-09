@@ -12,7 +12,20 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum InitialInspectionStatus implements IEnum<InitialInspectionStatus> {
 
-	CHECKING("0", "检测中"), UNABLE_TO_DETECT("1", "无法检测"), FINISH("2", "完成"),
+	/**
+	 * 检测中
+	 */
+	CHECKING("0", "检测中"),
+
+	/**
+	 * 无法检测
+	 */
+	UNABLE_TO_DETECT("1", "无法检测"),
+
+	/**
+	 * 完成
+	 */
+	FINISH("2", "完成"),
 
 	;
 

@@ -1,6 +1,5 @@
 package com.rosenzest.electric.controller;
 
-import java.util.Date;
 import java.util.List;
 
 import javax.validation.Valid;
@@ -15,34 +14,22 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.rosenzest.base.LoginUser;
 import com.rosenzest.base.Result;
-import com.rosenzest.base.enums.EnumUtils;
 import com.rosenzest.base.util.BeanUtils;
 import com.rosenzest.electric.dto.OwnerUnitAreaDto;
-import com.rosenzest.electric.dto.UnitAreaDangerDto;
 import com.rosenzest.electric.dto.UnitAreaDangerQuery;
-import com.rosenzest.electric.entity.IntuitiveDetectDanger;
 import com.rosenzest.electric.entity.OwnerUnit;
 import com.rosenzest.electric.entity.OwnerUnitArea;
 import com.rosenzest.electric.entity.OwnerUnitDanger;
-import com.rosenzest.electric.entity.OwnerUnitReport;
-import com.rosenzest.electric.enums.DetectFormB;
-import com.rosenzest.electric.enums.InitialInspectionStatus;
 import com.rosenzest.electric.enums.ProjectWorkerAreaRoleType;
-import com.rosenzest.electric.enums.ReExaminationStatus;
-import com.rosenzest.electric.enums.UnitReportType;
-import com.rosenzest.electric.service.IIntuitiveDetectDangerService;
 import com.rosenzest.electric.service.IOwnerUnitAreaService;
 import com.rosenzest.electric.service.IOwnerUnitDangerService;
-import com.rosenzest.electric.service.IOwnerUnitReportService;
 import com.rosenzest.electric.service.IOwnerUnitService;
 import com.rosenzest.electric.service.IProjectWorkerService;
 import com.rosenzest.electric.vo.OwnerUnitAreaVo;
 import com.rosenzest.electric.vo.UnitAreaDangerVo;
 import com.rosenzest.server.base.controller.ServerBaseController;
 
-import cn.hutool.core.util.StrUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -63,13 +50,7 @@ public class OwnerUnitAreaController extends ServerBaseController {
 	private IOwnerUnitDangerService unitDangerService;
 
 	@Autowired
-	private IIntuitiveDetectDangerService detectDangerService;
-
-	@Autowired
 	private IProjectWorkerService projectWorkerService;
-
-	@Autowired
-	private IOwnerUnitReportService unitReportService;
 
 	@ApiOperation(tags = "公共区域/户(城中村/工业园)", value = "公共区域/户列表")
 	@ApiImplicitParams({ @ApiImplicitParam(name = "type", required = false, value = "类型,见字典:owner_unit_area_type"),
@@ -151,102 +132,6 @@ public class OwnerUnitAreaController extends ServerBaseController {
 		List<UnitAreaDangerVo> results = BeanUtils.copyList(areaDangers, UnitAreaDangerVo.class);
 
 		return Result.SUCCESS(results);
-	}
-
-	@ApiOperation(tags = "公共区域/户(城中村/工业园)", value = "添加/修改隐患")
-	@PostMapping("/danger")
-	public Result<?> saveAreaDanger(@RequestBody @Valid UnitAreaDangerDto danger) {
-
-		LoginUser loginUser = getLoginUser();
-
-		// 检查工作人员权限
-		OwnerUnit ownerUnit = ownerUnitService.getById(danger.getUnitId());
-		if (ownerUnit == null) {
-			return Result.ERROR(400, "无操作权限");
-		}
-
-		if (!projectWorkerService.checkWorkerAreaRole(ownerUnit, getUserId(), ProjectWorkerAreaRoleType.EDIT)) {
-			return Result.ERROR(400, "无操作权限");
-		}
-
-		// 检测业主单元报告状态
-		OwnerUnitReport report = unitReportService.getReportByUnitIdAndBuildingIdAndType(danger.getId(), null,
-				UnitReportType.INITIAL);
-		if (report != null && InitialInspectionStatus.FINISH.code().equalsIgnoreCase(report.getDetectStatus())) {
-			return Result.ERROR(400, "业主单元已完成初检");
-		}
-
-		if (danger.getDangerId() != null) {
-			IntuitiveDetectDanger detectDanger = detectDangerService.getById(danger.getDangerId());
-			if (detectDanger != null) {
-				danger.setLevel(detectDanger.getLevel());
-				danger.setDescription(detectDanger.getDescription());
-				danger.setSuggestions(detectDanger.getSuggestions());
-			}
-		}
-
-		if ("B".equalsIgnoreCase(danger.getType())) {
-			if (StrUtil.isBlank(danger.getFormCode())) {
-				return Result.ERROR(400, "B类表CODE不能为空");
-			}
-			// 查询B类表
-			String description = EnumUtils.init(DetectFormB.class).getNamefromCode(danger.getFormCode());
-			danger.setDescription(description);
-		} else {
-			if (danger.getFormId() == null) {
-				return Result.ERROR(400, "A/C类表ID不能为空");
-			}
-		}
-
-		if (danger.getId() != null) {
-			OwnerUnitDanger dbDanger = unitDangerService.getById(danger.getId());
-			if (ReExaminationStatus.FINISH.code().equalsIgnoreCase(dbDanger.getStatus())) {
-				return Result.ERROR(400, "隐患已整改完成");
-			}
-		}
-
-		OwnerUnitDanger areaDanger = new OwnerUnitDanger();
-		BeanUtils.copyProperties(danger, areaDanger);
-
-		areaDanger.setInspector(loginUser.getName());
-		areaDanger.setInspectorId(loginUser.getUserId());
-		areaDanger.setInitialTime(new Date());
-
-		if (unitDangerService.saveOrUpdateDanger(areaDanger)) {
-			return Result.SUCCESS();
-		} else {
-			return Result.ERROR();
-		}
-	}
-
-	@ApiOperation(tags = "公共区域/户(城中村/工业园)", value = "删除隐患")
-	@DeleteMapping("/danger/{dangerId}")
-	public Result<?> deleteAreaDanger(@PathVariable Long dangerId) {
-
-		OwnerUnitDanger danger = unitDangerService.getById(dangerId);
-		if (danger == null) {
-			return Result.ERROR(400, "无操作权限");
-		}
-
-		if (ReExaminationStatus.FINISH.code().equalsIgnoreCase(danger.getStatus())) {
-			return Result.ERROR(400, "隐患已整改完成");
-		}
-
-		// 检查工作人员权限
-		OwnerUnit ownerUnit = ownerUnitService.getById(danger.getUnitId());
-		if (ownerUnit == null) {
-			return Result.ERROR(400, "无操作权限");
-		}
-
-		if (!projectWorkerService.checkWorkerAreaRole(ownerUnit, getUserId(), ProjectWorkerAreaRoleType.EDIT)) {
-			return Result.ERROR(400, "无操作权限");
-		}
-
-		if (unitDangerService.removeDanger(danger)) {
-			return Result.SUCCESS();
-		} else {
-			return Result.ERROR();
-		}
 	}
 
 }

@@ -9,7 +9,20 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum ProjectWorkerType implements IEnum<ProjectWorkerType> {
 
-	INSPECTOR("1", "检测员"), PROJECT_MANAGER("2", "项目经理"), APPROVER("2", "审批员"),
+	/**
+	 * 检测员
+	 */
+	INSPECTOR("1", "检测员"),
+
+	/**
+	 * 项目经理
+	 */
+	PROJECT_MANAGER("2", "项目经理"),
+
+	/**
+	 * 审批员
+	 */
+	APPROVER("2", "审批员"),
 
 	;
 

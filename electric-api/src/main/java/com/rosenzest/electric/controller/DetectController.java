@@ -1,5 +1,6 @@
 package com.rosenzest.electric.controller;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -8,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.rosenzest.base.Result;
@@ -15,15 +17,17 @@ import com.rosenzest.base.util.BeanUtils;
 import com.rosenzest.electric.entity.IntuitiveDetect;
 import com.rosenzest.electric.entity.IntuitiveDetectDanger;
 import com.rosenzest.electric.entity.IntuitiveDetectData;
+import com.rosenzest.electric.entity.OwnerUnit;
 import com.rosenzest.electric.entity.Project;
 import com.rosenzest.electric.service.IDetectTemplateBService;
 import com.rosenzest.electric.service.IIntuitiveDetectDangerService;
 import com.rosenzest.electric.service.IIntuitiveDetectDataService;
 import com.rosenzest.electric.service.IIntuitiveDetectService;
+import com.rosenzest.electric.service.IOwnerUnitService;
 import com.rosenzest.electric.service.IProjectService;
 import com.rosenzest.electric.vo.DetectDataDangerVo;
 import com.rosenzest.electric.vo.DetectDataVo;
-import com.rosenzest.electric.vo.DetectTableVo;
+import com.rosenzest.electric.vo.DetectFormVo;
 import com.rosenzest.server.base.controller.ServerBaseController;
 
 import cn.hutool.core.collection.CollUtil;
@@ -34,6 +38,9 @@ import io.swagger.annotations.ApiOperation;
 @RestController
 @RequestMapping("/detect")
 public class DetectController extends ServerBaseController {
+
+	@Autowired
+	private IOwnerUnitService ownerUnitService;
 
 	@Autowired
 	private IProjectService projectService;
@@ -50,37 +57,81 @@ public class DetectController extends ServerBaseController {
 	@Autowired
 	private IIntuitiveDetectDangerService detectDangerService;
 
-	@ApiOperation(tags = "检测表", value = "项目检测表列表")
-	@GetMapping("/table/{projectId}")
-	public Result<List<DetectTableVo>> tableList(@PathVariable Long projectId) {
+	@ApiOperation(tags = "检测表", value = "检测表")
+	@GetMapping("/form")
+	public Result<List<DetectFormVo>> formList(@RequestParam(value = "unitId") Long unitId,
+			@RequestParam(value = "unitAreaId", required = false) Long unitAreaId,
+			@RequestParam(value = "buildingId", required = false) Long buildingId) {
 
-		// 当前检测员是否有项目权限 TODO
+		OwnerUnit ownerUnit = ownerUnitService.getById(unitId);
+		if (ownerUnit == null) {
+			return Result.SUCCESS();
+		}
 
-		Project project = projectService.getById(projectId);
+		Project project = projectService.getById(ownerUnit.getProjectId());
+
+		if (project == null) {
+			return Result.SUCCESS();
+		}
 
 		// 项目检测表模板ID
 		Long templateId = project.getTemplateId();
 
+		List<DetectFormVo> results = new ArrayList<DetectFormVo>();
+
 		// 直观检测表 A类 C类
 		List<IntuitiveDetect> intuitiveDetect = intuitiveDetectService.getIntuitiveDetectByTemplateId(templateId);
 
-		List<DetectTableVo> results = BeanUtils.copyList(intuitiveDetect, DetectTableVo.class);
+		if (CollUtil.isNotEmpty(intuitiveDetect)) {
+			results.addAll(BeanUtils.copyList(intuitiveDetect, DetectFormVo.class));
+		}
 
+		results.forEach((form) -> {
+
+			// 查询该表隐患数
+			Integer dangers = intuitiveDetectService.getFormDangers(form.getId(), unitId, unitAreaId, buildingId);
+			form.setDangers(dangers);
+
+			List<IntuitiveDetectData> detectDatas = detectDataService.getByDetectId(form.getId());
+			if (CollUtil.isNotEmpty(detectDatas)) {
+
+				List<DetectDataVo> formDatas = BeanUtils.copyList(detectDatas, DetectDataVo.class);
+
+				formDatas.forEach((data) -> {
+					// 查询 data danger
+					List<IntuitiveDetectDanger> detectDanger = detectDangerService.getByDataId(data.getId());
+					if (CollUtil.isNotEmpty(detectDanger)) {
+						List<DetectDataDangerVo> formDatadangers = BeanUtils.copyList(detectDanger,
+								DetectDataDangerVo.class);
+						data.setDangers(formDatadangers);
+					}
+				});
+
+				form.setDatas(formDatas);
+			}
+		});
 		// 仪器检测 B类表
 
-		List<DetectTableVo> tableBList = templateBService.getTableBByTemplateId(templateId, "1");
-		results.addAll(tableBList);
+		List<DetectFormVo> formBList = templateBService.getTableBByTemplateId(templateId, "1");
 
-		Collections.sort(results, Comparator.comparing(DetectTableVo::getType));
+		formBList.forEach((form) -> {
+			// 查询该表隐患数
+			Integer dangers = intuitiveDetectService.getFormbDangers(form.getCode(), unitId, unitAreaId, buildingId);
+			form.setDangers(dangers);
+		});
+
+		results.addAll(formBList);
+
+		Collections.sort(results, Comparator.comparing(DetectFormVo::getType));
 
 		return Result.SUCCESS(results);
 	}
 
 	@ApiOperation(tags = "检测表", value = "检测表内容")
-	@GetMapping("/data/{tableId}")
-	public Result<List<DetectDataVo>> dataList(@PathVariable String tableId) {
+	@GetMapping("/data/{formId}")
+	public Result<List<DetectDataVo>> dataList(@PathVariable Long formId) {
 
-		List<IntuitiveDetectData> detectDatas = detectDataService.getByDetectId(Long.valueOf(tableId));
+		List<IntuitiveDetectData> detectDatas = detectDataService.getByDetectId(formId);
 		if (CollUtil.isNotEmpty(detectDatas)) {
 
 			List<DetectDataVo> results = BeanUtils.copyList(detectDatas, DetectDataVo.class);

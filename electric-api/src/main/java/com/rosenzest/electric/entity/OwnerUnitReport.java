@@ -32,11 +32,6 @@ public class OwnerUnitReport extends BaseEntity<OwnerUnitReport> {
 	private Long unitId;
 
 	/**
-	 * 楼栋ID
-	 */
-	private Long buildingId;
-
-	/**
 	 * 是否开启隐患通知单1开启
 	 */
 	private String isDangerNotice;

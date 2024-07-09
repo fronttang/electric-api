@@ -16,6 +16,8 @@ import com.rosenzest.electric.service.IProjectWorkerAreaService;
 import com.rosenzest.electric.service.IProjectWorkerService;
 import com.rosenzest.model.base.service.ModelBaseServiceImpl;
 
+import cn.hutool.core.util.StrUtil;
+
 /**
  * <p>
  * 项目工作人员 服务实现类
@@ -57,8 +59,12 @@ public class ProjectWorkerServiceImpl extends ModelBaseServiceImpl<ProjectWorker
 			queryWrapper.eq(ProjectWorkerArea::getType, type.code());
 			queryWrapper.eq(ProjectWorkerArea::getDistrict, area.getDistrict());
 			queryWrapper.eq(ProjectWorkerArea::getStreet, area.getStreet());
-			queryWrapper.eq(ProjectWorkerArea::getCommunity, area.getCommunity());
-			queryWrapper.eq(ProjectWorkerArea::getHamlet, area.getHamlet());
+			if (StrUtil.isNotBlank(area.getCommunity())) {
+				queryWrapper.eq(ProjectWorkerArea::getCommunity, area.getCommunity());
+			}
+			if (StrUtil.isNotBlank(area.getHamlet())) {
+				queryWrapper.eq(ProjectWorkerArea::getHamlet, area.getHamlet());
+			}
 
 			return workerAreaService.count(queryWrapper) > 0;
 		}

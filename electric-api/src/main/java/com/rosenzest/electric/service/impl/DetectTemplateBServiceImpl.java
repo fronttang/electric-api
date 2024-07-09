@@ -3,7 +3,7 @@ package com.rosenzest.electric.service.impl;
 import com.rosenzest.electric.entity.DetectTemplateB;
 import com.rosenzest.electric.mapper.DetectTemplateBMapper;
 import com.rosenzest.electric.service.IDetectTemplateBService;
-import com.rosenzest.electric.vo.DetectTableVo;
+import com.rosenzest.electric.vo.DetectFormVo;
 import com.rosenzest.model.base.service.ModelBaseServiceImpl;
 
 import java.util.List;
@@ -23,7 +23,7 @@ public class DetectTemplateBServiceImpl extends ModelBaseServiceImpl<DetectTempl
 
 	
 	@Override
-	public List<DetectTableVo> getTableBByTemplateId(Long templateId, String type) {
+	public List<DetectFormVo> getTableBByTemplateId(Long templateId, String type) {
 		return this.baseMapper.getTableBByTemplateId(templateId, type);
 	}
 

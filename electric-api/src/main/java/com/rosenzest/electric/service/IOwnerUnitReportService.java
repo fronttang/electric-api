@@ -1,8 +1,7 @@
 package com.rosenzest.electric.service;
 
-import com.rosenzest.electric.dto.UnitReportDto;
 import com.rosenzest.electric.entity.OwnerUnitReport;
-import com.rosenzest.electric.enums.ReExaminationStatus;
+import com.rosenzest.electric.enums.ReviewStatus;
 import com.rosenzest.electric.enums.UnitReportType;
 import com.rosenzest.model.base.service.IModelBaseService;
 
@@ -16,10 +15,12 @@ import com.rosenzest.model.base.service.IModelBaseService;
  */
 public interface IOwnerUnitReportService extends IModelBaseService<OwnerUnitReport> {
 
-	OwnerUnitReport getReportByUnitIdAndBuildingIdAndType(Long unitId, Long buildingId, UnitReportType type);
+	OwnerUnitReport getReportByUnitIdAndType(Long unitId, UnitReportType type);
 
-	boolean saveOrUpdateReport(UnitReportDto data);
+	boolean updateUnitReportStatus(Long unitId, UnitReportType type, String status);
 
-	ReExaminationStatus getReportDetectStatus(Long unitId);
+	boolean updateUnitReportStatus(Long unitId, UnitReportType type);
+
+	ReviewStatus getReportDetectStatus(Long unitId);
 
 }

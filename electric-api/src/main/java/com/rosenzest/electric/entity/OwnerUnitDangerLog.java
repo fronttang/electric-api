@@ -1,5 +1,7 @@
 package com.rosenzest.electric.entity;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.rosenzest.model.base.entity.BaseEntity;
 
 import lombok.Data;
@@ -22,6 +24,7 @@ public class OwnerUnitDangerLog extends BaseEntity<OwnerUnitDangerLog> {
 	/**
 	 * 日志ID
 	 */
+	@TableId(type = IdType.AUTO)
 	private Long id;
 
 	/**

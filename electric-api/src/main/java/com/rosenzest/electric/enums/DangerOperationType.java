@@ -9,15 +9,25 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum DangerOperationType implements IEnum<DangerOperationType> {
 
+	/**
+	 * 初检
+	 */
 	INITIAL("1", "初检"),
 
+	/**
+	 * 整改
+	 */
 	RECTIFICATION("2", "整改"),
 
-	REVIEW_PASS("3", "复检通过"),
+	/**
+	 * 复检
+	 */
+	REVIEW("3", "复检"),
 
-	REVIEW_NOTPASS("4", "复检不通过"),
-
-	UNABLE_TO_DETECT("5", "无法检测"),
+	/**
+	 * 无法检测
+	 */
+	UNABLE_TO_DETECT("4", "无法检测"),
 
 	;
 

@@ -6,13 +6,17 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 /**
- * 复检状态
+ * 工业园楼栋类型
  */
 @Getter
 @AllArgsConstructor
-public enum ReExaminationStatus implements IEnum<ReExaminationStatus> {
+public enum IndustrialAreaBuildingType implements IEnum<IndustrialAreaBuildingType> {
 
-	RECTIFIED("0", "待整改"), RE_EXAMINATION("1", "待复检"), FINISH("2", "完成"),
+	OTHER("0", "其他"),
+
+	POWER_ROOM("1", "配电房"),
+
+	DORMITORY("2", "宿舍楼"),
 
 	;
 

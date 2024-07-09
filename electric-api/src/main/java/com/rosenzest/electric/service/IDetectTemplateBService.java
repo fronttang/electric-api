@@ -3,7 +3,7 @@ package com.rosenzest.electric.service;
 import java.util.List;
 
 import com.rosenzest.electric.entity.DetectTemplateB;
-import com.rosenzest.electric.vo.DetectTableVo;
+import com.rosenzest.electric.vo.DetectFormVo;
 import com.rosenzest.model.base.service.IModelBaseService;
 
 /**
@@ -16,6 +16,6 @@ import com.rosenzest.model.base.service.IModelBaseService;
  */
 public interface IDetectTemplateBService extends IModelBaseService<DetectTemplateB> {
 
-	List<DetectTableVo> getTableBByTemplateId(Long templateId, String type);
+	List<DetectFormVo> getTableBByTemplateId(Long templateId, String type);
 
 }

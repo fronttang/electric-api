@@ -183,29 +183,37 @@ public class OwnerUnitDto {
 	/**
 	 * 区县
 	 */
-	@ApiModelProperty(value = "区县", required = true)
-	@NotBlank(message = "区县不能为空")
+	@ApiModelProperty(value = "区县")
 	private String district;
 
 	/**
 	 * 街道
 	 */
-	@ApiModelProperty(value = "街道", required = true)
-	@NotBlank(message = "街道不能为空")
+	@ApiModelProperty(value = "街道")
 	private String street;
 
 	/**
 	 * 社区
 	 */
-	@ApiModelProperty(value = "社区", required = true)
-	@NotBlank(message = "社区不能为空")
+	@ApiModelProperty(value = "社区")
 	private String community;
 
 	/**
 	 * 村
 	 */
-	@ApiModelProperty(value = "村", required = true)
-	@NotBlank(message = "村不能为空")
+	@ApiModelProperty(value = "村")
 	private String hamlet;
+
+	/**
+	 * 温度
+	 */
+	@ApiModelProperty("温度")
+	private String temperature;
+
+	/**
+	 * 湿度
+	 */
+	@ApiModelProperty("湿度")
+	private String humidity;
 
 }

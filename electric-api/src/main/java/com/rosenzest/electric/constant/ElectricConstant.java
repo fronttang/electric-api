@@ -7,9 +7,9 @@ import java.util.List;
  * 常量
  */
 public class ElectricConstant {
-	
+
 	public static final List<String> BUSINESS_DICT_TYPES = new ArrayList<String>();
-	
+
 	static {
 		// 项目类型
 		BUSINESS_DICT_TYPES.add("project_type");
@@ -45,7 +45,7 @@ public class ElectricConstant {
 		BUSINESS_DICT_TYPES.add("accumulation_method");
 		// 模块类型
 		BUSINESS_DICT_TYPES.add("highfirerisk_template_module_type");
-		//项目工作人员绑定类型
+		// 项目工作人员绑定类型
 		BUSINESS_DICT_TYPES.add("project_worker_bind_type");
 		// 初检状态
 		BUSINESS_DICT_TYPES.add("initial_test_status");
@@ -59,8 +59,10 @@ public class ElectricConstant {
 		BUSINESS_DICT_TYPES.add("hazard_level_charging_station");
 		// 隐患等级（高风险）
 		BUSINESS_DICT_TYPES.add("hazard_level_high");
+		// 楼栋类型（工业园）
+		BUSINESS_DICT_TYPES.add("industrial_area_building_type");
+		// 隐患日志类型
+		BUSINESS_DICT_TYPES.add("danger_log_type");
 	}
-	
-	
-	
+
 }

@@ -3,13 +3,13 @@
 <mapper namespace="com.rosenzest.electric.mapper.OwnerUnitMapper">
 
 
-	<select id="queryInitialList" parameterType="com.rosenzest.electric.dto.OwnerUnitQueryDto" resultType="com.rosenzest.electric.vo.InitialOwnerUnitVo" >
+	<select id="queryInitialList" parameterType="com.rosenzest.electric.dto.OwnerUnitQuery" resultType="com.rosenzest.electric.vo.InitialOwnerUnitVo" >
 		select t.* from (select o.id, o.name, o.layers,o.district,o.street,o.community,o.hamlet,a.dict_label as district_name,b.dict_label as street_name,c.dict_label as community_name,d.dict_label as hamlet_name,
 		(select count(1) from owner_unit_area a where a.unit_id = o.id and a.type = '2') as doors, 
 		(select count(1) from ( select ua.id, (select count(1) from owner_unit_danger d where d.unit_area_id = ua.id) as dangers from owner_unit_area ua where ua.unit_id = o.id ) t where t.dangers>0) as households,
 		o.project_id, CASE WHEN r.detect_status is null THEN 0 ELSE r.detect_status END as status 
 		
-		from owner_unit o left join owner_unit_report r on r.unit_id = o.id 
+		from owner_unit o left join owner_unit_report r on (r.unit_id = o.id and r.type = '1' )
 		left join sys_dict_data a on (o.district = a.dict_value and a.dict_type='district' and a.project_id = #{projectId})
 		left join sys_dict_data b on (o.street = b.dict_value and b.dict_type='street' and b.project_id = #{projectId})
 		left join sys_dict_data c on (o.community = c.dict_value and c.dict_type='community' and c.project_id = #{projectId})
@@ -43,24 +43,24 @@
 		select u.id,u.code,u.name,u.type,u.detect_id,u.detect_name,u.project_id,u.project_name,
 		u.entrust,u.address,u.contact,u.phone,u.acreage,u.layers,u.door_number,u.nature,u.test_start_date,u.test_end_date,
 		u.test_content,r.code as initial_test_no,r1.code as again_test_no,r1.detect_data as again_test_data,u.panorama_pic,
-		u.district,u.street,u.community,u.hamlet 
+		u.district,u.street,u.community,u.hamlet,
+		u.temperature,u.humidity 
 		from owner_unit u 
 		left join owner_unit_report r on (u.id = r.unit_id and r.type = 1) 
 		left join owner_unit_report r1 on (u.id = r1.unit_id and r1.type = 2) 
 		where u.id=#{unitId}
 	</select>
 	
-	<select id="queryAginList" parameterType="com.rosenzest.electric.dto.OwnerUnitAgainQueryDto" resultType="com.rosenzest.electric.vo.AgainOwnerUnitVo" >
+	<select id="queryAginList" parameterType="com.rosenzest.electric.dto.OwnerUnitAgainQuery" resultType="com.rosenzest.electric.vo.AgainOwnerUnitVo" >
 		select t.* from (select o.id, o.name,o.district,o.street,o.community,o.hamlet,a.dict_label as district_name,b.dict_label as street_name,c.dict_label as community_name,d.dict_label as hamlet_name,
-		(CASE r.status WHEN '0' then r.dangers else 0 end) as rectifications,
-		(CASE r.status WHEN '1' then r.dangers else 0 end) as reexaminations,
-		(CASE r.status WHEN '2' then r.dangers else 0 end) as finishs,
+		(select count(1) as dangers from owner_unit_danger ud1 where ud1.unit_id = o.id and ud1.status = 0 ) as rectifications,
+		(select count(1) as dangers from owner_unit_danger ud2 where ud2.unit_id = o.id and ud2.status = 1 ) as reexaminations,
+		(select count(1) as dangers from owner_unit_danger ud3 where ud3.unit_id = o.id and ud3.status = 2 ) as finishs,
 		(select count(1) from owner_unit_danger t where t.unit_id = o.id ) as dangers, 
 		CASE WHEN ur.detect_status is null THEN 0 ELSE ur.detect_status END as status,
 		o.project_id
 		from owner_unit o 
-		left join (select ud.unit_id, ud.status, count(1) as dangers from owner_unit_danger ud group by ud.unit_id, ud.status) r on r.unit_id = o.id
-		left join owner_unit_report ur on (ur.unit_id = o.id and ur.type = 2)
+		left join owner_unit_report ur on (ur.unit_id = o.id and ur.type = '2')
 		left join sys_dict_data a on (o.district = a.dict_value and a.dict_type='district' and a.project_id =  #{projectId})
 		left join sys_dict_data b on (o.street = b.dict_value and b.dict_type='street' and b.project_id =  #{projectId})
 		left join sys_dict_data c on (o.community = c.dict_value and c.dict_type='community' and c.project_id =  #{projectId})
