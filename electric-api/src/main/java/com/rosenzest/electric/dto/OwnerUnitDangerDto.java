@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @Data
 @ApiModel
 @NoArgsConstructor
-public class UnitAreaDangerDto {
+public class OwnerUnitDangerDto {
 
 	/**
 	 * ID
@@ -63,7 +63,7 @@ public class UnitAreaDangerDto {
 	 */
 	@ApiModelProperty("检测表类型:A/B/C")
 	@NotBlank(message = "检测表类型不能为空")
-	private String type;
+	private String formType;
 
 	/**
 	 * 隐患等级

@@ -16,7 +16,19 @@
 		left join sys_dict_data d on (o.hamlet = d.dict_value and d.dict_type='hamlet' and d.project_id = #{projectId})
 		
 		where o.project_id = #{projectId} and o.type=#{type}
-		and exists (select w.id from project_worker_area w where w.worker_id = #{workerId} and w.district = o.district and w.street = o.street and w.community = o.community and w.hamlet = o.hamlet )
+		
+		<choose>
+			<when test="type == 2 or type == 4">
+			 and exists (select w.id from project_worker_area w where w.worker_id = #{workerId} and type= '1' and w.district = o.district and w.street = o.street)
+			</when>
+			<when test="type == 3">
+			 and exists (select w.id from project_worker_area w where w.worker_id = #{workerId} and type= '1' and w.district = o.district and w.street = o.street and w.community = o.community)
+			</when>
+			<otherwise>
+			and exists (select w.id from project_worker_area w where w.worker_id = #{workerId} and type= '1' and w.district = o.district and w.street = o.street and w.community = o.community and w.hamlet = o.hamlet )
+			</otherwise>
+		</choose>
+		
 		) t where 1=1
 		<if test="district != null and district != ''">
 			and t.district = #{district}
@@ -51,7 +63,7 @@
 		where u.id=#{unitId}
 	</select>
 	
-	<select id="queryAginList" parameterType="com.rosenzest.electric.dto.OwnerUnitAgainQuery" resultType="com.rosenzest.electric.vo.AgainOwnerUnitVo" >
+	<select id="queryReviewList" parameterType="com.rosenzest.electric.dto.OwnerUnitReviewQuery" resultType="com.rosenzest.electric.vo.OwnerUnitReviewVo" >
 		select t.* from (select o.id, o.name,o.district,o.street,o.community,o.hamlet,a.dict_label as district_name,b.dict_label as street_name,c.dict_label as community_name,d.dict_label as hamlet_name,
 		(select count(1) as dangers from owner_unit_danger ud1 where ud1.unit_id = o.id and ud1.status = 0 ) as rectifications,
 		(select count(1) as dangers from owner_unit_danger ud2 where ud2.unit_id = o.id and ud2.status = 1 ) as reexaminations,
@@ -66,7 +78,19 @@
 		left join sys_dict_data c on (o.community = c.dict_value and c.dict_type='community' and c.project_id =  #{projectId})
 		left join sys_dict_data d on (o.hamlet = d.dict_value and d.dict_type='hamlet' and d.project_id =  #{projectId})
 		where o.project_id = #{projectId} and o.type=#{type}
-		and exists (select w.id from project_worker_area w where w.worker_id = #{workerId} and w.district = o.district and w.street = o.street and w.community = o.community and w.hamlet = o.hamlet )
+		
+		<choose>
+			<when test="type == 2 or type == 4">
+			 and exists (select w.id from project_worker_area w where w.worker_id = #{workerId} and type= '1' and w.district = o.district and w.street = o.street)
+			</when>
+			<when test="type == 3">
+			 and exists (select w.id from project_worker_area w where w.worker_id = #{workerId} and type= '1' and w.district = o.district and w.street = o.street and w.community = o.community)
+			</when>
+			<otherwise>
+			and exists (select w.id from project_worker_area w where w.worker_id = #{workerId} and type= '1' and w.district = o.district and w.street = o.street and w.community = o.community and w.hamlet = o.hamlet )
+			</otherwise>
+		</choose>
+		
 		) t where t.dangers > 0
 
 		<if test="district != null and district != ''">

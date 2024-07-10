@@ -85,6 +85,7 @@ public class SysUserController extends ServerBaseController {
 		if (device == null || device.getDetectId() != loginUser.getDetectId()) {
 			throw new BusinessException(400, "仪器不存在");
 		}
+		data.setDeviceType(device.getType());
 		userDeviceService.saveUserDevice(loginUser.getUserId(), data);
 
 		return Result.SUCCESS();

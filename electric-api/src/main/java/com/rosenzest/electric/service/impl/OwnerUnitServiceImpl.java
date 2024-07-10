@@ -12,9 +12,9 @@ import com.github.pagehelper.PageHelper;
 import com.rosenzest.base.LoginUser;
 import com.rosenzest.base.PageList;
 import com.rosenzest.base.util.BeanUtils;
-import com.rosenzest.electric.dto.OwnerUnitAgainQuery;
 import com.rosenzest.electric.dto.OwnerUnitDto;
 import com.rosenzest.electric.dto.OwnerUnitQuery;
+import com.rosenzest.electric.dto.OwnerUnitReviewQuery;
 import com.rosenzest.electric.entity.OwnerUnit;
 import com.rosenzest.electric.entity.OwnerUnitReport;
 import com.rosenzest.electric.entity.Project;
@@ -25,8 +25,8 @@ import com.rosenzest.electric.mapper.OwnerUnitMapper;
 import com.rosenzest.electric.service.IOwnerUnitReportService;
 import com.rosenzest.electric.service.IOwnerUnitService;
 import com.rosenzest.electric.service.IProjectService;
-import com.rosenzest.electric.vo.AgainOwnerUnitVo;
 import com.rosenzest.electric.vo.InitialOwnerUnitVo;
+import com.rosenzest.electric.vo.OwnerUnitReviewVo;
 import com.rosenzest.electric.vo.OwnerUnitVo;
 import com.rosenzest.model.base.service.ModelBaseServiceImpl;
 import com.rosenzest.server.base.context.IRequestContext;
@@ -54,6 +54,7 @@ public class OwnerUnitServiceImpl extends ModelBaseServiceImpl<OwnerUnitMapper, 
 	public List<InitialOwnerUnitVo> queryInitialList(OwnerUnitQuery query, PageList pageList) {
 
 		Page<InitialOwnerUnitVo> startPage = PageHelper.startPage(pageList.getPageNum(), pageList.getPageSize());
+		startPage.setReasonable(false);
 		List<InitialOwnerUnitVo> list = this.baseMapper.queryInitialList(query);
 		pageList.setTotalNum(startPage.getTotal());
 		return list;
@@ -117,9 +118,10 @@ public class OwnerUnitServiceImpl extends ModelBaseServiceImpl<OwnerUnitMapper, 
 	}
 
 	@Override
-	public List<AgainOwnerUnitVo> queryAginList(OwnerUnitAgainQuery query, PageList pageList) {
-		Page<AgainOwnerUnitVo> startPage = PageHelper.startPage(pageList.getPageNum(), pageList.getPageSize());
-		List<AgainOwnerUnitVo> list = this.baseMapper.queryAginList(query);
+	public List<OwnerUnitReviewVo> queryReviewList(OwnerUnitReviewQuery query, PageList pageList) {
+		Page<OwnerUnitReviewVo> startPage = PageHelper.startPage(pageList.getPageNum(), pageList.getPageSize());
+		startPage.setReasonable(false);
+		List<OwnerUnitReviewVo> list = this.baseMapper.queryReviewList(query);
 		pageList.setTotalNum(startPage.getTotal());
 		return list;
 	}

@@ -4,6 +4,10 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
+import com.rosenzest.base.PageList;
+import com.rosenzest.electric.dto.OwnerUnitAreaQuery;
 import com.rosenzest.electric.entity.OwnerUnitArea;
 import com.rosenzest.electric.mapper.OwnerUnitAreaMapper;
 import com.rosenzest.electric.service.IOwnerUnitAreaService;
@@ -23,9 +27,12 @@ public class OwnerUnitAreaServiceImpl extends ModelBaseServiceImpl<OwnerUnitArea
 		implements IOwnerUnitAreaService {
 
 	@Override
-	public List<OwnerUnitAreaVo> queryUnitAreaByType(Long unitId, Long buildingId, String type, String keyword) {
-
-		return this.baseMapper.queryUnitAreaByType(unitId, buildingId, type, keyword);
+	public List<OwnerUnitAreaVo> queryUnitAreaByType(OwnerUnitAreaQuery query, PageList pageList) {
+		Page<OwnerUnitAreaVo> startPage = PageHelper.startPage(pageList.getPageNum(), pageList.getPageSize());
+		startPage.setReasonable(false);
+		List<OwnerUnitAreaVo> list = this.baseMapper.queryUnitAreaByType(query);
+		pageList.setTotalNum(startPage.getTotal());
+		return list;
 	}
 
 }

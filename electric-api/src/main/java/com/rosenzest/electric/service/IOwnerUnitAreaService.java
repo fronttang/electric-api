@@ -2,6 +2,8 @@ package com.rosenzest.electric.service;
 
 import java.util.List;
 
+import com.rosenzest.base.PageList;
+import com.rosenzest.electric.dto.OwnerUnitAreaQuery;
 import com.rosenzest.electric.entity.OwnerUnitArea;
 import com.rosenzest.electric.vo.OwnerUnitAreaVo;
 import com.rosenzest.model.base.service.IModelBaseService;
@@ -16,6 +18,6 @@ import com.rosenzest.model.base.service.IModelBaseService;
  */
 public interface IOwnerUnitAreaService extends IModelBaseService<OwnerUnitArea> {
 
-	List<OwnerUnitAreaVo> queryUnitAreaByType(Long unitId, Long buildingId, String type, String keyword);
+	List<OwnerUnitAreaVo> queryUnitAreaByType(OwnerUnitAreaQuery query, PageList pageList);
 
 }

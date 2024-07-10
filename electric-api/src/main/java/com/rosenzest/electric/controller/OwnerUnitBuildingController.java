@@ -20,6 +20,7 @@ import com.rosenzest.base.util.BeanUtils;
 import com.rosenzest.electric.dto.InitialOwnerUnitBuildingSettingDto;
 import com.rosenzest.electric.dto.OwnerUnitBuildingDto;
 import com.rosenzest.electric.dto.OwnerUnitBuildingQuery;
+import com.rosenzest.electric.dto.OwnerUnitBuildingReivewQuery;
 import com.rosenzest.electric.entity.OwnerUnit;
 import com.rosenzest.electric.entity.OwnerUnitBuilding;
 import com.rosenzest.electric.entity.Project;
@@ -29,10 +30,12 @@ import com.rosenzest.electric.enums.ProjectType;
 import com.rosenzest.electric.enums.ProjectWorkerAreaRoleType;
 import com.rosenzest.electric.enums.ProjectWorkerType;
 import com.rosenzest.electric.service.IOwnerUnitBuildingService;
+import com.rosenzest.electric.service.IOwnerUnitDangerService;
 import com.rosenzest.electric.service.IOwnerUnitService;
 import com.rosenzest.electric.service.IProjectService;
 import com.rosenzest.electric.service.IProjectWorkerService;
 import com.rosenzest.electric.vo.InitialOwnerUnitBuildingVo;
+import com.rosenzest.electric.vo.OwnerUnitBuildingReviewVo;
 import com.rosenzest.server.base.controller.ServerBaseController;
 
 import io.swagger.annotations.Api;
@@ -63,19 +66,27 @@ public class OwnerUnitBuildingController extends ServerBaseController {
 	@Autowired
 	private IProjectService projectService;
 
-	@ApiOperation(tags = "业主单元楼栋(工业园)", value = "楼栋列表")
+	@Autowired
+	private IOwnerUnitDangerService unitDangerService;
+
+	@ApiOperation(tags = "业主单元楼栋(工业园)", value = "楼栋列表(初检)")
 	@PostMapping("/list")
 	public ListResult<InitialOwnerUnitBuildingVo> building(@RequestBody @Valid OwnerUnitBuildingQuery query) {
 
 		List<InitialOwnerUnitBuildingVo> unitList = new ArrayList<InitialOwnerUnitBuildingVo>();
 
-		Project project = projectService.getById(query.getProjectId());
-		if (project == null) {
+		OwnerUnit ownerUnit = ownerUnitService.getById(query.getUnitId());
+		if (ownerUnit == null) {
+			return ListResult.SUCCESS(0L, unitList);
+		}
+
+		Project project = projectService.getById(ownerUnit.getProjectId());
+		if (project == null || !ProjectType.INDUSTRIAL_AREA.code().equalsIgnoreCase(project.getType())) {
 			return ListResult.SUCCESS(0L, unitList);
 		}
 		query.setType(project.getType());
 
-		ProjectWorker projectWorker = projectWorkerService.getProjectWorker(query.getProjectId(), getUserId(),
+		ProjectWorker projectWorker = projectWorkerService.getProjectWorker(ownerUnit.getProjectId(), getUserId(),
 				ProjectWorkerType.INSPECTOR.code());
 		if (projectWorker == null) {
 			return ListResult.SUCCESS(0L, unitList);
@@ -85,6 +96,38 @@ public class OwnerUnitBuildingController extends ServerBaseController {
 
 		PageList pageList = new PageList(query.getPage(), query.getPageSize());
 		unitList = unitBuildingService.queryInitialList(query, pageList);
+
+		return ListResult.SUCCESS(pageList.getTotalNum(), unitList);
+	}
+
+	@ApiOperation(tags = "业主单元楼栋(工业园)", value = "楼栋列表(复检)")
+	@PostMapping("/review/list")
+	public ListResult<OwnerUnitBuildingReviewVo> reviewBuilding(
+			@RequestBody @Valid OwnerUnitBuildingReivewQuery query) {
+
+		List<OwnerUnitBuildingReviewVo> unitList = new ArrayList<OwnerUnitBuildingReviewVo>();
+
+		OwnerUnit ownerUnit = ownerUnitService.getById(query.getUnitId());
+		if (ownerUnit == null) {
+			return ListResult.SUCCESS(0L, unitList);
+		}
+
+		Project project = projectService.getById(ownerUnit.getProjectId());
+		if (project == null || !ProjectType.INDUSTRIAL_AREA.code().equalsIgnoreCase(project.getType())) {
+			return ListResult.SUCCESS(0L, unitList);
+		}
+		query.setType(project.getType());
+
+		ProjectWorker projectWorker = projectWorkerService.getProjectWorker(ownerUnit.getProjectId(), getUserId(),
+				ProjectWorkerType.INSPECTOR.code());
+		if (projectWorker == null) {
+			return ListResult.SUCCESS(0L, unitList);
+		}
+
+		query.setWorkerId(projectWorker.getId());
+
+		PageList pageList = new PageList(query.getPage(), query.getPageSize());
+		unitList = unitBuildingService.queryReviewList(query, pageList);
 
 		return ListResult.SUCCESS(pageList.getTotalNum(), unitList);
 	}
@@ -106,6 +149,17 @@ public class OwnerUnitBuildingController extends ServerBaseController {
 		if (!ProjectType.INDUSTRIAL_AREA.code().equalsIgnoreCase(ownerUnit.getType())) {
 			return Result.ERROR(400, "非工业园类型项目不能添加楼栋");
 		}
+		if (data.getId() != null) {
+			OwnerUnitBuilding unitBuilding = unitBuildingService.getById(data.getId());
+
+			if (unitBuilding == null) {
+				return Result.ERROR(400, "无操作权限");
+			}
+
+			if (InitialInspectionStatus.FINISH.code().equalsIgnoreCase(unitBuilding.getStatus())) {
+				return Result.ERROR(400, "楼栋已完成初检");
+			}
+		}
 
 		OwnerUnitBuilding building = new OwnerUnitBuilding();
 
@@ -121,10 +175,15 @@ public class OwnerUnitBuildingController extends ServerBaseController {
 	@ApiOperation(tags = "业主单元楼栋(工业园)", value = "设置初检状态")
 	@PostMapping("/setting")
 	public Result<?> buildingSetting(@RequestBody @Valid InitialOwnerUnitBuildingSettingDto data) {
+
 		OwnerUnitBuilding unitBuilding = unitBuildingService.getById(data.getBuildingId());
 
 		if (unitBuilding == null) {
 			return Result.ERROR(400, "无操作权限");
+		}
+
+		if (InitialInspectionStatus.FINISH.code().equalsIgnoreCase(unitBuilding.getStatus())) {
+			return Result.ERROR(400, "楼栋已完成初检");
 		}
 
 		// 检查工作人员权限
@@ -148,6 +207,7 @@ public class OwnerUnitBuildingController extends ServerBaseController {
 		} else {
 			unitBuilding.setStatus(InitialInspectionStatus.CHECKING.code());
 		}
+
 		if (unitBuildingService.saveOrUpdate(unitBuilding)) {
 			return Result.SUCCESS();
 		} else {
@@ -165,6 +225,10 @@ public class OwnerUnitBuildingController extends ServerBaseController {
 			return Result.ERROR(400, "无操作权限");
 		}
 
+		if (InitialInspectionStatus.FINISH.code().equalsIgnoreCase(unitBuilding.getStatus())) {
+			return Result.ERROR(400, "楼栋已完成初检");
+		}
+
 		// 检查工作人员权限
 		OwnerUnit ownerUnit = ownerUnitService.getById(unitBuilding.getUnitId());
 		if (ownerUnit == null) {
@@ -173,6 +237,12 @@ public class OwnerUnitBuildingController extends ServerBaseController {
 
 		if (!projectWorkerService.checkWorkerAreaRole(ownerUnit, getUserId(), ProjectWorkerAreaRoleType.EDIT)) {
 			return Result.ERROR(400, "无操作权限");
+		}
+
+		// 检查是否有隐患数据
+		Integer dangers = unitDangerService.countByBuildingId(unitBuilding.getId());
+		if (dangers > 0) {
+			return Result.ERROR(400, "请先删除隐患数据！");
 		}
 
 		if (unitBuildingService.removeById(buildingId)) {

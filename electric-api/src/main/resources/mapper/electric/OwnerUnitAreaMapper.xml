@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.rosenzest.electric.mapper.OwnerUnitAreaMapper">
 
-	<select id="queryUnitAreaByType" resultType="com.rosenzest.electric.vo.OwnerUnitAreaVo">
+	<select id="queryUnitAreaByType" parameterType="com.rosenzest.electric.dto.OwnerUnitAreaQuery" resultType="com.rosenzest.electric.vo.OwnerUnitAreaVo">
 		select a.id, a.unit_id, a.building_id, a.name, a.floor, a.type, a.remark,
 		(select count(1) from owner_unit_danger d where d.unit_area_id =a.id and d.unit_id = a.unit_id) as dangers 
 		from owner_unit_area a where a.unit_id = #{unitId}

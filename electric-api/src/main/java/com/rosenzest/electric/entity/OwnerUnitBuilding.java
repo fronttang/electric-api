@@ -53,6 +53,11 @@ public class OwnerUnitBuilding extends BaseEntity<OwnerUnitBuilding> {
 	private String status;
 
 	/**
+	 * 复检状态
+	 */
+	private String reviewStatus;
+
+	/**
 	 * 是否完成入户率1是0否
 	 */
 	private String isHouseholdRate;

@@ -2,43 +2,32 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.rosenzest.electric.mapper.OwnerUnitDangerMapper">
 
-	<select id="queryOwnerUnitDanger" resultType="com.rosenzest.electric.vo.OwnerUnitDangerVo">
-		select d.id,d.unit_id,u.`name` as unit_name, d.building_id,d.unit_area_id,ua.`name` as unit_area_name, d.danger_id,d.type,d.level,d.description,d.suggestions,d.location,
-		d.danger_pic,d.rectification_pic,d.detect_pic,d.status,d.inspector,d.initial_time
-		from owner_unit_danger d 
-		left join owner_unit u on u.id = d.unit_id 
-		left join owner_unit_area ua on ua.id = d.unit_area_id
-		where d.unit_id = #{unitId}
-		<if test="buildingId != null"> and d.building_id = #{buildingId} </if>
-		<if test="date != null and date != ''"> and date(d.initial_time) = #{date} </if>
-		<if test="keyword != null and keyword != ''">
-			and (
-			u.`name` like concat('%', #{keyword}, '%') 
-			or ua.`name` like concat('%', #{keyword}, '%') 
-			or d.location like concat('%', #{keyword}, '%')
-			)
-		</if>
- 
-	</select>
-	
-	<select id="queryOwnerUnitAgainDanger" resultType="com.rosenzest.electric.vo.OwnerUnitAgainDangerVo">
-		select d.id,d.unit_id,u.`name` as unit_name, d.building_id,d.unit_area_id,ua.`name` as unit_area_name, ua.type as area_type, d.danger_id,d.type,d.level,d.description,d.suggestions,d.location,
-		d.danger_pic,d.rectification_pic,d.detect_pic,d.status,d.inspector,d.initial_time,
-		d.rectification,d.rectification_date, d.reviewer,d.reviewer_date,d.reason,du.name as detect_name
+	<select id="queryOwnerUnitDanger" resultType="com.rosenzest.electric.vo.OwnerUnitDangerVo" parameterType="com.rosenzest.electric.dto.OwnerUnitDangerQuery">
+		select d.id, d.unit_id, u.`name` as unit_name, du.name as detect_name, d.building_id, ub.name as building_name,d.unit_area_id,ua.`name` as unit_area_name, 
+		ua.type as unit_area_type, d.danger_id, d.form_type, d.level, d.description, d.suggestions, d.location,
+		d.danger_pic, d.rectification_pic, d.detect_pic, d.reason, d.status, d.inspector, d.initial_time, 
+		d.rectification, d.rectification_date, d.reviewer, d.reviewer_date, d.formb 
 		from owner_unit_danger d 
 		left join owner_unit u on u.id = d.unit_id 
 		left join detect_unit du on du.id = u.detect_id
+		left join owner_unit_building ub on ub.id = d.building_id 
 		left join owner_unit_area ua on ua.id = d.unit_area_id
 		where d.unit_id = #{unitId}
+		<if test="buildingId != null and buildingId != ''"> and d.building_id = #{buildingId} </if>
+		<if test="unitAreaId != null and unitAreaId != ''"> and ua.id = #{unitAreaId} </if>
+		<if test="unitAreatype != null and unitAreatype != ''"> and ua.type = #{unitAreatype} </if>
 		<if test="status != null and status != ''"> and d.status = #{status} </if>
-		<if test="type != null and type != ''"> and ua.type = #{type} </if>
-		<if test="initalDate != null and initalDate != ''"> and date(d.initial_time) = #{initalDate} </if>
-		<if test="againDate != null and againDate != ''"> and date(d.rectification_date) = #{againDate} </if>
+		<if test="initialDate != null and initialDate != ''"> and date(d.initial_time) = #{initialDate} </if>
+		<if test="reviewDate != null and reviewDate != ''"> and date(d.rectification_date) = #{reviewDate} </if>
+		<if test="formId != null and formId != ''"> and d.form_id = #{formId} </if>
+		<if test="formCode != null and formCode != ''"> and d.form_code = #{formCode} </if>
+		<if test="formType != null and formType != ''"> and d.form_type = #{formType} </if>
 		<if test="keyword != null and keyword != ''">
 			and (
 			u.`name` like concat('%', #{keyword}, '%') 
 			or ua.`name` like concat('%', #{keyword}, '%') 
 			or d.location like concat('%', #{keyword}, '%')
+			or ub.name like concat('%', #{keyword}, '%')
 			)
 		</if>
  

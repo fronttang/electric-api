@@ -2,13 +2,13 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.rosenzest.electric.mapper.ProjectWorkerAreaMapper">
 
-	<select id="getProjectWorkerArea" parameterType="Long" resultType="com.rosenzest.electric.entity.ProjectWorkerArea">
+	<select id="getProjectWorkerArea" resultType="com.rosenzest.electric.entity.ProjectWorkerArea">
 		select pa.id, pa.worker_id, pa.district,a.dict_label as district_name, pa.street, b.dict_label as street_name, pa.community, c.dict_label as community_name, pa.hamlet, d.dict_label as hamlet_name 
 		from project_worker_area pa
 		left join sys_dict_data a on pa.district = a.dict_value and a.dict_type='district'
 		left join sys_dict_data b on pa.street = b.dict_value and b.dict_type='street'
 		left join sys_dict_data c on pa.community = c.dict_value and c.dict_type='community'
 		left join sys_dict_data d on pa.hamlet = d.dict_value and d.dict_type='hamlet'
-		where pa.worker_id = #{workerId}
+		where pa.worker_id = #{workerId} and pa.type = #{type}
 	</select>
 </mapper>

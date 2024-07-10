@@ -12,10 +12,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class InitialOwnerUnitBuildingSettingDto {
 
-	@ApiModelProperty(value = "业主单元ID", required = true)
-	@NotNull(message = "业主单元ID不能为空")
-	private Long id;
-
 	@ApiModelProperty(value = "楼栋ID", required = true)
 	@NotNull(message = "楼栋ID不能为空")
 	private Long buildingId;

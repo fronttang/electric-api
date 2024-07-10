@@ -2,6 +2,8 @@ package com.rosenzest.electric.mapper;
 
 import java.util.List;
 
+import org.apache.ibatis.annotations.Param;
+
 import com.rosenzest.electric.entity.ProjectWorkerArea;
 import com.rosenzest.model.base.mapper.ModelBaseMapper;
 
@@ -15,6 +17,6 @@ import com.rosenzest.model.base.mapper.ModelBaseMapper;
  */
 public interface ProjectWorkerAreaMapper extends ModelBaseMapper<ProjectWorkerArea> {
 
-	List<ProjectWorkerArea> getProjectWorkerArea(Long workerId);
+	List<ProjectWorkerArea> getProjectWorkerArea(@Param("workerId") Long workerId, @Param("type") String type);
 
 }

@@ -19,7 +19,7 @@ public class OwnerUnitBuildingDto {
 	/**
 	 * ID
 	 */
-	@ApiModelProperty("ID,修改时传入")
+	@ApiModelProperty("楼栋ID,修改时传入")
 	private Long id;
 
 	/**

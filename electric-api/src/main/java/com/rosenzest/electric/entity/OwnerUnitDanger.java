@@ -62,7 +62,7 @@ public class OwnerUnitDanger extends BaseEntity<OwnerUnitDanger> {
 	/**
 	 * 检测表类型A/B/C
 	 */
-	private String type;
+	private String formType;
 
 	/**
 	 * 隐患等级

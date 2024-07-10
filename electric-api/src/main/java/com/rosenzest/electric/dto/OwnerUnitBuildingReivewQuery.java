@@ -14,7 +14,7 @@ import lombok.ToString;
 @EqualsAndHashCode(callSuper = true)
 @ApiModel
 @NoArgsConstructor
-public class OwnerUnitBuildingQuery extends PageQuery {
+public class OwnerUnitBuildingReivewQuery extends PageQuery {
 
 	@ApiModelProperty("业主单元ID")
 	@NotNull(message = "业主单元ID不能为空")
@@ -22,7 +22,7 @@ public class OwnerUnitBuildingQuery extends PageQuery {
 
 	private String type;
 
-	@ApiModelProperty("状态,见字典:initial_test_status")
+	@ApiModelProperty("状态,见字典:again_test_status")
 	private String status;
 
 	@ApiModelProperty("名称/地址")

@@ -1,6 +1,7 @@
 package com.rosenzest.electric.controller;
 
 import java.util.Date;
+import java.util.List;
 
 import javax.validation.Valid;
 
@@ -12,25 +13,32 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.rosenzest.base.ListResult;
 import com.rosenzest.base.LoginUser;
+import com.rosenzest.base.PageList;
 import com.rosenzest.base.Result;
 import com.rosenzest.base.enums.EnumUtils;
 import com.rosenzest.base.util.BeanUtils;
-import com.rosenzest.electric.dto.UnitAreaDangerDto;
+import com.rosenzest.electric.dto.OwnerUnitDangerDto;
+import com.rosenzest.electric.dto.OwnerUnitDangerQuery;
 import com.rosenzest.electric.entity.IntuitiveDetectDanger;
 import com.rosenzest.electric.entity.OwnerUnit;
+import com.rosenzest.electric.entity.OwnerUnitBuilding;
 import com.rosenzest.electric.entity.OwnerUnitDanger;
 import com.rosenzest.electric.entity.OwnerUnitReport;
 import com.rosenzest.electric.enums.DetectFormB;
+import com.rosenzest.electric.enums.IndustrialAreaBuildingType;
 import com.rosenzest.electric.enums.InitialInspectionStatus;
 import com.rosenzest.electric.enums.ProjectWorkerAreaRoleType;
 import com.rosenzest.electric.enums.ReviewStatus;
 import com.rosenzest.electric.enums.UnitReportType;
 import com.rosenzest.electric.service.IIntuitiveDetectDangerService;
+import com.rosenzest.electric.service.IOwnerUnitBuildingService;
 import com.rosenzest.electric.service.IOwnerUnitDangerService;
 import com.rosenzest.electric.service.IOwnerUnitReportService;
 import com.rosenzest.electric.service.IOwnerUnitService;
 import com.rosenzest.electric.service.IProjectWorkerService;
+import com.rosenzest.electric.vo.OwnerUnitDangerVo;
 import com.rosenzest.server.base.controller.ServerBaseController;
 
 import cn.hutool.core.util.StrUtil;
@@ -57,9 +65,12 @@ public class OwnerUnitDangerController extends ServerBaseController {
 	@Autowired
 	private IIntuitiveDetectDangerService detectDangerService;
 
+	@Autowired
+	private IOwnerUnitBuildingService unitBuildingService;
+
 	@ApiOperation(tags = "隐患(城中村/工业园)", value = "添加/修改隐患")
 	@PostMapping("")
-	public Result<?> saveAreaDanger(@RequestBody @Valid UnitAreaDangerDto danger) {
+	public Result<?> saveAreaDanger(@RequestBody @Valid OwnerUnitDangerDto danger) {
 
 		LoginUser loginUser = getLoginUser();
 
@@ -80,6 +91,22 @@ public class OwnerUnitDangerController extends ServerBaseController {
 			}
 		}
 
+		if (danger.getBuildingId() != null) {
+			OwnerUnitBuilding building = unitBuildingService.getById(danger.getBuildingId());
+
+			if (!IndustrialAreaBuildingType.POWER_ROOM.code().equalsIgnoreCase(building.getType())
+					&& danger.getUnitAreaId() == null) {
+				return Result.ERROR(400, "公共区域/户ID不能为空");
+			}
+			if (building != null && InitialInspectionStatus.FINISH.code().equalsIgnoreCase(building.getStatus())) {
+				return Result.ERROR(400, "楼栋已完成初检");
+			}
+		} else {
+			if (danger.getUnitAreaId() == null) {
+				return Result.ERROR(400, "公共区域/户ID不能为空");
+			}
+		}
+
 		// 检测业主单元报告状态
 		OwnerUnitReport report = unitReportService.getReportByUnitIdAndType(danger.getUnitId(), UnitReportType.INITIAL);
 		if (report != null && InitialInspectionStatus.FINISH.code().equalsIgnoreCase(report.getDetectStatus())) {
@@ -95,7 +122,7 @@ public class OwnerUnitDangerController extends ServerBaseController {
 			}
 		}
 
-		if ("B".equalsIgnoreCase(danger.getType())) {
+		if ("B".equalsIgnoreCase(danger.getFormType())) {
 			if (StrUtil.isBlank(danger.getFormCode())) {
 				return Result.ERROR(400, "B类表CODE不能为空");
 			}
@@ -135,6 +162,20 @@ public class OwnerUnitDangerController extends ServerBaseController {
 			return Result.ERROR(400, "隐患已整改完成");
 		}
 
+		// 检测业主单元报告状态
+		OwnerUnitReport report = unitReportService.getReportByUnitIdAndType(danger.getUnitId(), UnitReportType.INITIAL);
+		if (report != null && InitialInspectionStatus.FINISH.code().equalsIgnoreCase(report.getDetectStatus())) {
+			return Result.ERROR(400, "业主单元已完成初检");
+		}
+
+		if (danger.getBuildingId() != null) {
+			OwnerUnitBuilding building = unitBuildingService.getById(danger.getBuildingId());
+
+			if (building != null && InitialInspectionStatus.FINISH.code().equalsIgnoreCase(building.getStatus())) {
+				return Result.ERROR(400, "楼栋已完成初检");
+			}
+		}
+
 		// 检查工作人员权限
 		OwnerUnit ownerUnit = ownerUnitService.getById(danger.getUnitId());
 		if (ownerUnit == null) {
@@ -150,6 +191,16 @@ public class OwnerUnitDangerController extends ServerBaseController {
 		} else {
 			return Result.ERROR();
 		}
+	}
+
+	@ApiOperation(tags = "隐患(城中村/工业园)", value = "隐患列表")
+	@PostMapping("/list")
+	public ListResult<OwnerUnitDangerVo> dangerList(@RequestBody @Valid OwnerUnitDangerQuery query) {
+
+		PageList pageList = new PageList(query.getPage(), query.getPageSize());
+		List<OwnerUnitDangerVo> dangers = unitDangerService.queryOwnerUnitDanger(query, pageList);
+
+		return ListResult.SUCCESS(pageList.getTotalNum(), dangers);
 	}
 
 }

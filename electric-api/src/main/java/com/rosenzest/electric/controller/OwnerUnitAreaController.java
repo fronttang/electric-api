@@ -6,33 +6,37 @@ import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.rosenzest.base.ListResult;
+import com.rosenzest.base.PageList;
 import com.rosenzest.base.Result;
 import com.rosenzest.base.util.BeanUtils;
 import com.rosenzest.electric.dto.OwnerUnitAreaDto;
-import com.rosenzest.electric.dto.UnitAreaDangerQuery;
+import com.rosenzest.electric.dto.OwnerUnitAreaQuery;
 import com.rosenzest.electric.entity.OwnerUnit;
 import com.rosenzest.electric.entity.OwnerUnitArea;
-import com.rosenzest.electric.entity.OwnerUnitDanger;
+import com.rosenzest.electric.entity.OwnerUnitBuilding;
+import com.rosenzest.electric.entity.OwnerUnitReport;
+import com.rosenzest.electric.enums.IndustrialAreaBuildingType;
+import com.rosenzest.electric.enums.InitialInspectionStatus;
+import com.rosenzest.electric.enums.ProjectType;
 import com.rosenzest.electric.enums.ProjectWorkerAreaRoleType;
+import com.rosenzest.electric.enums.UnitReportType;
 import com.rosenzest.electric.service.IOwnerUnitAreaService;
+import com.rosenzest.electric.service.IOwnerUnitBuildingService;
 import com.rosenzest.electric.service.IOwnerUnitDangerService;
+import com.rosenzest.electric.service.IOwnerUnitReportService;
 import com.rosenzest.electric.service.IOwnerUnitService;
 import com.rosenzest.electric.service.IProjectWorkerService;
 import com.rosenzest.electric.vo.OwnerUnitAreaVo;
-import com.rosenzest.electric.vo.UnitAreaDangerVo;
 import com.rosenzest.server.base.controller.ServerBaseController;
 
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 
 @Api(tags = "公共区域/户(城中村/工业园)")
@@ -52,20 +56,20 @@ public class OwnerUnitAreaController extends ServerBaseController {
 	@Autowired
 	private IProjectWorkerService projectWorkerService;
 
+	@Autowired
+	private IOwnerUnitBuildingService unitBuildingService;
+
+	@Autowired
+	private IOwnerUnitReportService unitReportService;
+
 	@ApiOperation(tags = "公共区域/户(城中村/工业园)", value = "公共区域/户列表")
-	@ApiImplicitParams({ @ApiImplicitParam(name = "type", required = false, value = "类型,见字典:owner_unit_area_type"),
-			@ApiImplicitParam(name = "unitId", required = true, value = "业主单元ID"),
-			@ApiImplicitParam(name = "buildingId", required = false, value = "楼栋ID"),
-			@ApiImplicitParam(name = "keyword", required = false, value = "搜索关键字") })
-	@GetMapping("list")
-	public Result<List<OwnerUnitAreaVo>> listArea(@RequestParam(name = "unitId") Long unitId,
-			@RequestParam(name = "buildingId", required = false) Long buildingId,
-			@RequestParam(name = "type", required = false) String type,
-			@RequestParam(name = "keyword", required = false) String keyword) {
+	@PostMapping("list")
+	public ListResult<OwnerUnitAreaVo> listArea(@RequestBody @Valid OwnerUnitAreaQuery query) {
 
-		List<OwnerUnitAreaVo> unitAreas = ownerUnitAreaService.queryUnitAreaByType(unitId, buildingId, type, keyword);
+		PageList pageList = new PageList(query.getPage(), query.getPageSize());
+		List<OwnerUnitAreaVo> unitAreas = ownerUnitAreaService.queryUnitAreaByType(query, pageList);
 
-		return Result.SUCCESS(unitAreas);
+		return ListResult.SUCCESS(pageList.getTotalNum(), unitAreas);
 	}
 
 	@ApiOperation(tags = "公共区域/户(城中村/工业园)", value = "新增/修改公共区域/户")
@@ -80,6 +84,33 @@ public class OwnerUnitAreaController extends ServerBaseController {
 
 		if (!projectWorkerService.checkWorkerAreaRole(ownerUnit, getUserId(), ProjectWorkerAreaRoleType.EDIT)) {
 			return Result.ERROR(400, "无操作权限");
+		}
+
+		// 工业园
+		if (ProjectType.INDUSTRIAL_AREA.code().equalsIgnoreCase(ownerUnit.getType())) {
+			if (data.getBuildingId() == null) {
+				return Result.ERROR(400, "楼栋ID不能为空");
+			}
+
+			OwnerUnitBuilding building = unitBuildingService.getById(data.getBuildingId());
+			if (building == null || building.getUnitId() != ownerUnit.getId()) {
+				return Result.ERROR(400, "无操作权限");
+			}
+
+			if (InitialInspectionStatus.FINISH.code().equalsIgnoreCase(building.getStatus())) {
+				return Result.ERROR(400, "楼栋已完成初检");
+			}
+
+			if (IndustrialAreaBuildingType.POWER_ROOM.code().equalsIgnoreCase(building.getType())) {
+				return Result.ERROR(400, "配电房无需添加公共区域或户");
+			}
+		}
+
+		OwnerUnitReport unitReport = unitReportService.getReportByUnitIdAndType(ownerUnit.getId(),
+				UnitReportType.INITIAL);
+		if (unitReport != null
+				&& InitialInspectionStatus.FINISH.code().equalsIgnoreCase(unitReport.getDetectStatus())) {
+			return Result.ERROR(400, "业主单元已完成初检");
 		}
 
 		OwnerUnitArea entity = new OwnerUnitArea();
@@ -111,6 +142,22 @@ public class OwnerUnitAreaController extends ServerBaseController {
 			return Result.ERROR(400, "无操作权限");
 		}
 
+		if (unitArea.getBuildingId() != null) {
+
+			OwnerUnitBuilding building = unitBuildingService.getById(unitArea.getBuildingId());
+
+			if (building != null && InitialInspectionStatus.FINISH.code().equalsIgnoreCase(building.getStatus())) {
+				return Result.ERROR(400, "楼栋已完成初检");
+			}
+		}
+
+		OwnerUnitReport unitReport = unitReportService.getReportByUnitIdAndType(ownerUnit.getId(),
+				UnitReportType.INITIAL);
+		if (unitReport != null
+				&& InitialInspectionStatus.FINISH.code().equalsIgnoreCase(unitReport.getDetectStatus())) {
+			return Result.ERROR(400, "业主单元已完成初检");
+		}
+
 		// 检查是否有隐患数据
 		Integer dangers = unitDangerService.countByUnitAreaId(unitAreaId);
 		if (dangers > 0) {
@@ -122,16 +169,6 @@ public class OwnerUnitAreaController extends ServerBaseController {
 		} else {
 			return Result.ERROR();
 		}
-	}
-
-	@ApiOperation(tags = "公共区域/户(城中村/工业园)", value = "隐患列表")
-	@GetMapping("/danger")
-	public Result<List<UnitAreaDangerVo>> areaDangerList(UnitAreaDangerQuery query) {
-
-		List<OwnerUnitDanger> areaDangers = unitDangerService.selectByCondition(query);
-		List<UnitAreaDangerVo> results = BeanUtils.copyList(areaDangers, UnitAreaDangerVo.class);
-
-		return Result.SUCCESS(results);
 	}
 
 }

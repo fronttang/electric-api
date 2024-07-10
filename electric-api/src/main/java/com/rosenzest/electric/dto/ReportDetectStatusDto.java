@@ -16,6 +16,11 @@ public class ReportDetectStatusDto {
 	private Long unitId;
 
 	/**
+	 * 楼栋ID
+	 */
+	private Long buildingId;
+
+	/**
 	 * 总隐患数
 	 */
 	@ApiModelProperty("总隐患数")

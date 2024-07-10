@@ -9,7 +9,15 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum ProjectWorkerAreaRoleType implements IEnum<ProjectWorkerAreaRoleType> {
 
-	VIEW("1", "查询"), EDIT("2", "编辑")
+	/**
+	 * 查询
+	 */
+	VIEW("1", "查询"),
+
+	/**
+	 * 编辑
+	 */
+	EDIT("2", "编辑")
 
 	;
 

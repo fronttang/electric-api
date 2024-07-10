@@ -4,12 +4,11 @@
 
 
 	<select id="queryInitialList" parameterType="com.rosenzest.electric.dto.OwnerUnitBuildingQuery" resultType="com.rosenzest.electric.vo.InitialOwnerUnitBuildingVo" >
-		select t.* from (select b.id,b.name,b.type,b.unit_id,r.`status`,
+		select t.* from (select b.id,b.name,b.type,b.unit_id,b.`status`,
 		(select count(1) from owner_unit_area a where a.unit_id = b.unit_id and a.building_id = b.id ) as doors,
 		(select count(1) from owner_unit_danger ud where ud.unit_id = b.unit_id and ud.building_id = b.id) as dangers,
 		(select count(1) from ( select ua.id, (select count(1) from owner_unit_danger d where d.unit_area_id = ua.id) as dangers from owner_unit_area ua where ua.unit_id = b.unit_id and ua.building_id = b.id ) t where t.dangers>0) as households
-		from owner_unit_building b 
-		left join owner_unit_report r on (r.unit_id = b.unit_id and r.building_id = b.id)
+		from owner_unit_building b where b.unit_id = #{unitId} 
 		) t where 1=1
 		<if test="status != null and status != ''">
 			and t.status = #{status}
@@ -18,6 +17,33 @@
 			and t.name like concat('%', #{keyword}, '%')
 		</if>
 		order by t.id asc
+	</select>
+	
+	
+	<select id="queryReviewList" parameterType="com.rosenzest.electric.dto.OwnerUnitBuildingReivewQuery" resultType="com.rosenzest.electric.vo.OwnerUnitBuildingReviewVo" >
+		select t.* from (select b.id,b.name,b.type,b.unit_id,b.review_status as status,
+		(select count(1) from owner_unit_danger ud where ud.unit_id = b.unit_id and ud.building_id = b.id) as dangers,
+		(select count(1) as dangers from owner_unit_danger ud1 where ud1.unit_id = b.unit_id and ud1.building_id = b.id and ud1.status = 0 ) as rectifications,
+		(select count(1) as dangers from owner_unit_danger ud2 where ud2.unit_id = b.unit_id and ud2.building_id = b.id and ud2.status = 1 ) as reexaminations,
+		(select count(1) as dangers from owner_unit_danger ud3 where ud3.unit_id = b.unit_id and ud3.building_id = b.id and ud3.status = 2 ) as finishs 
+		from owner_unit_building b where b.unit_id = #{unitId} 
+		) t where t.dangers > 0 
+		<if test="status != null and status != ''">
+			and t.status = #{status}
+		</if>
+		<if test="keyword != null and keyword != ''">
+			and t.name like concat('%', #{keyword}, '%')
+		</if>
+		order by t.id asc
+	</select>
+	
+	<select id="getBuildingReviewStatus" parameterType="Long" resultType="com.rosenzest.electric.dto.ReportDetectStatusDto">
+		select b.id as building_id, b.unit_id,
+		(select count(1) from owner_unit_danger ud where ud.unit_id = b.unit_id and ud.building_id = b.id) as dangers,
+		(select count(1) as dangers from owner_unit_danger ud1 where ud1.unit_id = b.unit_id and ud1.building_id = b.id and ud1.status = 0 ) as rectifications,
+		(select count(1) as dangers from owner_unit_danger ud2 where ud2.unit_id = b.unit_id and ud2.building_id = b.id and ud2.status = 1 ) as reexaminations,
+		(select count(1) as dangers from owner_unit_danger ud3 where ud3.unit_id = b.unit_id and ud3.building_id = b.id and ud3.status = 2 ) as finishs 
+		from owner_unit_building b where b.id = #{buildingId} limit 1
 	</select>
 	
 </mapper>

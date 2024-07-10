@@ -23,7 +23,6 @@ import com.rosenzest.base.exception.BusinessException;
 import com.rosenzest.base.util.BeanUtils;
 import com.rosenzest.base.util.SnowFlakeUtil;
 import com.rosenzest.electric.dto.InitialOwnerUnitSettingDto;
-import com.rosenzest.electric.dto.OwnerUnitDangerQuery;
 import com.rosenzest.electric.dto.OwnerUnitDto;
 import com.rosenzest.electric.dto.OwnerUnitQuery;
 import com.rosenzest.electric.entity.OwnerUnit;
@@ -41,7 +40,6 @@ import com.rosenzest.electric.service.IOwnerUnitService;
 import com.rosenzest.electric.service.IProjectService;
 import com.rosenzest.electric.service.IProjectWorkerService;
 import com.rosenzest.electric.vo.InitialOwnerUnitVo;
-import com.rosenzest.electric.vo.OwnerUnitDangerVo;
 import com.rosenzest.electric.vo.OwnerUnitVo;
 import com.rosenzest.server.base.controller.ServerBaseController;
 
@@ -221,15 +219,6 @@ public class OwnerUnitController extends ServerBaseController {
 		} else {
 			return Result.ERROR();
 		}
-	}
-
-	@ApiOperation(tags = "业主单元(城中村/工业园)", value = "隐患汇总列表")
-	@PostMapping("/danger/list")
-	public Result<List<OwnerUnitDangerVo>> dangerList(@RequestBody @Valid OwnerUnitDangerQuery query) {
-
-		List<OwnerUnitDangerVo> dangers = ownerUnitDangerService.queryOwnerUnitDanger(query);
-
-		return Result.SUCCESS(dangers);
 	}
 
 }

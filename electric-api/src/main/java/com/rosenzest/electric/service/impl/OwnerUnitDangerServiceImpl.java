@@ -10,12 +10,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
 import com.rosenzest.base.LoginUser;
+import com.rosenzest.base.PageList;
 import com.rosenzest.electric.dto.DangerNotPassDto;
 import com.rosenzest.electric.dto.DangerPassDto;
-import com.rosenzest.electric.dto.OwnerUnitAgainDangerQuery;
 import com.rosenzest.electric.dto.OwnerUnitDangerQuery;
-import com.rosenzest.electric.dto.UnitAreaDangerQuery;
 import com.rosenzest.electric.entity.OwnerUnitDanger;
 import com.rosenzest.electric.entity.OwnerUnitDangerLog;
 import com.rosenzest.electric.enums.DangerOperationType;
@@ -25,16 +26,14 @@ import com.rosenzest.electric.enums.ReviewStatus;
 import com.rosenzest.electric.enums.UnitReportType;
 import com.rosenzest.electric.enums.UserType;
 import com.rosenzest.electric.mapper.OwnerUnitDangerMapper;
+import com.rosenzest.electric.service.IOwnerUnitBuildingService;
 import com.rosenzest.electric.service.IOwnerUnitDangerLogService;
 import com.rosenzest.electric.service.IOwnerUnitDangerService;
 import com.rosenzest.electric.service.IOwnerUnitReportService;
-import com.rosenzest.electric.vo.OwnerUnitAgainDangerVo;
 import com.rosenzest.electric.vo.OwnerUnitDangerVo;
 import com.rosenzest.model.base.service.ModelBaseServiceImpl;
 import com.rosenzest.server.base.context.IRequestContext;
 import com.rosenzest.server.base.context.RequestContextHolder;
-
-import cn.hutool.core.util.StrUtil;
 
 /**
  * <p>
@@ -54,6 +53,9 @@ public class OwnerUnitDangerServiceImpl extends ModelBaseServiceImpl<OwnerUnitDa
 	@Autowired
 	private IOwnerUnitReportService unitReportService;
 
+	@Autowired
+	private IOwnerUnitBuildingService unitBuildingService;
+
 	@Override
 	public List<OwnerUnitDanger> getByUnitAreaId(Long unitAreaId) {
 		LambdaQueryWrapper<OwnerUnitDanger> queryWrapper = new LambdaQueryWrapper<OwnerUnitDanger>();
@@ -62,8 +64,12 @@ public class OwnerUnitDangerServiceImpl extends ModelBaseServiceImpl<OwnerUnitDa
 	}
 
 	@Override
-	public List<OwnerUnitDangerVo> queryOwnerUnitDanger(OwnerUnitDangerQuery query) {
-		return this.baseMapper.queryOwnerUnitDanger(query);
+	public List<OwnerUnitDangerVo> queryOwnerUnitDanger(OwnerUnitDangerQuery query, PageList pageList) {
+		Page<OwnerUnitDangerVo> startPage = PageHelper.startPage(pageList.getPageNum(), pageList.getPageSize());
+		startPage.setReasonable(false);
+		List<OwnerUnitDangerVo> list = this.baseMapper.queryOwnerUnitDanger(query);
+		pageList.setTotalNum(startPage.getTotal());
+		return list;
 	}
 
 	@Override
@@ -78,32 +84,6 @@ public class OwnerUnitDangerServiceImpl extends ModelBaseServiceImpl<OwnerUnitDa
 		LambdaQueryWrapper<OwnerUnitDanger> queryWrapper = new LambdaQueryWrapper<OwnerUnitDanger>();
 		queryWrapper.eq(OwnerUnitDanger::getUnitId, unitId);
 		return this.baseMapper.selectCount(queryWrapper);
-	}
-
-	@Override
-	public List<OwnerUnitDanger> selectByCondition(UnitAreaDangerQuery query) {
-		LambdaQueryWrapper<OwnerUnitDanger> queryWrapper = new LambdaQueryWrapper<OwnerUnitDanger>();
-		if (query.getUnitAreaId() != null) {
-			queryWrapper.eq(OwnerUnitDanger::getUnitAreaId, query.getUnitAreaId());
-		}
-		if (query.getUnitId() != null) {
-			queryWrapper.eq(OwnerUnitDanger::getUnitId, query.getUnitId());
-		}
-		if (query.getBuildingId() != null) {
-			queryWrapper.eq(OwnerUnitDanger::getBuildingId, query.getBuildingId());
-		}
-
-		if ("B".equalsIgnoreCase(query.getType())) {
-			if (StrUtil.isNotBlank(query.getFormCode())) {
-				queryWrapper.eq(OwnerUnitDanger::getFormCode, query.getFormCode());
-			}
-		} else {
-			if (query.getFormId() != null) {
-				queryWrapper.eq(OwnerUnitDanger::getFormId, query.getFormId());
-			}
-		}
-
-		return this.baseMapper.selectList(queryWrapper);
 	}
 
 	@Override
@@ -139,6 +119,9 @@ public class OwnerUnitDangerServiceImpl extends ModelBaseServiceImpl<OwnerUnitDa
 		boolean reviewReportFlag = unitReportService.updateUnitReportStatus(danger.getUnitId(), UnitReportType.REVIEW,
 				ReviewStatus.RECTIFIED.code());
 
+		// 楼栋复检状态
+		unitBuildingService.updateBuildingReviewStatus(danger.getBuildingId(), ReviewStatus.RECTIFIED);
+
 		return saveDangerFlag && saveDangerLogFlag && initalReportFlag && reviewReportFlag;
 	}
 
@@ -151,17 +134,12 @@ public class OwnerUnitDangerServiceImpl extends ModelBaseServiceImpl<OwnerUnitDa
 		boolean reviewReportFlag = false;
 		if (deleteFlag) {
 			// 复检报告状态
-			reviewReportFlag = unitReportService.updateUnitReportStatus(danger.getUnitId(), UnitReportType.REVIEW,
-					ReviewStatus.RECTIFIED.code());
+			reviewReportFlag = unitReportService.updateUnitReportStatus(danger.getUnitId(), UnitReportType.REVIEW);
+			// 楼栋复检状态
+			unitBuildingService.updateBuildingReviewStatus(danger.getBuildingId(), null);
 		}
 
 		return deleteFlag && reviewReportFlag;
-	}
-
-	@Override
-	public List<OwnerUnitAgainDangerVo> queryOwnerUnitAgainDanger(OwnerUnitAgainDangerQuery query) {
-
-		return this.baseMapper.queryOwnerUnitAgainDanger(query);
 	}
 
 	@Override
@@ -198,6 +176,9 @@ public class OwnerUnitDangerServiceImpl extends ModelBaseServiceImpl<OwnerUnitDa
 
 		// 复检报告状态
 		unitReportService.updateUnitReportStatus(danger.getUnitId(), UnitReportType.REVIEW);
+
+		// 楼栋复检状态
+		unitBuildingService.updateBuildingReviewStatus(danger.getBuildingId(), null);
 
 		// 检测员整改添加整改日志
 		if (workerRectified) {
@@ -271,6 +252,13 @@ public class OwnerUnitDangerServiceImpl extends ModelBaseServiceImpl<OwnerUnitDa
 		dangerLogService.save(log);
 
 		return true;
+	}
+
+	@Override
+	public Integer countByBuildingId(Long buildingId) {
+		LambdaQueryWrapper<OwnerUnitDanger> queryWrapper = new LambdaQueryWrapper<OwnerUnitDanger>();
+		queryWrapper.eq(OwnerUnitDanger::getBuildingId, buildingId);
+		return this.baseMapper.selectCount(queryWrapper);
 	}
 
 }

@@ -17,6 +17,7 @@ import com.rosenzest.base.util.BeanUtils;
 import com.rosenzest.electric.entity.Project;
 import com.rosenzest.electric.entity.ProjectWorker;
 import com.rosenzest.electric.entity.ProjectWorkerArea;
+import com.rosenzest.electric.enums.ProjectWorkerAreaRoleType;
 import com.rosenzest.electric.enums.ProjectWorkerType;
 import com.rosenzest.electric.enums.UserType;
 import com.rosenzest.electric.service.IProjectService;
@@ -65,8 +66,12 @@ public class ProjectController extends ServerBaseController {
 		ProjectWorker projectWorker = projectWorkerService.getProjectWorker(projectId, userId,
 				ProjectWorkerType.INSPECTOR.code());
 
+		if (projectWorker == null) {
+			return Result.SUCCESS();
+		}
+
 		List<ProjectWorkerArea> projectWorkerAreas = projectWorkerAreaService
-				.getProjectWorkerArea(projectWorker.getId());
+				.getProjectWorkerArea(projectWorker.getId(), ProjectWorkerAreaRoleType.VIEW);
 
 		Map<String, ProjectAreaVo> districtMap = new HashMap<String, ProjectAreaVo>();
 		Map<String, ProjectAreaVo> streetMap = new HashMap<String, ProjectAreaVo>();

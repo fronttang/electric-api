@@ -12,10 +12,19 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum IndustrialAreaBuildingType implements IEnum<IndustrialAreaBuildingType> {
 
+	/**
+	 * 其他
+	 */
 	OTHER("0", "其他"),
 
+	/**
+	 * 配电房
+	 */
 	POWER_ROOM("1", "配电房"),
 
+	/**
+	 * 宿舍楼
+	 */
 	DORMITORY("2", "宿舍楼"),
 
 	;

@@ -2,6 +2,8 @@ package com.rosenzest.electric.vo;
 
 import java.util.Date;
 
+import com.alibaba.fastjson.JSONObject;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -25,16 +27,34 @@ public class OwnerUnitDangerVo {
 	private Long unitId;
 
 	/**
+	 * 业主单元名称
+	 */
+	@ApiModelProperty("业主单元名称")
+	private String unitName;
+
+	/**
+	 * 检测单位名称
+	 */
+	@ApiModelProperty("检测单位名称")
+	private String detectName;
+
+	/**
 	 * 单元区域ID
 	 */
 	@ApiModelProperty("公共区域/户ID")
 	private Long unitAreaId;
 
 	/**
-	 * 业主单元名称
+	 * 类型,见字典:owner_unit_area_type
 	 */
-	@ApiModelProperty("业主单元名称")
-	private String unitName;
+	@ApiModelProperty("类型,公共区域/户，见字典:owner_unit_area_type")
+	private String unitAreatype;
+
+	/**
+	 * 公共区域/户名称
+	 */
+	@ApiModelProperty("公共区域/户名称")
+	private String unitAreaName;
 
 	/**
 	 * 楼栋ID
@@ -49,19 +69,16 @@ public class OwnerUnitDangerVo {
 	private String buildingName;
 
 	/**
-	 * 公共区域/户名称
-	 */
-	@ApiModelProperty("公共区域/户名称")
-	private String unitAreaName;
-
-	/**
 	 * 隐患ID
 	 */
 	@ApiModelProperty("隐患ID")
 	private Long dangerId;
 
-	@ApiModelProperty(" 检测表类型:A/B/C")
-	private String type;
+	/**
+	 * 检测表类型:A/B/C
+	 */
+	@ApiModelProperty("检测表类型:A/B/C")
+	private String formType;
 
 	/**
 	 * 隐患等级
@@ -114,7 +131,7 @@ public class OwnerUnitDangerVo {
 	/**
 	 * 状态
 	 */
-	@ApiModelProperty("状态,同字典复检状态：again_test_status")
+	@ApiModelProperty("状态,见字典复检状态：again_test_status")
 	private String status;
 
 	/**
@@ -134,5 +151,35 @@ public class OwnerUnitDangerVo {
 	 */
 	@ApiModelProperty("初检时间")
 	private Date initialTime;
+
+	/**
+	 * B类表数据
+	 */
+	@ApiModelProperty("B类表数据")
+	private JSONObject formb;
+
+	/**
+	 * 整改员
+	 */
+	@ApiModelProperty("整改员")
+	private String rectification;
+
+	/**
+	 * 整改时间
+	 */
+	@ApiModelProperty("整改时间")
+	private Date rectificationDate;
+
+	/**
+	 * 复检员
+	 */
+	@ApiModelProperty("复检员")
+	private String reviewer;
+
+	/**
+	 * 复检时间
+	 */
+	@ApiModelProperty("复检时间")
+	private Date reviewerDate;
 
 }

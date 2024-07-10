@@ -14,13 +14,12 @@ import lombok.ToString;
 @EqualsAndHashCode(callSuper = true)
 @ApiModel
 @NoArgsConstructor
-public class OwnerUnitAgainQuery extends PageQuery {
+public class OwnerUnitReviewQuery extends PageQuery {
 
 	@ApiModelProperty(value = "项目ID", required = true)
 	@NotNull(message = "项目ID不能为空")
 	private Long projectId;
 
-	@ApiModelProperty("类型,见字典:project_type")
 	private String type;
 
 	@ApiModelProperty("状态,见字典:again_test_status")
