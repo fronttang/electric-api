@@ -49,7 +49,7 @@ import io.swagger.annotations.ApiOperation;
  * @author fronttang
  * @since 2024-07-04
  */
-@Api(tags = "业主单元楼栋(工业园)")
+@Api(tags = "楼栋(工业园)")
 @RestController
 @RequestMapping("/unit/building")
 public class OwnerUnitBuildingController extends ServerBaseController {
@@ -69,7 +69,7 @@ public class OwnerUnitBuildingController extends ServerBaseController {
 	@Autowired
 	private IOwnerUnitDangerService unitDangerService;
 
-	@ApiOperation(tags = "业主单元楼栋(工业园)", value = "楼栋列表(初检)")
+	@ApiOperation(tags = "楼栋(工业园)", value = "楼栋列表(初检)")
 	@PostMapping("/list")
 	public ListResult<InitialOwnerUnitBuildingVo> building(@RequestBody @Valid OwnerUnitBuildingQuery query) {
 
@@ -100,7 +100,7 @@ public class OwnerUnitBuildingController extends ServerBaseController {
 		return ListResult.SUCCESS(pageList.getTotalNum(), unitList);
 	}
 
-	@ApiOperation(tags = "业主单元楼栋(工业园)", value = "楼栋列表(复检)")
+	@ApiOperation(tags = "楼栋(工业园)", value = "楼栋列表(复检)")
 	@PostMapping("/review/list")
 	public ListResult<OwnerUnitBuildingReviewVo> reviewBuilding(
 			@RequestBody @Valid OwnerUnitBuildingReivewQuery query) {
@@ -132,7 +132,7 @@ public class OwnerUnitBuildingController extends ServerBaseController {
 		return ListResult.SUCCESS(pageList.getTotalNum(), unitList);
 	}
 
-	@ApiOperation(tags = "业主单元楼栋(工业园)", value = "添加/修改楼栋")
+	@ApiOperation(tags = "楼栋(工业园)", value = "添加/修改楼栋")
 	@PostMapping("")
 	public Result<?> saveBuilding(@RequestBody @Valid OwnerUnitBuildingDto data) {
 
@@ -172,7 +172,7 @@ public class OwnerUnitBuildingController extends ServerBaseController {
 		}
 	}
 
-	@ApiOperation(tags = "业主单元楼栋(工业园)", value = "设置初检状态")
+	@ApiOperation(tags = "楼栋(工业园)", value = "设置初检状态")
 	@PostMapping("/setting")
 	public Result<?> buildingSetting(@RequestBody @Valid InitialOwnerUnitBuildingSettingDto data) {
 
@@ -215,7 +215,7 @@ public class OwnerUnitBuildingController extends ServerBaseController {
 		}
 	}
 
-	@ApiOperation(tags = "业主单元楼栋(工业园)", value = "删除楼栋")
+	@ApiOperation(tags = "楼栋(工业园)", value = "删除楼栋")
 	@DeleteMapping("/{buildingId}")
 	public Result<?> deleteBuilding(@PathVariable Long buildingId) {
 
