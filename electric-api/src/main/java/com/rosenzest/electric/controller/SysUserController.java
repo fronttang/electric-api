@@ -5,24 +5,32 @@ import java.util.List;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.rosenzest.base.LoginUser;
 import com.rosenzest.base.Result;
+import com.rosenzest.base.constant.ResultCodeConstants;
+import com.rosenzest.base.enums.TerminalType;
 import com.rosenzest.base.exception.BusinessException;
 import com.rosenzest.base.util.BeanUtils;
+import com.rosenzest.base.util.RedisUtil;
 import com.rosenzest.electric.dto.LoginDto;
+import com.rosenzest.electric.dto.ModifyPasswordDto;
 import com.rosenzest.electric.dto.UserDeviceDto;
 import com.rosenzest.electric.entity.DetectDevice;
+import com.rosenzest.electric.entity.SysUser;
 import com.rosenzest.electric.service.IDetectDeviceService;
 import com.rosenzest.electric.service.ISysUserService;
 import com.rosenzest.electric.service.IUserDeviceService;
 import com.rosenzest.electric.vo.DeviceVo;
 import com.rosenzest.electric.vo.LoginVo;
+import com.rosenzest.server.base.cache.CacheKeyBuilder;
 import com.rosenzest.server.base.controller.ServerBaseController;
 
 import io.swagger.annotations.Api;
@@ -63,6 +71,42 @@ public class SysUserController extends ServerBaseController {
 			return Result.ERROR();
 		}
 		return Result.SUCCESS(loginVo);
+	}
+
+	@ApiOperation(tags = "用户相关", value = "修改密码")
+	@PutMapping("/password")
+	public Result<LoginVo> modifyPassword(@RequestBody @Valid ModifyPasswordDto data) {
+		Long userId = getUserId();
+
+		SysUser user = sysUserService.getById(userId);
+		if (user == null) {
+			throw new BusinessException(ResultCodeConstants.UNAUTHOZIED, "无token信息");
+		}
+
+		// 验证旧密码
+		BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+		// 匹配密码
+		if (!passwordEncoder.matches(data.getPassword(), user.getPassword())) {
+			throw new BusinessException(ResultCodeConstants.BUSINESS_ERROR_CODE, "密码错误");
+		}
+
+		if (data.getPassword().equalsIgnoreCase(data.getNewPassword())) {
+			throw new BusinessException(ResultCodeConstants.BUSINESS_ERROR_CODE, "新旧密码不能相同");
+		}
+
+		SysUser update = new SysUser();
+		update.setUserId(userId);
+		update.setPassword(passwordEncoder.encode(data.getNewPassword()));
+
+		if (sysUserService.saveOrUpdate(update)) {
+
+			// 删除token缓存,重新登录
+			String custTokenKey = CacheKeyBuilder.getCustTokenKey(TerminalType.APP.code(), userId);
+			RedisUtil.del(custTokenKey);
+
+			return Result.SUCCESS();
+		}
+		return Result.ERROR();
 	}
 
 	@ApiOperation(tags = "用户相关", value = "用户仪器列表")

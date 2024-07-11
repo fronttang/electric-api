@@ -15,23 +15,24 @@ import com.rosenzest.server.base.interceptor.SecurityInterceptor;
 @Configuration
 public class WebMvcConfigs implements WebMvcConfigurer {
 
-    @Bean
-    public SecurityInterceptor securityInterceptor() {
-        return new SecurityInterceptor();
-    }
+	@Bean
+	public SecurityInterceptor securityInterceptor() {
+		return new SecurityInterceptor();
+	}
 
-    @Override
-    public void addInterceptors(InterceptorRegistry registry) {
+	@Override
+	public void addInterceptors(InterceptorRegistry registry) {
 
-        String[] excludeArray = SpringSecurityConstant.NONE_SECURITY_URL_PATTERNS;
+		String[] excludeArray = SpringSecurityConstant.NONE_SECURITY_URL_PATTERNS;
 
-        List<String> exclude = new ArrayList<>();
-        exclude.addAll(Arrays.asList(excludeArray));
-        exclude.add("/login/**");
-        exclude.add("/user/login");
-        exclude.add("/register");
+		List<String> exclude = new ArrayList<>();
+		exclude.addAll(Arrays.asList(excludeArray));
+		exclude.add("/login/**");
+		exclude.add("/user/login");
+		exclude.add("/register");
+		exclude.add("/dict/list");
 
-        registry.addInterceptor(securityInterceptor()).order(Integer.MAX_VALUE).addPathPatterns("/**")
-            .excludePathPatterns(exclude);
-    }
+		registry.addInterceptor(securityInterceptor()).order(Integer.MAX_VALUE).addPathPatterns("/**")
+				.excludePathPatterns(exclude);
+	}
 }

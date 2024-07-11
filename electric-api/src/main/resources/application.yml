@@ -1,3 +1,6 @@
+system: 
+  profile: /dat/upload
+
 #端口號
 server:
   port: 8083
@@ -40,8 +43,8 @@ spring:
     timeout: 3000
   servlet:
     multipart:
-      max-file-size: 3MB
-      max-request-size: 3MB
+      max-file-size: 5MB
+      max-request-size: 5MB
 
 #雪花算法配置
 SnowFlake:

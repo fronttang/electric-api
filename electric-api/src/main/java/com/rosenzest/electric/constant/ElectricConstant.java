@@ -6,7 +6,7 @@ import java.util.List;
 /**
  * 常量
  */
-public class ElectricConstant {
+public final class ElectricConstant {
 
 	public static final List<String> BUSINESS_DICT_TYPES = new ArrayList<String>();
 
@@ -65,4 +65,8 @@ public class ElectricConstant {
 		BUSINESS_DICT_TYPES.add("danger_log_type");
 	}
 
+	/**
+	 * 资源映射路径 前缀
+	 */
+	public static final String RESOURCE_PREFIX = "/profile";
 }
