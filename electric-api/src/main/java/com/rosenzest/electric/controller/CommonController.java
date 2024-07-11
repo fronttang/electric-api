@@ -6,6 +6,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.rosenzest.base.Result;
+import com.rosenzest.electric.exception.FileSizeLimitExceededException;
+import com.rosenzest.electric.exception.InvalidExtensionException;
 import com.rosenzest.electric.properties.SystemProperties;
 import com.rosenzest.electric.util.FileUploadUtils;
 import com.rosenzest.electric.util.MimeTypeUtils;
@@ -35,6 +37,9 @@ public class CommonController {
 			// 上传并返回新文件名称
 			String fileName = FileUploadUtils.upload(filePath, file, MimeTypeUtils.IMAGE_EXTENSION);
 			return Result.SUCCESS(fileName);
+		} catch (InvalidExtensionException | FileSizeLimitExceededException e) {
+			log.error("", e);
+			return Result.BUSINESS_ERROR(e.getMessage());
 		} catch (Exception e) {
 			log.error("", e);
 			return Result.ERROR();

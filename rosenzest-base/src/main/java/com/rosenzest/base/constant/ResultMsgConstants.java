@@ -11,59 +11,59 @@ package com.rosenzest.base.constant;
  */
 public interface ResultMsgConstants {
 
-    /**
-     * success
-     */
-    String SUCCESS = "success";
+	/**
+	 * success
+	 */
+	String SUCCESS = "success";
 
-    /**
-     * error
-     */
-    String ERROR = "error";
+	/**
+	 * error
+	 */
+	String ERROR = "error";
 
-    /**
-     * 操作失败
-     */
-    String BUSINESS_ERROR = "操作失败";
+	/**
+	 * 操作失败
+	 */
+	String BUSINESS_ERROR = "操作失败";
 
-    /**
-     * status
-     */
-    String STATUS = "status";
+	/**
+	 * status
+	 */
+	String STATUS = "status";
 
-    /**
-     * message
-     */
-    String MESSAGE = "message";
+	/**
+	 * message
+	 */
+	String MESSAGE = "message";
 
-    /**
-     * 服务器异常
-     */
-    String SYSTEM_ERROR = "服务器异常";
+	/**
+	 * 服务器异常
+	 */
+	String SYSTEM_ERROR = "服务器异常";
 
-    /**
-     * 参数错误
-     */
-    String PARAM_BIND_ERROR = "参数错误";
+	/**
+	 * 参数错误
+	 */
+	String PARAM_BIND_ERROR = "参数错误";
 
-    /**
-     * 参数错误
-     */
-    String UPLOAD_SIZE_EXCEEDED_ERROR ="文件上传大小不能超过3M，请压缩图片或者降低图片质量再上传！";
+	/**
+	 * 参数错误
+	 */
+	String UPLOAD_SIZE_EXCEEDED_ERROR = "文件上传大小不能超过10M，请压缩图片或者降低图片质量再上传！";
 
-    /**
-     * 未授权
-     */
-    String UNAUTHOZIED = "未授权";
+	/**
+	 * 未授权
+	 */
+	String UNAUTHOZIED = "未授权";
 
-    /**
-     * 没有权限
-     */
-    String FORBIDDEN = "没有权限";
+	/**
+	 * 没有权限
+	 */
+	String FORBIDDEN = "没有权限";
 
-    /**
-     * 资源未找到
-     */
-    String RESOURCE_NOT_FOUND = "资源未找到";
+	/**
+	 * 资源未找到
+	 */
+	String RESOURCE_NOT_FOUND = "资源未找到";
 
 }

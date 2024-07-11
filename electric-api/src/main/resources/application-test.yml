@@ -15,10 +15,5 @@ spring:
     port: 6379
     password: DAT@TestRedis147
 
-  servlet:
-    multipart: 
-      max-file-size: 3MB
-      max-request-size: 3MB
-
 #token配置
 token: 
