@@ -3,12 +3,12 @@ package com.rosenzest.electric.service;
 import java.util.List;
 
 import com.rosenzest.base.PageList;
-import com.rosenzest.electric.dto.OwnerUnitReviewQuery;
 import com.rosenzest.electric.dto.OwnerUnitDto;
 import com.rosenzest.electric.dto.OwnerUnitQuery;
+import com.rosenzest.electric.dto.OwnerUnitReviewQuery;
 import com.rosenzest.electric.entity.OwnerUnit;
-import com.rosenzest.electric.vo.OwnerUnitReviewVo;
 import com.rosenzest.electric.vo.InitialOwnerUnitVo;
+import com.rosenzest.electric.vo.OwnerUnitReviewVo;
 import com.rosenzest.electric.vo.OwnerUnitVo;
 import com.rosenzest.model.base.service.IModelBaseService;
 
@@ -29,5 +29,7 @@ public interface IOwnerUnitService extends IModelBaseService<OwnerUnit> {
 	boolean saveOwnerUnit(OwnerUnitDto data);
 
 	List<OwnerUnitReviewVo> queryReviewList(OwnerUnitReviewQuery query, PageList pageList);
+
+	boolean removeOwnerUnitById(Long unitId);
 
 }

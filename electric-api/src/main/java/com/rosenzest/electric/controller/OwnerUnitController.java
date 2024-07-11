@@ -164,15 +164,11 @@ public class OwnerUnitController extends ServerBaseController {
 		OwnerUnit unit = new OwnerUnit();
 		BeanUtils.copyProperties(data, unit);
 
-		// 工作人员权限检查
-		if (!projectWorkerService.checkWorkerAreaRole(unit, loginUser.getUserId(), ProjectWorkerAreaRoleType.EDIT)) {
-			return Result.ERROR(400, "无操作权限");
-		}
-
 		Project project = projectService.getById(data.getProjectId());
 		if (project == null) {
 			return Result.ERROR(400, "无操作权限");
 		}
+
 		if (StrUtil.isBlank(unit.getDistrict())) {
 			return Result.ERROR(400, "区ID不能为空");
 		} else if (StrUtil.isBlank(unit.getStreet())) {
@@ -184,6 +180,11 @@ public class OwnerUnitController extends ServerBaseController {
 			} else if (StrUtil.isBlank(unit.getHamlet())) {
 				return Result.ERROR(400, "村ID不能为空");
 			}
+		}
+
+		// 工作人员权限检查
+		if (!projectWorkerService.checkWorkerAreaRole(unit, loginUser.getUserId(), ProjectWorkerAreaRoleType.EDIT)) {
+			return Result.ERROR(400, "无操作权限");
 		}
 
 		if (ownerUnitService.saveOwnerUnit(data)) {

@@ -20,4 +20,6 @@ public interface IOwnerUnitAreaService extends IModelBaseService<OwnerUnitArea> 
 
 	List<OwnerUnitAreaVo> queryUnitAreaByType(OwnerUnitAreaQuery query, PageList pageList);
 
+	int removeByUnitId(Long unitId);
+
 }

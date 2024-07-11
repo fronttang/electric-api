@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.rosenzest.base.PageList;
@@ -33,6 +34,13 @@ public class OwnerUnitAreaServiceImpl extends ModelBaseServiceImpl<OwnerUnitArea
 		List<OwnerUnitAreaVo> list = this.baseMapper.queryUnitAreaByType(query);
 		pageList.setTotalNum(startPage.getTotal());
 		return list;
+	}
+
+	@Override
+	public int removeByUnitId(Long unitId) {
+		LambdaQueryWrapper<OwnerUnitArea> queryWrapper = new LambdaQueryWrapper<OwnerUnitArea>();
+		queryWrapper.eq(OwnerUnitArea::getUnitId, unitId);
+		return this.baseMapper.delete(queryWrapper);
 	}
 
 }

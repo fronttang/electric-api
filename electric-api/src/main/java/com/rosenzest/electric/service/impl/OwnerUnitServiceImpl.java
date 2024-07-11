@@ -22,6 +22,7 @@ import com.rosenzest.electric.enums.InitialInspectionStatus;
 import com.rosenzest.electric.enums.ReviewStatus;
 import com.rosenzest.electric.enums.UnitReportType;
 import com.rosenzest.electric.mapper.OwnerUnitMapper;
+import com.rosenzest.electric.service.IOwnerUnitAreaService;
 import com.rosenzest.electric.service.IOwnerUnitReportService;
 import com.rosenzest.electric.service.IOwnerUnitService;
 import com.rosenzest.electric.service.IProjectService;
@@ -49,6 +50,9 @@ public class OwnerUnitServiceImpl extends ModelBaseServiceImpl<OwnerUnitMapper, 
 
 	@Autowired
 	private IOwnerUnitReportService ownerUnitReportService;
+
+	@Autowired
+	private IOwnerUnitAreaService ownerUnitAreaService;
 
 	@Override
 	public List<InitialOwnerUnitVo> queryInitialList(OwnerUnitQuery query, PageList pageList) {
@@ -124,6 +128,21 @@ public class OwnerUnitServiceImpl extends ModelBaseServiceImpl<OwnerUnitMapper, 
 		List<OwnerUnitReviewVo> list = this.baseMapper.queryReviewList(query);
 		pageList.setTotalNum(startPage.getTotal());
 		return list;
+	}
+
+	@Override
+	@Transactional
+	public boolean removeOwnerUnitById(Long unitId) {
+		// 删除公共区域/户
+		ownerUnitAreaService.removeByUnitId(unitId);
+
+		// 删除报告
+
+		// 删除building
+
+		// 删除config
+
+		return this.removeById(unitId);
 	}
 
 }
