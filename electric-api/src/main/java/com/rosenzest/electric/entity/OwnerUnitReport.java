@@ -37,9 +37,9 @@ public class OwnerUnitReport extends BaseEntity<OwnerUnitReport> {
 	private String isDangerNotice;
 
 	/**
-	 * 是否完成入户率1是0否
+	 * 是否完成/完成入户率1是0否
 	 */
-	private String isHouseholdRate;
+	private String isComplete;
 
 	/**
 	 * 是否无法检测1是0否

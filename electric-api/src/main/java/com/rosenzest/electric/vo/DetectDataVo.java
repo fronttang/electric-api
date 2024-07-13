@@ -111,6 +111,10 @@ public class DetectDataVo {
 	private Long viewParentId;
 
 	/**
+	 * 二级模块（高风险）
+	 */
+	private List<DetectDataVo> subDatas;
+	/**
 	 * 隐患数据列表
 	 */
 	@ApiModelProperty("隐患数据列表")

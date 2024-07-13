@@ -3,6 +3,7 @@ package com.rosenzest.electric.service;
 import java.util.List;
 
 import com.rosenzest.electric.entity.IntuitiveDetect;
+import com.rosenzest.electric.enums.HighRiskType;
 import com.rosenzest.model.base.service.IModelBaseService;
 
 /**
@@ -15,7 +16,7 @@ import com.rosenzest.model.base.service.IModelBaseService;
  */
 public interface IIntuitiveDetectService extends IModelBaseService<IntuitiveDetect> {
 
-	List<IntuitiveDetect> getIntuitiveDetectByTemplateId(Long templateId);
+	List<IntuitiveDetect> getIntuitiveDetectByTemplateId(Long templateId, HighRiskType type);
 
 	Integer getFormDangers(Long formId, Long unitId, Long unitAreaId, Long buildingId);
 

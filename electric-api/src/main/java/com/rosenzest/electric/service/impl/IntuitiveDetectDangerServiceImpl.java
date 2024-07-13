@@ -19,7 +19,9 @@ import com.rosenzest.model.base.service.ModelBaseServiceImpl;
  * @since 2024-06-29
  */
 @Service
-public class IntuitiveDetectDangerServiceImpl extends ModelBaseServiceImpl<IntuitiveDetectDangerMapper, IntuitiveDetectDanger> implements IIntuitiveDetectDangerService {
+public class IntuitiveDetectDangerServiceImpl
+		extends ModelBaseServiceImpl<IntuitiveDetectDangerMapper, IntuitiveDetectDanger>
+		implements IIntuitiveDetectDangerService {
 
 	@Override
 	public List<IntuitiveDetectDanger> getByDataId(Long dataId) {

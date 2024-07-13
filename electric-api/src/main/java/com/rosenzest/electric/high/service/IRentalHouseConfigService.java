@@ -3,7 +3,6 @@ package com.rosenzest.electric.high.service;
 import com.rosenzest.electric.high.dto.UnitRentalHouseDto;
 import com.rosenzest.electric.high.entity.RentalHouseConfig;
 import com.rosenzest.electric.high.vo.UnitRentalHouseVo;
-import com.rosenzest.model.base.service.IModelBaseService;
 
 /**
  * <p>
@@ -13,12 +12,7 @@ import com.rosenzest.model.base.service.IModelBaseService;
  * @author fronttang
  * @since 2024-07-11
  */
-public interface IRentalHouseConfigService extends IModelBaseService<RentalHouseConfig> {
-
-	boolean saveOwnerUnit(UnitRentalHouseDto data);
-
-	RentalHouseConfig getByUnitId(Long unitId);
-
-	UnitRentalHouseVo getRentalHouseById(Long unitId);
+public interface IRentalHouseConfigService
+		extends BaseHighConfigService<RentalHouseConfig, UnitRentalHouseDto, UnitRentalHouseVo> {
 
 }

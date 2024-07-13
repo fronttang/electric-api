@@ -95,4 +95,34 @@ public class InitialOwnerUnitVo {
 	 */
 	@ApiModelProperty("村")
 	private String hamletName;
+
+	/**
+	 * 高风险类型
+	 */
+	@ApiModelProperty("高风险类型,见字典：high_risk_type")
+	private String highRiskType;
+
+	/**
+	 * 总隐患数
+	 */
+	@ApiModelProperty("总隐患数")
+	private Integer dangers;
+
+	/**
+	 * 待整改数
+	 */
+	@ApiModelProperty("待整改数")
+	private Integer rectifications;
+
+	/**
+	 * 待复检数
+	 */
+	@ApiModelProperty("待复检数")
+	private Integer reexaminations;
+
+	/**
+	 * 完成数
+	 */
+	@ApiModelProperty("完成数")
+	private Integer finishs;
 }

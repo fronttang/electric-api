@@ -10,6 +10,11 @@ import lombok.Data;
 public class UnitRentalHouseVo {
 
 	/**
+	 * 高风险类型
+	 */
+	private String highRiskType;
+
+	/**
 	 * ID
 	 */
 	@ApiModelProperty("ID")

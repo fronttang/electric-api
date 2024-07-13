@@ -29,6 +29,7 @@ import com.rosenzest.electric.entity.OwnerUnitReport;
 import com.rosenzest.electric.enums.DetectFormB;
 import com.rosenzest.electric.enums.IndustrialAreaBuildingType;
 import com.rosenzest.electric.enums.InitialInspectionStatus;
+import com.rosenzest.electric.enums.ProjectType;
 import com.rosenzest.electric.enums.ProjectWorkerAreaRoleType;
 import com.rosenzest.electric.enums.ReviewStatus;
 import com.rosenzest.electric.enums.UnitReportType;
@@ -102,7 +103,8 @@ public class OwnerUnitDangerController extends ServerBaseController {
 				return Result.ERROR(400, "楼栋已完成初检");
 			}
 		} else {
-			if (danger.getUnitAreaId() == null) {
+			if (danger.getUnitAreaId() == null
+					&& ProjectType.URBAN_VILLAGE.code().equalsIgnoreCase(ownerUnit.getType())) {
 				return Result.ERROR(400, "公共区域/户ID不能为空");
 			}
 		}

@@ -1,9 +1,5 @@
 package com.rosenzest.electric.high.entity;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.rosenzest.model.base.entity.BaseEntity;
-
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -17,15 +13,9 @@ import lombok.EqualsAndHashCode;
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class RentalHouseConfig extends BaseEntity<RentalHouseConfig> {
+public class RentalHouseConfig extends BaseHighConfigEntity<RentalHouseConfig> {
 
 	private static final long serialVersionUID = 1L;
-
-	/**
-	 * 业主单元ID
-	 */
-	@TableId(type = IdType.INPUT)
-	private Long unitId;
 
 	/**
 	 * 是否张贴电动自行车禁止入内标识

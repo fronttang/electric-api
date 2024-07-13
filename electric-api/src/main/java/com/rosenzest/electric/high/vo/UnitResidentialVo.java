@@ -10,6 +10,11 @@ import lombok.Data;
 public class UnitResidentialVo {
 
 	/**
+	 * 高风险类型
+	 */
+	private String highRiskType;
+
+	/**
 	 * ID
 	 */
 	@ApiModelProperty("ID,添加是不传,修改时传")

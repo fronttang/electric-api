@@ -1,13 +1,16 @@
 package com.rosenzest.electric.high.dto;
 
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 @Data
-public class UnitResidentialDto {
+@ToString(callSuper = true)
+@EqualsAndHashCode(callSuper = true)
+public class UnitResidentialDto extends BaseHighDto {
 
 	/**
 	 * ID
@@ -41,13 +44,6 @@ public class UnitResidentialDto {
 	 * 检测单位名称
 	 */
 	// private String detectName;
-
-	/**
-	 * 项目ID
-	 */
-	@NotNull(message = "项目ID不能为空")
-	@ApiModelProperty(value = "项目ID", required = true)
-	private Long projectId;
 
 	/**
 	 * 项目名称
@@ -87,21 +83,21 @@ public class UnitResidentialDto {
 	/**
 	 * 区县
 	 */
-	@ApiModelProperty("区")
+	@ApiModelProperty(value = "区", required = true)
 	@NotBlank(message = "区不能为空")
 	private String district;
 
 	/**
 	 * 街道
 	 */
-	@ApiModelProperty("街道")
+	@ApiModelProperty(value = "街道", required = true)
 	@NotBlank(message = "街道不能为空")
 	private String street;
 
 	/**
 	 * 社区
 	 */
-	@ApiModelProperty("社区")
+	@ApiModelProperty(value = "社区", required = true)
 	@NotBlank(message = "社区不能为空")
 	private String community;
 

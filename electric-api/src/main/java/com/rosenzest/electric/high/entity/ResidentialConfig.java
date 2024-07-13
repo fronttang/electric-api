@@ -1,7 +1,5 @@
 package com.rosenzest.electric.high.entity;
 
-import com.rosenzest.model.base.entity.BaseEntity;
-
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -15,14 +13,9 @@ import lombok.EqualsAndHashCode;
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class ResidentialConfig extends BaseEntity<ResidentialConfig> {
+public class ResidentialConfig extends BaseHighConfigEntity<ResidentialConfig> {
 
 	private static final long serialVersionUID = 1L;
-
-	/**
-	 * 业主单元ID
-	 */
-	private Long unitId;
 
 	/**
 	 * 4KgABC手提干粉灭火器数量

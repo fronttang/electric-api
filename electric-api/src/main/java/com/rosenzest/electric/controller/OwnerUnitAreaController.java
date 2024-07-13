@@ -117,7 +117,7 @@ public class OwnerUnitAreaController extends ServerBaseController {
 		BeanUtils.copyProperties(data, entity);
 
 		if (ownerUnitAreaService.saveOrUpdate(entity)) {
-			return Result.SUCCESS();
+			return Result.SUCCESS(entity);
 		} else {
 			return Result.ERROR();
 		}

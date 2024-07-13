@@ -15,6 +15,6 @@ import com.rosenzest.model.base.service.IModelBaseService;
  */
 public interface IIntuitiveDetectDangerService extends IModelBaseService<IntuitiveDetectDanger> {
 
-	List<IntuitiveDetectDanger> getByDataId(Long id);
+	List<IntuitiveDetectDanger> getByDataId(Long dataId);
 
 }

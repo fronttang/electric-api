@@ -88,6 +88,8 @@ public class OwnerUnitServiceImpl extends ModelBaseServiceImpl<OwnerUnitMapper, 
 
 		this.saveOrUpdate(unit);
 
+		data.setId(unit.getId());
+		;
 		// 初检报告
 		OwnerUnitReport report = ownerUnitReportService.getReportByUnitIdAndType(unit.getId(), UnitReportType.INITIAL);
 		if (report == null) {

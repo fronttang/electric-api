@@ -20,7 +20,7 @@ public class InitialOwnerUnitBuildingSettingDto {
 	 * 是否完成入户率
 	 */
 	@ApiModelProperty("是否完成入户率 0否 1是")
-	private String isHouseholdRate = "0";
+	private String isComplete = "0";
 
 	/**
 	 * 无法检测

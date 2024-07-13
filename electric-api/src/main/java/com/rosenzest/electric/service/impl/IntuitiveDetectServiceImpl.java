@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.rosenzest.electric.entity.IntuitiveDetect;
+import com.rosenzest.electric.enums.HighRiskType;
 import com.rosenzest.electric.mapper.IntuitiveDetectMapper;
 import com.rosenzest.electric.service.IIntuitiveDetectService;
 import com.rosenzest.model.base.service.ModelBaseServiceImpl;
@@ -23,9 +24,12 @@ public class IntuitiveDetectServiceImpl extends ModelBaseServiceImpl<IntuitiveDe
 		implements IIntuitiveDetectService {
 
 	@Override
-	public List<IntuitiveDetect> getIntuitiveDetectByTemplateId(Long templateId) {
+	public List<IntuitiveDetect> getIntuitiveDetectByTemplateId(Long templateId, HighRiskType type) {
 		LambdaQueryWrapper<IntuitiveDetect> queryWrapper = new LambdaQueryWrapper<IntuitiveDetect>();
 		queryWrapper.eq(IntuitiveDetect::getTemplateId, templateId);
+		if (type != null) {
+			queryWrapper.eq(IntuitiveDetect::getUnitType, type.code());
+		}
 		return this.baseMapper.selectList(queryWrapper);
 	}
 

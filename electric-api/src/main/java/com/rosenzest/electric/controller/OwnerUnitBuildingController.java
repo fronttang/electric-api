@@ -166,7 +166,7 @@ public class OwnerUnitBuildingController extends ServerBaseController {
 		BeanUtils.copyProperties(data, building);
 
 		if (unitBuildingService.saveOrUpdate(building)) {
-			return Result.SUCCESS();
+			return Result.SUCCESS(building);
 		} else {
 			return Result.ERROR();
 		}
@@ -196,11 +196,11 @@ public class OwnerUnitBuildingController extends ServerBaseController {
 			return Result.ERROR(400, "无操作权限");
 		}
 
-		unitBuilding.setIsHouseholdRate(data.getIsHouseholdRate());
+		unitBuilding.setIsComplete(data.getIsComplete());
 		unitBuilding.setIsTest(data.getIsTest());
 		unitBuilding.setIsTestReason(data.getIsTestReason());
 
-		if ("1".equalsIgnoreCase(data.getIsHouseholdRate())) {
+		if ("1".equalsIgnoreCase(data.getIsComplete())) {
 			unitBuilding.setStatus(InitialInspectionStatus.FINISH.code());
 		} else if ("1".equalsIgnoreCase(data.getIsTest())) {
 			unitBuilding.setStatus(InitialInspectionStatus.UNABLE_TO_DETECT.code());

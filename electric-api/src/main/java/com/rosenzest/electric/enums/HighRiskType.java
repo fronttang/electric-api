@@ -14,6 +14,31 @@ public enum HighRiskType implements IEnum<HighRiskType> {
 	 */
 	RENTAL_HOUSE("1", "出租屋"),
 
+	/**
+	 * 三小场所
+	 */
+	SMALL("2", "三小场所"),
+
+	/**
+	 * 住宅小区
+	 */
+	RESIDENTIAL("3", "住宅小区"),
+
+	/**
+	 * 工业企业
+	 */
+	INDUSTRIAL("4", "工业企业"),
+
+	/**
+	 * 公共场所
+	 */
+	PUBLIC_PLACES("5", "公共场所"),
+
+	/**
+	 * 大型综合体
+	 */
+	COMPLEX("6", "大型综合体"),
+
 	;
 
 	final String code;

@@ -7,18 +7,20 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.rosenzest.base.Result;
+import com.rosenzest.base.enums.EnumUtils;
 import com.rosenzest.base.util.BeanUtils;
 import com.rosenzest.electric.entity.IntuitiveDetect;
 import com.rosenzest.electric.entity.IntuitiveDetectDanger;
 import com.rosenzest.electric.entity.IntuitiveDetectData;
 import com.rosenzest.electric.entity.OwnerUnit;
 import com.rosenzest.electric.entity.Project;
+import com.rosenzest.electric.enums.HighRiskType;
+import com.rosenzest.electric.enums.ProjectType;
 import com.rosenzest.electric.service.IDetectTemplateBService;
 import com.rosenzest.electric.service.IIntuitiveDetectDangerService;
 import com.rosenzest.electric.service.IIntuitiveDetectDataService;
@@ -74,13 +76,18 @@ public class DetectController extends ServerBaseController {
 			return Result.SUCCESS();
 		}
 
+		boolean isHighRisk = ProjectType.HIGH_RISK.code().equalsIgnoreCase(project.getType());
+
+		final HighRiskType type = isHighRisk ? EnumUtils.init(HighRiskType.class).fromCode(ownerUnit.getHighRiskType())
+				: null;
+
 		// 项目检测表模板ID
 		Long templateId = project.getTemplateId();
 
 		List<DetectFormVo> results = new ArrayList<DetectFormVo>();
 
 		// 直观检测表 A类 C类
-		List<IntuitiveDetect> intuitiveDetect = intuitiveDetectService.getIntuitiveDetectByTemplateId(templateId);
+		List<IntuitiveDetect> intuitiveDetect = intuitiveDetectService.getIntuitiveDetectByTemplateId(templateId, type);
 
 		if (CollUtil.isNotEmpty(intuitiveDetect)) {
 			results.addAll(BeanUtils.copyList(intuitiveDetect, DetectFormVo.class));
@@ -92,60 +99,88 @@ public class DetectController extends ServerBaseController {
 			Integer dangers = intuitiveDetectService.getFormDangers(form.getId(), unitId, unitAreaId, buildingId);
 			form.setDangers(dangers);
 
-			List<IntuitiveDetectData> detectDatas = detectDataService.getByDetectId(form.getId());
+			List<IntuitiveDetectData> detectDatas = detectDataService.getByDetectId(form.getId(), type);
 			if (CollUtil.isNotEmpty(detectDatas)) {
 
 				List<DetectDataVo> formDatas = BeanUtils.copyList(detectDatas, DetectDataVo.class);
 
 				formDatas.forEach((data) -> {
-					// 查询 data danger
-					List<IntuitiveDetectDanger> detectDanger = detectDangerService.getByDataId(data.getId());
-					if (CollUtil.isNotEmpty(detectDanger)) {
-						List<DetectDataDangerVo> formDatadangers = BeanUtils.copyList(detectDanger,
-								DetectDataDangerVo.class);
-						data.setDangers(formDatadangers);
+
+					if (isHighRisk) {
+
+						List<IntuitiveDetectData> subDetectDatas = detectDataService.getByViewParent(data.getId(),
+								type);
+						if (CollUtil.isNotEmpty(subDetectDatas)) {
+
+							List<DetectDataVo> subDatas = BeanUtils.copyList(subDetectDatas, DetectDataVo.class);
+							subDatas.forEach((subData) -> {
+								// 查询 data danger
+								List<IntuitiveDetectDanger> detectDanger = detectDangerService
+										.getByDataId(subData.getId());
+								if (CollUtil.isNotEmpty(detectDanger)) {
+									List<DetectDataDangerVo> formDatadangers = BeanUtils.copyList(detectDanger,
+											DetectDataDangerVo.class);
+									subData.setDangers(formDatadangers);
+								}
+							});
+
+							data.setSubDatas(subDatas);
+						}
+					} else {
+
+						// 查询 data danger
+						List<IntuitiveDetectDanger> detectDanger = detectDangerService.getByDataId(data.getId());
+						if (CollUtil.isNotEmpty(detectDanger)) {
+							List<DetectDataDangerVo> formDatadangers = BeanUtils.copyList(detectDanger,
+									DetectDataDangerVo.class);
+							data.setDangers(formDatadangers);
+						}
 					}
 				});
 
 				form.setDatas(formDatas);
 			}
 		});
-		// 仪器检测 B类表
 
-		List<DetectFormVo> formBList = templateBService.getTableBByTemplateId(templateId, "1");
+		if (!isHighRisk) {
+			// 仪器检测 B类表
 
-		formBList.forEach((form) -> {
-			// 查询该表隐患数
-			Integer dangers = intuitiveDetectService.getFormbDangers(form.getCode(), unitId, unitAreaId, buildingId);
-			form.setDangers(dangers);
-		});
+			List<DetectFormVo> formBList = templateBService.getTableBByTemplateId(templateId, "1");
 
-		results.addAll(formBList);
+			formBList.forEach((form) -> {
+				// 查询该表隐患数
+				Integer dangers = intuitiveDetectService.getFormbDangers(form.getCode(), unitId, unitAreaId,
+						buildingId);
+				form.setDangers(dangers);
+			});
+
+			results.addAll(formBList);
+		}
 
 		Collections.sort(results, Comparator.comparing(DetectFormVo::getType));
 
 		return Result.SUCCESS(results);
 	}
 
-	@ApiOperation(tags = "检测表", value = "检测表内容")
-	@GetMapping("/data/{formId}")
-	public Result<List<DetectDataVo>> dataList(@PathVariable Long formId) {
-
-		List<IntuitiveDetectData> detectDatas = detectDataService.getByDetectId(formId);
-		if (CollUtil.isNotEmpty(detectDatas)) {
-
-			List<DetectDataVo> results = BeanUtils.copyList(detectDatas, DetectDataVo.class);
-
-			results.forEach((data) -> {
-				// 查询 data danger
-				List<IntuitiveDetectDanger> detectDanger = detectDangerService.getByDataId(data.getId());
-				if (CollUtil.isNotEmpty(detectDanger)) {
-					List<DetectDataDangerVo> dangers = BeanUtils.copyList(detectDanger, DetectDataDangerVo.class);
-					data.setDangers(dangers);
-				}
-			});
-			return Result.SUCCESS(results);
-		}
-		return Result.SUCCESS();
-	}
+//	@ApiOperation(tags = "检测表", value = "检测表内容")
+//	@GetMapping("/data/{formId}")
+//	public Result<List<DetectDataVo>> dataList(@PathVariable Long formId) {
+//
+//		List<IntuitiveDetectData> detectDatas = detectDataService.getByDetectId(formId);
+//		if (CollUtil.isNotEmpty(detectDatas)) {
+//
+//			List<DetectDataVo> results = BeanUtils.copyList(detectDatas, DetectDataVo.class);
+//
+//			results.forEach((data) -> {
+//				// 查询 data danger
+//				List<IntuitiveDetectDanger> detectDanger = detectDangerService.getByDataId(data.getId());
+//				if (CollUtil.isNotEmpty(detectDanger)) {
+//					List<DetectDataDangerVo> dangers = BeanUtils.copyList(detectDanger, DetectDataDangerVo.class);
+//					data.setDangers(dangers);
+//				}
+//			});
+//			return Result.SUCCESS(results);
+//		}
+//		return Result.SUCCESS();
+//	}
 }

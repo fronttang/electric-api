@@ -60,7 +60,7 @@ public class OwnerUnitBuilding extends BaseEntity<OwnerUnitBuilding> {
 	/**
 	 * 是否完成入户率1是0否
 	 */
-	private String isHouseholdRate;
+	private String isComplete;
 
 	/**
 	 * 是否无法检测1是0否

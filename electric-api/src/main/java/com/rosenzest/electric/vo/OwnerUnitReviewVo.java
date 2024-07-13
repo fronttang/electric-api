@@ -101,4 +101,10 @@ public class OwnerUnitReviewVo {
 	 */
 	@ApiModelProperty("村")
 	private String hamletName;
+
+	/**
+	 * 高风险类型
+	 */
+	@ApiModelProperty("高风险类型,见字典：high_risk_type")
+	private String highRiskType;
 }

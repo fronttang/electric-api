@@ -45,4 +45,10 @@ public class OwnerUnitReviewQuery extends PageQuery {
 	private String keyword;
 
 	private Long workerId;
+
+	/**
+	 * 高风险类型
+	 */
+	@ApiModelProperty("高风险类型,见字典：high_risk_type")
+	private String highRiskType;
 }

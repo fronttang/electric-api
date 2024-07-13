@@ -123,11 +123,11 @@ public class OwnerUnitController extends ServerBaseController {
 		report.setInspectorId(loginUser.getUserId());
 		report.setUnitId(data.getId());
 		report.setIsDangerNotice(data.getIsDangerNotice());
-		report.setIsHouseholdRate(data.getIsHouseholdRate());
+		report.setIsComplete(data.getIsComplete());
 		report.setIsTest(data.getIsTest());
 		report.setIsTestReason(data.getIsTestReason());
 		report.setDetectData(new Date());
-		if ("1".equalsIgnoreCase(data.getIsHouseholdRate())) {
+		if ("1".equalsIgnoreCase(data.getIsComplete())) {
 			report.setDetectStatus(InitialInspectionStatus.FINISH.code());
 		} else if ("1".equalsIgnoreCase(data.getIsTest())) {
 			report.setDetectStatus(InitialInspectionStatus.UNABLE_TO_DETECT.code());
@@ -158,7 +158,7 @@ public class OwnerUnitController extends ServerBaseController {
 
 	@ApiOperation(tags = "业主单元(城中村/工业园)", value = "添加/修改业主单元")
 	@PostMapping("")
-	public Result<?> saveUnit(@RequestBody @Valid OwnerUnitDto data) {
+	public Result<OwnerUnitVo> saveUnit(@RequestBody @Valid OwnerUnitDto data) {
 
 		LoginUser loginUser = getLoginUser();
 		OwnerUnit unit = new OwnerUnit();
@@ -188,7 +188,7 @@ public class OwnerUnitController extends ServerBaseController {
 		}
 
 		if (ownerUnitService.saveOwnerUnit(data)) {
-			return Result.SUCCESS();
+			return this.unitInfo(data.getId());
 		} else {
 			return Result.ERROR();
 		}
