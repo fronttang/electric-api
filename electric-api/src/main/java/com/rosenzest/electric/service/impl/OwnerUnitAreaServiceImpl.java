@@ -43,4 +43,21 @@ public class OwnerUnitAreaServiceImpl extends ModelBaseServiceImpl<OwnerUnitArea
 		return this.baseMapper.delete(queryWrapper);
 	}
 
+	@Override
+	public OwnerUnitArea getByUnitId(Long unitId) {
+		LambdaQueryWrapper<OwnerUnitArea> queryWrapper = new LambdaQueryWrapper<OwnerUnitArea>();
+		queryWrapper.eq(OwnerUnitArea::getUnitId, unitId);
+		queryWrapper.last(" limit 1 ");
+		return this.baseMapper.selectOne(queryWrapper);
+	}
+
+	@Override
+	public OwnerUnitArea getByUnitIdAndBuildingId(Long unitId, Long buildingId) {
+		LambdaQueryWrapper<OwnerUnitArea> queryWrapper = new LambdaQueryWrapper<OwnerUnitArea>();
+		queryWrapper.eq(OwnerUnitArea::getUnitId, unitId);
+		queryWrapper.eq(OwnerUnitArea::getBuildingId, buildingId);
+		queryWrapper.last(" limit 1 ");
+		return this.baseMapper.selectOne(queryWrapper);
+	}
+
 }

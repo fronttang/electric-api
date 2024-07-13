@@ -22,4 +22,8 @@ public interface IOwnerUnitAreaService extends IModelBaseService<OwnerUnitArea> 
 
 	int removeByUnitId(Long unitId);
 
+	OwnerUnitArea getByUnitId(Long unitId);
+
+	OwnerUnitArea getByUnitIdAndBuildingId(Long unitId, Long buildingId);
+
 }

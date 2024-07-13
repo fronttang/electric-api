@@ -23,6 +23,7 @@ import com.rosenzest.electric.dto.OwnerUnitDangerDto;
 import com.rosenzest.electric.dto.OwnerUnitDangerQuery;
 import com.rosenzest.electric.entity.IntuitiveDetectDanger;
 import com.rosenzest.electric.entity.OwnerUnit;
+import com.rosenzest.electric.entity.OwnerUnitArea;
 import com.rosenzest.electric.entity.OwnerUnitBuilding;
 import com.rosenzest.electric.entity.OwnerUnitDanger;
 import com.rosenzest.electric.entity.OwnerUnitReport;
@@ -34,6 +35,7 @@ import com.rosenzest.electric.enums.ProjectWorkerAreaRoleType;
 import com.rosenzest.electric.enums.ReviewStatus;
 import com.rosenzest.electric.enums.UnitReportType;
 import com.rosenzest.electric.service.IIntuitiveDetectDangerService;
+import com.rosenzest.electric.service.IOwnerUnitAreaService;
 import com.rosenzest.electric.service.IOwnerUnitBuildingService;
 import com.rosenzest.electric.service.IOwnerUnitDangerService;
 import com.rosenzest.electric.service.IOwnerUnitReportService;
@@ -53,6 +55,9 @@ public class OwnerUnitDangerController extends ServerBaseController {
 
 	@Autowired
 	private IOwnerUnitService ownerUnitService;
+
+	@Autowired
+	private IOwnerUnitAreaService unitAreaService;
 
 	@Autowired
 	private IProjectWorkerService projectWorkerService;
@@ -92,20 +97,42 @@ public class OwnerUnitDangerController extends ServerBaseController {
 			}
 		}
 
-		if (danger.getBuildingId() != null) {
+		if (ProjectType.URBAN_VILLAGE.code().equalsIgnoreCase(ownerUnit.getType())) {
+			if (danger.getUnitAreaId() == null) {
+				return Result.ERROR(400, "公共区域/户ID不能为空");
+			}
+
+			OwnerUnitArea unitArea = unitAreaService.getByUnitId(ownerUnit.getId());
+			if (unitArea == null) {
+				return Result.ERROR(400, "公共区域/户ID错误");
+			}
+
+		} else if (ProjectType.INDUSTRIAL_AREA.code().equalsIgnoreCase(ownerUnit.getType())) {
+
+			if ((danger.getBuildingId() != null || danger.getBuildingId() != 0)) {
+				return Result.ERROR(400, "楼栋ID不能为空");
+			}
+
 			OwnerUnitBuilding building = unitBuildingService.getById(danger.getBuildingId());
 
-			if (!IndustrialAreaBuildingType.POWER_ROOM.code().equalsIgnoreCase(building.getType())
-					&& danger.getUnitAreaId() == null) {
-				return Result.ERROR(400, "公共区域/户ID不能为空");
+			if (building == null) {
+				return Result.ERROR(400, "楼栋不存在");
 			}
+
+			// 非配电房需要公共区域/户ID
+			if (!IndustrialAreaBuildingType.POWER_ROOM.code().equalsIgnoreCase(building.getType())) {
+				if (danger.getUnitAreaId() == null) {
+					return Result.ERROR(400, "公共区域/户ID不能为空");
+				}
+
+				OwnerUnitArea unitArea = unitAreaService.getByUnitIdAndBuildingId(ownerUnit.getId(), building.getId());
+				if (unitArea == null) {
+					return Result.ERROR(400, "公共区域/户ID错误");
+				}
+			}
+
 			if (building != null && InitialInspectionStatus.FINISH.code().equalsIgnoreCase(building.getStatus())) {
 				return Result.ERROR(400, "楼栋已完成初检");
-			}
-		} else {
-			if (danger.getUnitAreaId() == null
-					&& ProjectType.URBAN_VILLAGE.code().equalsIgnoreCase(ownerUnit.getType())) {
-				return Result.ERROR(400, "公共区域/户ID不能为空");
 			}
 		}
 
@@ -164,6 +191,16 @@ public class OwnerUnitDangerController extends ServerBaseController {
 			return Result.ERROR(400, "隐患已整改完成");
 		}
 
+		// 检查工作人员权限
+		OwnerUnit ownerUnit = ownerUnitService.getById(danger.getUnitId());
+		if (ownerUnit == null) {
+			return Result.ERROR(400, "无操作权限");
+		}
+
+		if (!projectWorkerService.checkWorkerAreaRole(ownerUnit, getUserId(), ProjectWorkerAreaRoleType.EDIT)) {
+			return Result.ERROR(400, "无操作权限");
+		}
+
 		// 检测业主单元报告状态
 		OwnerUnitReport report = unitReportService.getReportByUnitIdAndType(danger.getUnitId(), UnitReportType.INITIAL);
 		if (report != null && InitialInspectionStatus.FINISH.code().equalsIgnoreCase(report.getDetectStatus())) {
@@ -176,16 +213,6 @@ public class OwnerUnitDangerController extends ServerBaseController {
 			if (building != null && InitialInspectionStatus.FINISH.code().equalsIgnoreCase(building.getStatus())) {
 				return Result.ERROR(400, "楼栋已完成初检");
 			}
-		}
-
-		// 检查工作人员权限
-		OwnerUnit ownerUnit = ownerUnitService.getById(danger.getUnitId());
-		if (ownerUnit == null) {
-			return Result.ERROR(400, "无操作权限");
-		}
-
-		if (!projectWorkerService.checkWorkerAreaRole(ownerUnit, getUserId(), ProjectWorkerAreaRoleType.EDIT)) {
-			return Result.ERROR(400, "无操作权限");
 		}
 
 		if (unitDangerService.removeDanger(danger)) {
