@@ -159,6 +159,9 @@ public class OwnerUnitDangerController extends ServerBaseController {
 			String description = EnumUtils.init(DetectFormB.class).getNamefromCode(danger.getFormCode());
 			danger.setDescription(description);
 		} else {
+			if (StrUtil.isBlank(danger.getLocation())) {
+				return Result.ERROR(400, "隐患位置不能为空");
+			}
 			if (danger.getFormId() == null) {
 				return Result.ERROR(400, "A/C类表ID不能为空");
 			}

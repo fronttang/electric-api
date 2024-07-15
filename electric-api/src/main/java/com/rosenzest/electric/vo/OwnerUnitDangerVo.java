@@ -81,6 +81,24 @@ public class OwnerUnitDangerVo {
 	private String formType;
 
 	/**
+	 * 检测表ID
+	 */
+	@ApiModelProperty("检测表ID,B类表不传ID,只传编号和类型")
+	private Long formId;
+
+	/**
+	 * 检测表编号
+	 */
+	@ApiModelProperty("检测表编号")
+	private String formCode;
+
+	/**
+	 * B类表数据
+	 */
+	@ApiModelProperty("B类表数据")
+	private JSONObject formb;
+
+	/**
 	 * 隐患等级
 	 */
 	@ApiModelProperty("隐患等级")
@@ -151,12 +169,6 @@ public class OwnerUnitDangerVo {
 	 */
 	@ApiModelProperty("初检时间")
 	private Date initialTime;
-
-	/**
-	 * B类表数据
-	 */
-	@ApiModelProperty("B类表数据")
-	private JSONObject formb;
 
 	/**
 	 * 整改员

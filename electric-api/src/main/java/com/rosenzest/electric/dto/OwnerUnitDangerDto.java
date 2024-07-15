@@ -86,7 +86,7 @@ public class OwnerUnitDangerDto {
 	/**
 	 * 位置
 	 */
-	@NotBlank(message = "隐患位置不能为空")
+	// @NotBlank(message = "隐患位置不能为空")
 	@ApiModelProperty("位置")
 	private String location;
 
