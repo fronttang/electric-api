@@ -22,7 +22,7 @@ public class OwnerUnitReportLog extends BaseEntity<OwnerUnitReportLog> {
 	/**
 	 * 日志ID
 	 */
-	private Long id;
+	private String id;
 
 	/**
 	 * 报告ID

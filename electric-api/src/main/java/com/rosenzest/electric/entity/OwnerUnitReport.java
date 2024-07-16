@@ -2,6 +2,8 @@ package com.rosenzest.electric.entity;
 
 import java.util.Date;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.rosenzest.model.base.entity.BaseEntity;
 
 import lombok.Data;
@@ -24,6 +26,7 @@ public class OwnerUnitReport extends BaseEntity<OwnerUnitReport> {
 	/**
 	 * ID
 	 */
+	@TableId(type = IdType.AUTO)
 	private Long id;
 
 	/**

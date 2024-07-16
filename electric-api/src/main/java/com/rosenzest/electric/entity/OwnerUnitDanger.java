@@ -2,9 +2,13 @@ package com.rosenzest.electric.entity;
 
 import java.util.Date;
 
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 import com.rosenzest.model.base.entity.BaseEntity;
+import com.rosenzest.model.base.type.JsonObjectTypeHandler;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -19,6 +23,7 @@ import lombok.EqualsAndHashCode;
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
+@TableName(autoResultMap = true)
 public class OwnerUnitDanger extends BaseEntity<OwnerUnitDanger> {
 
 	private static final long serialVersionUID = 1L;
@@ -112,7 +117,8 @@ public class OwnerUnitDanger extends BaseEntity<OwnerUnitDanger> {
 	/**
 	 * B类表数据
 	 */
-	private String formb;
+	@TableField(typeHandler = JsonObjectTypeHandler.class)
+	private JSONObject formb;
 
 	/**
 	 * 整改员
