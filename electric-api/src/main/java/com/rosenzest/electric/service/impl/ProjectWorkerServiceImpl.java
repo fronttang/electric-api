@@ -76,12 +76,32 @@ public class ProjectWorkerServiceImpl extends ModelBaseServiceImpl<ProjectWorker
 
 		OwnerUnit ownerUnit = ownerUnitService.getById(unitId);
 
+		if (ownerUnit == null) {
+			return false;
+		}
+
+		if (String.valueOf(userId).equalsIgnoreCase(ownerUnit.getCreateBy())) {
+			return true;
+		}
+
 		return checkWorkerAreaRole(ownerUnit, userId, type);
 	}
 
 	@Override
 	public boolean checkWorkerAreaRole(OwnerUnit unit, Long userId, ProjectWorkerAreaRoleType type) {
 		if (unit != null) {
+
+			if (unit.getId() != null) {
+				OwnerUnit ownerUnit = ownerUnitService.getById(unit.getId());
+				if (ownerUnit == null) {
+					return false;
+				}
+
+				if (String.valueOf(userId).equalsIgnoreCase(ownerUnit.getCreateBy())) {
+					return true;
+				}
+			}
+
 			AreaDto area = new AreaDto();
 			area.setDistrict(unit.getDistrict());
 			area.setStreet(unit.getStreet());

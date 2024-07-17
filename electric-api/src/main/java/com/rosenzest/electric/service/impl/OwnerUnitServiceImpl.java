@@ -86,6 +86,9 @@ public class OwnerUnitServiceImpl extends ModelBaseServiceImpl<OwnerUnitMapper, 
 		OwnerUnit unit = new OwnerUnit();
 		BeanUtils.copyProperties(data, unit);
 
+		if (data.getId() == null) {
+			unit.setCreateBy(String.valueOf(loginUser.getUserId()));
+		}
 		this.saveOrUpdate(unit);
 
 		data.setId(unit.getId());

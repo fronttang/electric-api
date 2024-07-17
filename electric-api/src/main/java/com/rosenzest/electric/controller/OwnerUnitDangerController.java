@@ -109,7 +109,7 @@ public class OwnerUnitDangerController extends ServerBaseController {
 
 		} else if (ProjectType.INDUSTRIAL_AREA.code().equalsIgnoreCase(ownerUnit.getType())) {
 
-			if ((danger.getBuildingId() != null || danger.getBuildingId() != 0)) {
+			if ((danger.getBuildingId() == null || danger.getBuildingId() == 0)) {
 				return Result.ERROR(400, "楼栋ID不能为空");
 			}
 

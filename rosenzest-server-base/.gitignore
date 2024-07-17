@@ -5,3 +5,4 @@
 .classpath
 .project
 /target/
+/.apt_generated_tests/

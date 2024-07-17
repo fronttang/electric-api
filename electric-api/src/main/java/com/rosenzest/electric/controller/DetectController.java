@@ -162,6 +162,101 @@ public class DetectController extends ServerBaseController {
 		return Result.SUCCESS(results);
 	}
 
+	@ApiOperation(tags = "检测表", value = "检测表(按项目查)")
+	@GetMapping("/form/project")
+	public Result<List<DetectFormVo>> formListByProject(@RequestParam(value = "projectId") Long projectId,
+			@RequestParam(value = "type", required = false) String type) {
+
+		Project project = projectService.getById(projectId);
+
+		if (project == null) {
+			return Result.SUCCESS();
+		}
+
+		boolean isHighRisk = ProjectType.HIGH_RISK.code().equalsIgnoreCase(project.getType());
+
+		if (isHighRisk && type == null) {
+			return Result.SUCCESS();
+		}
+
+		final HighRiskType highRiskType = isHighRisk ? EnumUtils.init(HighRiskType.class).fromCode(type) : null;
+
+		// 项目检测表模板ID
+		Long templateId = project.getTemplateId();
+
+		List<DetectFormVo> results = new ArrayList<DetectFormVo>();
+
+		// 直观检测表 A类 C类
+		List<IntuitiveDetect> intuitiveDetect = intuitiveDetectService.getIntuitiveDetectByTemplateId(templateId,
+				highRiskType);
+
+		if (CollUtil.isNotEmpty(intuitiveDetect)) {
+			results.addAll(BeanUtils.copyList(intuitiveDetect, DetectFormVo.class));
+		}
+
+		results.forEach((form) -> {
+
+			// 查询该表隐患数
+			// Integer dangers = intuitiveDetectService.getFormDangers(form.getId(), unitId,
+			// unitAreaId, buildingId);
+			form.setDangers(0);
+
+			List<IntuitiveDetectData> detectDatas = detectDataService.getByDetectId(form.getId(), highRiskType);
+			if (CollUtil.isNotEmpty(detectDatas)) {
+
+				List<DetectDataVo> formDatas = BeanUtils.copyList(detectDatas, DetectDataVo.class);
+
+				formDatas.forEach((data) -> {
+
+					if (isHighRisk) {
+
+						List<IntuitiveDetectData> subDetectDatas = detectDataService.getByViewParent(data.getId(),
+								highRiskType);
+						if (CollUtil.isNotEmpty(subDetectDatas)) {
+
+							List<DetectDataVo> subDatas = BeanUtils.copyList(subDetectDatas, DetectDataVo.class);
+							subDatas.forEach((subData) -> {
+								// 查询 data danger
+								List<IntuitiveDetectDanger> detectDanger = detectDangerService
+										.getByDataId(subData.getId());
+								if (CollUtil.isNotEmpty(detectDanger)) {
+									List<DetectDataDangerVo> formDatadangers = BeanUtils.copyList(detectDanger,
+											DetectDataDangerVo.class);
+									subData.setDangers(formDatadangers);
+								}
+							});
+
+							data.setSubDatas(subDatas);
+						}
+					} else {
+
+						// 查询 data danger
+						List<IntuitiveDetectDanger> detectDanger = detectDangerService.getByDataId(data.getId());
+						if (CollUtil.isNotEmpty(detectDanger)) {
+							List<DetectDataDangerVo> formDatadangers = BeanUtils.copyList(detectDanger,
+									DetectDataDangerVo.class);
+							data.setDangers(formDatadangers);
+						}
+					}
+				});
+
+				form.setDatas(formDatas);
+			}
+		});
+
+		if (!isHighRisk) {
+			// 仪器检测 B类表
+
+			List<DetectFormVo> formBList = templateBService.getTableBByTemplateId(templateId, "1");
+
+			results.addAll(formBList);
+		}
+
+		Collections.sort(results, Comparator.comparing(DetectFormVo::getType));
+
+		return Result.SUCCESS(results);
+	}
+
 //	@ApiOperation(tags = "检测表", value = "检测表内容")
 //	@GetMapping("/data/{formId}")
 //	public Result<List<DetectDataVo>> dataList(@PathVariable Long formId) {

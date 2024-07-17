@@ -6,3 +6,4 @@
 .project
 /target/
 /xmzy-model-generator.iml
+/.apt_generated_tests/

@@ -4,8 +4,7 @@
 
 
 	<select id="queryInitialList" parameterType="com.rosenzest.electric.dto.OwnerUnitBuildingQuery" resultType="com.rosenzest.electric.vo.InitialOwnerUnitBuildingVo" >
-		select t.* from (select b.id,b.name,b.type,b.unit_id,b.`status`,
-		(select count(1) from owner_unit_area a where a.unit_id = b.unit_id and a.building_id = b.id ) as doors,
+		select t.* from (select b.id,b.name,b.type,b.unit_id,b.`status`, doors,
 		(select count(1) from owner_unit_danger ud where ud.unit_id = b.unit_id and ud.building_id = b.id) as dangers,
 		(select count(1) from ( select ua.id, (select count(1) from owner_unit_danger d where d.unit_area_id = ua.id) as dangers from owner_unit_area ua where ua.unit_id = b.unit_id and ua.building_id = b.id ) t where t.dangers>0) as households
 		from owner_unit_building b where b.unit_id = #{unitId} 
