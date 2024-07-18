@@ -76,7 +76,7 @@ public class CodeGenerator {
 		// 包配置
 		final PackageConfig pc = new PackageConfig();
 		// pc.setModuleName(scanner("模块名"));
-		pc.setModuleName("high");
+		pc.setModuleName("station");
 		pc.setParent("com.rosenzest.electric");
 		mpg.setPackageInfo(pc);
 
@@ -144,7 +144,7 @@ public class CodeGenerator {
 		strategy.setSuperEntityColumns("SEQ_NO", "CRE_TLR", "CRE_DTE", "CRE_BR", "CRE_BK", "UPD_TLR", "UPD_DTE",
 				"UPD_BR", "UPD_BK", "CREATE_TIME", "CREATE_BY", "UPDATE_TIME", "UPDATE_BY");
 		// strategy.setInclude(scanner("表名，多个英文逗号分割").split(","));
-		strategy.setInclude("complex_config");
+		strategy.setInclude("publicplaces_config");
 		// strategy.setTablePrefix("xm_");
 		strategy.setControllerMappingHyphenStyle(true);
 		// strategy.setTablePrefix(pc.getModuleName() + "_");

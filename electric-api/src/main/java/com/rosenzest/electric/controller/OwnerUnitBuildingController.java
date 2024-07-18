@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.rosenzest.base.ListResult;
+import com.rosenzest.base.LoginUser;
 import com.rosenzest.base.PageList;
 import com.rosenzest.base.Result;
 import com.rosenzest.base.util.BeanUtils;
@@ -80,20 +81,6 @@ public class OwnerUnitBuildingController extends ServerBaseController {
 			return ListResult.SUCCESS(0L, unitList);
 		}
 
-		Project project = projectService.getById(ownerUnit.getProjectId());
-		if (project == null || !ProjectType.INDUSTRIAL_AREA.code().equalsIgnoreCase(project.getType())) {
-			return ListResult.SUCCESS(0L, unitList);
-		}
-		query.setType(project.getType());
-
-		ProjectWorker projectWorker = projectWorkerService.getProjectWorker(ownerUnit.getProjectId(), getUserId(),
-				ProjectWorkerType.INSPECTOR.code());
-		if (projectWorker == null) {
-			return ListResult.SUCCESS(0L, unitList);
-		}
-
-		query.setWorkerId(projectWorker.getId());
-
 		PageList pageList = new PageList(query.getPage(), query.getPageSize());
 		unitList = unitBuildingService.queryInitialList(query, pageList);
 
@@ -136,13 +123,11 @@ public class OwnerUnitBuildingController extends ServerBaseController {
 	@PostMapping("")
 	public Result<?> saveBuilding(@RequestBody @Valid OwnerUnitBuildingDto data) {
 
+		LoginUser loginUser = getLoginUser();
+
 		// 检查工作人员权限
 		OwnerUnit ownerUnit = ownerUnitService.getById(data.getUnitId());
 		if (ownerUnit == null) {
-			return Result.ERROR(400, "无操作权限");
-		}
-
-		if (!projectWorkerService.checkWorkerAreaRole(ownerUnit, getUserId(), ProjectWorkerAreaRoleType.EDIT)) {
 			return Result.ERROR(400, "无操作权限");
 		}
 
@@ -159,11 +144,22 @@ public class OwnerUnitBuildingController extends ServerBaseController {
 			if (InitialInspectionStatus.FINISH.code().equalsIgnoreCase(unitBuilding.getStatus())) {
 				return Result.ERROR(400, "楼栋已完成初检");
 			}
+
+			if (!String.valueOf(loginUser.getUserId()).equalsIgnoreCase(unitBuilding.getCreateBy())) {
+
+				if (!projectWorkerService.checkWorkerAreaRole(ownerUnit, getUserId(), ProjectWorkerAreaRoleType.EDIT)) {
+					return Result.ERROR(400, "无操作权限");
+				}
+			}
 		}
 
 		OwnerUnitBuilding building = new OwnerUnitBuilding();
 
 		BeanUtils.copyProperties(data, building);
+
+		if (building.getId() == null) {
+			building.setCreateBy(String.valueOf(loginUser.getUserId()));
+		}
 
 		if (unitBuildingService.saveOrUpdate(building)) {
 			return Result.SUCCESS(building);
@@ -176,6 +172,8 @@ public class OwnerUnitBuildingController extends ServerBaseController {
 	@PostMapping("/setting")
 	public Result<?> buildingSetting(@RequestBody @Valid InitialOwnerUnitBuildingSettingDto data) {
 
+		LoginUser loginUser = getLoginUser();
+
 		OwnerUnitBuilding unitBuilding = unitBuildingService.getById(data.getBuildingId());
 
 		if (unitBuilding == null) {
@@ -186,14 +184,17 @@ public class OwnerUnitBuildingController extends ServerBaseController {
 			return Result.ERROR(400, "楼栋已完成初检");
 		}
 
-		// 检查工作人员权限
 		OwnerUnit ownerUnit = ownerUnitService.getById(unitBuilding.getUnitId());
 		if (ownerUnit == null) {
 			return Result.ERROR(400, "无操作权限");
 		}
 
-		if (!projectWorkerService.checkWorkerAreaRole(ownerUnit, getUserId(), ProjectWorkerAreaRoleType.EDIT)) {
-			return Result.ERROR(400, "无操作权限");
+		// 检查工作人员权限
+		if (!String.valueOf(loginUser.getUserId()).equalsIgnoreCase(unitBuilding.getCreateBy())) {
+
+			if (!projectWorkerService.checkWorkerAreaRole(ownerUnit, getUserId(), ProjectWorkerAreaRoleType.EDIT)) {
+				return Result.ERROR(400, "无操作权限");
+			}
 		}
 
 		unitBuilding.setIsComplete(data.getIsComplete());
@@ -219,6 +220,8 @@ public class OwnerUnitBuildingController extends ServerBaseController {
 	@DeleteMapping("/{buildingId}")
 	public Result<?> deleteBuilding(@PathVariable Long buildingId) {
 
+		LoginUser loginUser = getLoginUser();
+
 		OwnerUnitBuilding unitBuilding = unitBuildingService.getById(buildingId);
 
 		if (unitBuilding == null) {
@@ -235,8 +238,11 @@ public class OwnerUnitBuildingController extends ServerBaseController {
 			return Result.ERROR(400, "无操作权限");
 		}
 
-		if (!projectWorkerService.checkWorkerAreaRole(ownerUnit, getUserId(), ProjectWorkerAreaRoleType.EDIT)) {
-			return Result.ERROR(400, "无操作权限");
+		if (!String.valueOf(loginUser.getUserId()).equalsIgnoreCase(unitBuilding.getCreateBy())) {
+
+			if (!projectWorkerService.checkWorkerAreaRole(ownerUnit, getUserId(), ProjectWorkerAreaRoleType.EDIT)) {
+				return Result.ERROR(400, "无操作权限");
+			}
 		}
 
 		// 检查是否有隐患数据

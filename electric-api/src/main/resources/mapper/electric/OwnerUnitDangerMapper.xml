@@ -5,13 +5,14 @@
 	<resultMap id="OwnerUnitDangerVoResultMap" type="com.rosenzest.electric.vo.OwnerUnitDangerVo" >
     	<!--将json类型的rules字段修改为如下形式-->
     	<result column="formb" property="formb" typeHandler="com.rosenzest.model.base.type.JsonObjectTypeHandler" />
+    	<result column="charging_pile_id" property="chargingPileId" typeHandler="com.rosenzest.model.base.type.LongListTypeHandler" />
   	</resultMap>
 
 	<select id="queryOwnerUnitDanger" resultMap="OwnerUnitDangerVoResultMap" parameterType="com.rosenzest.electric.dto.OwnerUnitDangerQuery">
-		select d.id, d.unit_id, u.`name` as unit_name, du.name as detect_name, d.building_id, ub.name as building_name,d.unit_area_id,ua.`name` as unit_area_name, 
+		select d.id, d.unit_id, u.`name` as unit_name, du.name as detect_name, d.building_id, ub.name as building_name, d.unit_area_id,ua.`name` as unit_area_name, 
 		ua.type as unit_area_type, d.danger_id, d.form_type, d.form_id, d.form_code, d.level, d.description, d.suggestions, d.location,
 		d.danger_pic, d.rectification_pic, d.detect_pic, d.reason, d.status, d.inspector, d.initial_time, 
-		d.rectification, d.rectification_date, d.reviewer, d.reviewer_date, d.formb 
+		d.rectification, d.rectification_date, d.reviewer, d.reviewer_date, d.formb, d.charging_pile_id 
 		from owner_unit_danger d 
 		left join owner_unit u on u.id = d.unit_id 
 		left join detect_unit du on du.id = u.detect_id
@@ -27,6 +28,11 @@
 		<if test="formId != null and formId != ''"> and d.form_id = #{formId} </if>
 		<if test="formCode != null and formCode != ''"> and d.form_code = #{formCode} </if>
 		<if test="formType != null and formType != ''"> and d.form_type = #{formType} </if>
+		<if test="formDataId != null and formDataId != ''"> and d.form_data_id = #{formDataId} </if>
+		<if test="rounds != null and rounds != ''"> and d.rounds = #{rounds} </if>
+		<if test="chargingPileId != null and chargingPileId != '' ">
+		 and #{chargingPileId} member of(d.charging_pile_id) 
+		 </if>
 		<if test="keyword != null and keyword != ''">
 			and (
 			u.`name` like concat('%', #{keyword}, '%') 
@@ -36,6 +42,39 @@
 			)
 		</if>
  
+	</select>
+	
+	<select id="countByChargingPileId"  parameterType="Long" resultType="Integer">
+		select count(1) from owner_unit_danger d where #{pileId} member of(d.charging_pile_id)
+	</select>
+	
+	<select id="countFormDangers" resultType="Integer">
+		select count(1) as dangers from owner_unit_danger d 
+		where d.form_id = #{formId} and d.unit_id = #{unitId} 
+		<if test="unitAreaId != null">
+			and d.unit_area_id = #{unitAreaId}
+		</if>
+		<if test="buildingId != null">
+			and d.building_id = #{buildingId}
+		</if>
+	</select>
+	
+	<select id="countFormbDangers" resultType="Integer">
+		select count(1) as dangers from owner_unit_danger d 
+		where d.form_code = #{code} and d.form_type = 'B' and d.unit_id = #{unitId} 
+		<if test="unitAreaId != null">
+			and d.unit_area_id = #{unitAreaId}
+		</if>
+		<if test="buildingId != null">
+			and d.building_id = #{buildingId}
+		</if>
+	</select>
+	
+	<select id="countByDataIdAndPileId" resultType="Integer">
+		select count(1) from owner_unit_danger d where d.form_data_id = #{dataId}
+		<if test="pileId != null">
+			and #{pileId} member of(d.charging_pile_id)
+		</if>
 	</select>
 	
 </mapper>

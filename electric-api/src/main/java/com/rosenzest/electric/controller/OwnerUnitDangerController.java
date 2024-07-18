@@ -48,7 +48,7 @@ import cn.hutool.core.util.StrUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
-@Api(tags = "隐患(城中村/工业园)")
+@Api(tags = "隐患")
 @RestController
 @RequestMapping("/unit/danger")
 public class OwnerUnitDangerController extends ServerBaseController {
@@ -74,7 +74,7 @@ public class OwnerUnitDangerController extends ServerBaseController {
 	@Autowired
 	private IOwnerUnitBuildingService unitBuildingService;
 
-	@ApiOperation(tags = "隐患(城中村/工业园)", value = "添加/修改隐患")
+	@ApiOperation(tags = "隐患", value = "添加/修改隐患")
 	@PostMapping("")
 	public Result<?> saveAreaDanger(@RequestBody @Valid OwnerUnitDangerDto danger) {
 
@@ -86,14 +86,32 @@ public class OwnerUnitDangerController extends ServerBaseController {
 			return Result.ERROR(400, "无操作权限");
 		}
 
-		if (!projectWorkerService.checkWorkerAreaRole(ownerUnit, getUserId(), ProjectWorkerAreaRoleType.EDIT)) {
-			return Result.ERROR(400, "无操作权限");
-		}
-
 		if (danger.getId() != null) {
+			// id不为空是修改数据
 			OwnerUnitDanger dbDanger = unitDangerService.getById(danger.getId());
+
+			if (dbDanger == null) {
+				return Result.ERROR(400, "无操作权限");
+			}
+
+			// 充电场项目检查轮次
+			if (ProjectType.CHARGING_STATION.code().equalsIgnoreCase(ownerUnit.getType())) {
+
+				if (!ownerUnit.getRounds().equals(dbDanger.getRounds())) {
+					return Result.ERROR(400, "非当前轮次数据不能修改");
+				}
+			}
+
 			if (ReviewStatus.FINISH.code().equalsIgnoreCase(dbDanger.getStatus())) {
 				return Result.ERROR(400, "隐患已整改完成");
+			}
+
+			// 非自己数据才需要判断编辑权限
+			if (!String.valueOf(loginUser.getUserId()).equalsIgnoreCase(dbDanger.getCreateBy())) {
+
+				if (!projectWorkerService.checkWorkerAreaRole(ownerUnit, getUserId(), ProjectWorkerAreaRoleType.EDIT)) {
+					return Result.ERROR(400, "无操作权限");
+				}
 			}
 		}
 
@@ -136,21 +154,6 @@ public class OwnerUnitDangerController extends ServerBaseController {
 			}
 		}
 
-		// 检测业主单元报告状态
-		OwnerUnitReport report = unitReportService.getReportByUnitIdAndType(danger.getUnitId(), UnitReportType.INITIAL);
-		if (report != null && InitialInspectionStatus.FINISH.code().equalsIgnoreCase(report.getDetectStatus())) {
-			return Result.ERROR(400, "已完成初检");
-		}
-
-		if (danger.getDangerId() != null) {
-			IntuitiveDetectDanger detectDanger = detectDangerService.getById(danger.getDangerId());
-			if (detectDanger != null) {
-				danger.setLevel(detectDanger.getLevel());
-				danger.setDescription(detectDanger.getDescription());
-				danger.setSuggestions(detectDanger.getSuggestions());
-			}
-		}
-
 		if ("B".equalsIgnoreCase(danger.getFormType())) {
 			if (StrUtil.isBlank(danger.getFormCode())) {
 				return Result.ERROR(400, "B类表CODE不能为空");
@@ -166,6 +169,21 @@ public class OwnerUnitDangerController extends ServerBaseController {
 				return Result.ERROR(400, "A/C类表ID不能为空");
 			}
 		}
+		// 检测业主单元报告状态
+		OwnerUnitReport report = unitReportService.getReportByUnitIdAndType(danger.getUnitId(), UnitReportType.INITIAL);
+		if (report != null && InitialInspectionStatus.FINISH.code().equalsIgnoreCase(report.getDetectStatus())) {
+			return Result.ERROR(400, "已完成初检");
+		}
+
+		if (danger.getDangerId() != null) {
+			IntuitiveDetectDanger detectDanger = detectDangerService.getById(danger.getDangerId());
+			if (detectDanger != null) {
+				danger.setLevel(detectDanger.getLevel());
+				danger.setDescription(detectDanger.getDescription());
+				danger.setSuggestions(detectDanger.getSuggestions());
+				danger.setFormDataId(detectDanger.getDataId());
+			}
+		}
 
 		OwnerUnitDanger areaDanger = new OwnerUnitDanger();
 		BeanUtils.copyProperties(danger, areaDanger);
@@ -173,6 +191,11 @@ public class OwnerUnitDangerController extends ServerBaseController {
 		areaDanger.setInspector(loginUser.getName());
 		areaDanger.setInspectorId(loginUser.getUserId());
 		areaDanger.setInitialTime(new Date());
+		areaDanger.setRounds(ownerUnit.getRounds());
+
+		if (areaDanger.getId() == null) {
+			areaDanger.setCreateBy(String.valueOf(loginUser.getUserId()));
+		}
 
 		if (unitDangerService.saveOrUpdateDanger(areaDanger)) {
 			return Result.SUCCESS();
@@ -181,9 +204,11 @@ public class OwnerUnitDangerController extends ServerBaseController {
 		}
 	}
 
-	@ApiOperation(tags = "隐患(城中村/工业园)", value = "删除隐患")
+	@ApiOperation(tags = "隐患", value = "删除隐患")
 	@DeleteMapping("/{dangerId}")
 	public Result<?> deleteAreaDanger(@PathVariable Long dangerId) {
+
+		LoginUser loginUser = getLoginUser();
 
 		OwnerUnitDanger danger = unitDangerService.getById(dangerId);
 		if (danger == null) {
@@ -200,8 +225,20 @@ public class OwnerUnitDangerController extends ServerBaseController {
 			return Result.ERROR(400, "无操作权限");
 		}
 
-		if (!projectWorkerService.checkWorkerAreaRole(ownerUnit, getUserId(), ProjectWorkerAreaRoleType.EDIT)) {
-			return Result.ERROR(400, "无操作权限");
+		// 充电场项目检查轮次
+		if (ProjectType.CHARGING_STATION.code().equalsIgnoreCase(ownerUnit.getType())) {
+
+			if (!ownerUnit.getRounds().equals(danger.getRounds())) {
+				return Result.ERROR(400, "非当前轮次数据不能删除");
+			}
+		}
+
+		// 不是自己的数据才判断编辑权限
+		if (!String.valueOf(loginUser.getUserId()).equalsIgnoreCase(danger.getCreateBy())) {
+
+			if (!projectWorkerService.checkWorkerAreaRole(ownerUnit, getUserId(), ProjectWorkerAreaRoleType.EDIT)) {
+				return Result.ERROR(400, "无操作权限");
+			}
 		}
 
 		// 检测业主单元报告状态
@@ -225,7 +262,7 @@ public class OwnerUnitDangerController extends ServerBaseController {
 		}
 	}
 
-	@ApiOperation(tags = "隐患(城中村/工业园)", value = "隐患列表")
+	@ApiOperation(tags = "隐患", value = "隐患列表")
 	@PostMapping("/list")
 	public ListResult<OwnerUnitDangerVo> dangerList(@RequestBody @Valid OwnerUnitDangerQuery query) {
 

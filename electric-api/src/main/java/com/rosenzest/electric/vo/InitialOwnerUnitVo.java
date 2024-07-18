@@ -125,4 +125,22 @@ public class InitialOwnerUnitVo {
 	 */
 	@ApiModelProperty("完成数")
 	private Integer finishs;
+
+	/**
+	 * 充电桩数
+	 */
+	@ApiModelProperty("充电桩数")
+	private Integer piles;
+
+	/**
+	 * 当前轮次
+	 */
+	@ApiModelProperty("当前轮次")
+	private Integer rounds;
+
+	/**
+	 * 检测模块
+	 */
+	@ApiModelProperty("检测模块，见数据字典：detect_module")
+	private String detectModule;
 }

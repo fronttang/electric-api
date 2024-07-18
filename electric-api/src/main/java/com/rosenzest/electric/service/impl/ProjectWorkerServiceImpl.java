@@ -100,17 +100,18 @@ public class ProjectWorkerServiceImpl extends ModelBaseServiceImpl<ProjectWorker
 				if (String.valueOf(userId).equalsIgnoreCase(ownerUnit.getCreateBy())) {
 					return true;
 				}
+
+				AreaDto area = new AreaDto();
+				area.setDistrict(unit.getDistrict());
+				area.setStreet(unit.getStreet());
+				area.setCommunity(unit.getCommunity());
+				area.setHamlet(unit.getHamlet());
+
+				return this.checkWorkerAreaRole(unit.getProjectId(), userId, type, area);
+			} else {
+				return true;
 			}
-
-			AreaDto area = new AreaDto();
-			area.setDistrict(unit.getDistrict());
-			area.setStreet(unit.getStreet());
-			area.setCommunity(unit.getCommunity());
-			area.setHamlet(unit.getHamlet());
-
-			return this.checkWorkerAreaRole(unit.getProjectId(), userId, type, area);
 		}
-
 		return false;
 	}
 

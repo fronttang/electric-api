@@ -261,4 +261,24 @@ public class OwnerUnitDangerServiceImpl extends ModelBaseServiceImpl<OwnerUnitDa
 		return this.baseMapper.selectCount(queryWrapper);
 	}
 
+	@Override
+	public Integer countByChargingPileId(Long pileId) {
+		return this.baseMapper.countByChargingPileId(pileId);
+	}
+
+	@Override
+	public Integer countFormDangers(Long formId, Long unitId, Long unitAreaId, Long buildingId) {
+		return this.baseMapper.countFormDangers(formId, unitId, unitAreaId, buildingId);
+	}
+
+	@Override
+	public Integer countFormbDangers(String code, Long unitId, Long unitAreaId, Long buildingId) {
+		return this.baseMapper.countFormbDangers(code, unitId, unitAreaId, buildingId);
+	}
+
+	@Override
+	public Integer countByDataIdAndPileId(Long dataId, Long pileId) {
+		return this.baseMapper.countByDataIdAndPileId(dataId, pileId);
+	}
+
 }

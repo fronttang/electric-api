@@ -108,6 +108,11 @@ public class IndustrialConfig extends BaseHighConfigEntity<IndustrialConfig> {
 	private String fireControlRoom;
 
 	/**
+	 * 消防控制室的管理是否符合要求1是0否
+	 */
+	private String fireControlRoomMgr;
+
+	/**
 	 * 电气线路敷设、电气设备使用是否符合要求1是0否
 	 */
 	private String electricalEquipment;

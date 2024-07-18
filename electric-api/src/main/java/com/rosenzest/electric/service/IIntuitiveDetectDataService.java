@@ -20,4 +20,6 @@ public interface IIntuitiveDetectDataService extends IModelBaseService<Intuitive
 
 	List<IntuitiveDetectData> getByViewParent(Long viewParentId, HighRiskType type);
 
+	List<IntuitiveDetectData> getByTemplateIdAndDetectModule(Long templateId, String module);
+
 }

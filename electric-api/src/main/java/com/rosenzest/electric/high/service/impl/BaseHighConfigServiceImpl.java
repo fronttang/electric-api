@@ -77,6 +77,10 @@ public abstract class BaseHighConfigServiceImpl<M extends ModelBaseMapper<T>, T 
 
 		unit.setHighRiskType(getHighRiskType().code());
 
+		if (unit.getId() == null) {
+			unit.setCreateBy(String.valueOf(loginUser.getUserId()));
+		}
+
 		ownerUnitService.saveOrUpdate(unit);
 		data.setId(unit.getId());
 

@@ -107,4 +107,16 @@ public class OwnerUnitReviewVo {
 	 */
 	@ApiModelProperty("高风险类型,见字典：high_risk_type")
 	private String highRiskType;
+
+	/**
+	 * 充电桩数
+	 */
+	@ApiModelProperty("充电桩数")
+	private Integer piles;
+
+	/**
+	 * 当前轮次
+	 */
+	@ApiModelProperty("当前轮次")
+	private Integer rounds;
 }

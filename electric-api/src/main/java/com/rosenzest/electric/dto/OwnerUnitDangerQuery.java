@@ -76,4 +76,21 @@ public class OwnerUnitDangerQuery extends PageQuery {
 	 */
 	@ApiModelProperty("检测表类型:A/B/C")
 	private String formType;
+
+	/**
+	 * 检测表数据ID
+	 */
+	private Long formDataId;
+
+	/**
+	 * 轮次
+	 */
+	@ApiModelProperty("轮次")
+	private Integer rounds;
+
+	/**
+	 * 充电桩ID
+	 */
+	@ApiModelProperty("充电桩ID")
+	private Long chargingPileId;
 }

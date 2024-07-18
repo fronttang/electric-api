@@ -1,6 +1,7 @@
 package com.rosenzest.electric.vo;
 
 import java.util.Date;
+import java.util.List;
 
 import com.alibaba.fastjson.JSONObject;
 
@@ -69,6 +70,12 @@ public class OwnerUnitDangerVo {
 	private String buildingName;
 
 	/**
+	 * 充电桩ID
+	 */
+	@ApiModelProperty("充电桩ID")
+	private List<Long> chargingPileId;
+
+	/**
 	 * 隐患ID
 	 */
 	@ApiModelProperty("隐患ID")
@@ -97,6 +104,11 @@ public class OwnerUnitDangerVo {
 	 */
 	@ApiModelProperty("B类表数据")
 	private JSONObject formb;
+
+	/**
+	 * 检测表数据ID
+	 */
+	private Long formDataId;
 
 	/**
 	 * 隐患等级

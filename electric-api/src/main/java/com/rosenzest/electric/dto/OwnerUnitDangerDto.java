@@ -1,5 +1,7 @@
 package com.rosenzest.electric.dto;
 
+import java.util.List;
+
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
@@ -41,6 +43,12 @@ public class OwnerUnitDangerDto {
 	private Long unitAreaId;
 
 	/**
+	 * 充电桩ID
+	 */
+	@ApiModelProperty("充电桩ID")
+	private List<Long> chargingPileId;
+
+	/**
 	 * 隐患ID
 	 */
 	@ApiModelProperty("隐患ID")
@@ -64,6 +72,11 @@ public class OwnerUnitDangerDto {
 	@ApiModelProperty("检测表类型:A/B/C")
 	@NotBlank(message = "检测表类型不能为空")
 	private String formType;
+
+	/**
+	 * 检测表数据ID
+	 */
+	private Long formDataId;
 
 	/**
 	 * 隐患等级

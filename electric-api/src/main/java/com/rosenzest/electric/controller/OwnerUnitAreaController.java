@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.rosenzest.base.ListResult;
+import com.rosenzest.base.LoginUser;
 import com.rosenzest.base.PageList;
 import com.rosenzest.base.Result;
 import com.rosenzest.base.util.BeanUtils;
@@ -76,14 +77,28 @@ public class OwnerUnitAreaController extends ServerBaseController {
 	@PostMapping("")
 	public Result<?> saveUnitArea(@RequestBody @Valid OwnerUnitAreaDto data) {
 
+		LoginUser loginUser = getLoginUser();
+
 		// 检查工作人员权限
 		OwnerUnit ownerUnit = ownerUnitService.getById(data.getUnitId());
 		if (ownerUnit == null) {
 			return Result.ERROR(400, "无操作权限");
 		}
 
-		if (!projectWorkerService.checkWorkerAreaRole(ownerUnit, getUserId(), ProjectWorkerAreaRoleType.EDIT)) {
-			return Result.ERROR(400, "无操作权限");
+		if (data.getId() != null) {
+
+			OwnerUnitArea unitArea = ownerUnitAreaService.getById(data.getId());
+			if (unitArea == null) {
+				return Result.ERROR(400, "无操作权限");
+			}
+
+			if (!String.valueOf(loginUser.getUserId()).equalsIgnoreCase(unitArea.getCreateBy())) {
+
+				if (!projectWorkerService.checkWorkerAreaRole(ownerUnit, loginUser.getUserId(),
+						ProjectWorkerAreaRoleType.EDIT)) {
+					return Result.ERROR(400, "无操作权限");
+				}
+			}
 		}
 
 		// 工业园
@@ -95,6 +110,14 @@ public class OwnerUnitAreaController extends ServerBaseController {
 			OwnerUnitBuilding building = unitBuildingService.getById(data.getBuildingId());
 			if (building == null || building.getUnitId() != ownerUnit.getId()) {
 				return Result.ERROR(400, "无操作权限");
+			}
+
+			if (!String.valueOf(loginUser.getUserId()).equalsIgnoreCase(building.getCreateBy())) {
+
+				if (!projectWorkerService.checkWorkerAreaRole(ownerUnit, loginUser.getUserId(),
+						ProjectWorkerAreaRoleType.EDIT)) {
+					return Result.ERROR(400, "无操作权限");
+				}
 			}
 
 			if (InitialInspectionStatus.FINISH.code().equalsIgnoreCase(building.getStatus())) {
@@ -116,6 +139,10 @@ public class OwnerUnitAreaController extends ServerBaseController {
 		OwnerUnitArea entity = new OwnerUnitArea();
 		BeanUtils.copyProperties(data, entity);
 
+		if (data.getId() == null) {
+			entity.setCreateBy(String.valueOf(loginUser.getUserId()));
+		}
+
 		if (ownerUnitAreaService.saveOrUpdate(entity)) {
 			return Result.SUCCESS(entity);
 		} else {
@@ -126,6 +153,8 @@ public class OwnerUnitAreaController extends ServerBaseController {
 	@ApiOperation(tags = "公共区域/户(城中村/工业园)", value = "删除公共区域/户")
 	@DeleteMapping("/{unitAreaId}")
 	public Result<?> deleteArea(@PathVariable Long unitAreaId) {
+
+		LoginUser loginUser = getLoginUser();
 
 		OwnerUnitArea unitArea = ownerUnitAreaService.getById(unitAreaId);
 		if (unitArea == null) {
@@ -138,8 +167,10 @@ public class OwnerUnitAreaController extends ServerBaseController {
 			return Result.ERROR(400, "无操作权限");
 		}
 
-		if (!projectWorkerService.checkWorkerAreaRole(ownerUnit, getUserId(), ProjectWorkerAreaRoleType.EDIT)) {
-			return Result.ERROR(400, "无操作权限");
+		if (!String.valueOf(loginUser.getUserId()).equalsIgnoreCase(unitArea.getCreateBy())) {
+			if (!projectWorkerService.checkWorkerAreaRole(ownerUnit, getUserId(), ProjectWorkerAreaRoleType.EDIT)) {
+				return Result.ERROR(400, "无操作权限");
+			}
 		}
 
 		if (unitArea.getBuildingId() != null) {

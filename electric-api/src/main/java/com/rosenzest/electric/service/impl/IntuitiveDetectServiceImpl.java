@@ -33,14 +33,4 @@ public class IntuitiveDetectServiceImpl extends ModelBaseServiceImpl<IntuitiveDe
 		return this.baseMapper.selectList(queryWrapper);
 	}
 
-	@Override
-	public Integer getFormDangers(Long formId, Long unitId, Long unitAreaId, Long buildingId) {
-		return this.baseMapper.getFormDangers(formId, unitId, unitAreaId, buildingId);
-	}
-
-	@Override
-	public Integer getFormbDangers(String code, Long unitId, Long unitAreaId, Long buildingId) {
-		return this.baseMapper.getFormbDangers(code, unitId, unitAreaId, buildingId);
-	}
-
 }

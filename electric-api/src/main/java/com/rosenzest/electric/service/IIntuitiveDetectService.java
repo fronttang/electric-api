@@ -18,8 +18,4 @@ public interface IIntuitiveDetectService extends IModelBaseService<IntuitiveDete
 
 	List<IntuitiveDetect> getIntuitiveDetectByTemplateId(Long templateId, HighRiskType type);
 
-	Integer getFormDangers(Long formId, Long unitId, Long unitAreaId, Long buildingId);
-
-	Integer getFormbDangers(String code, Long unitId, Long unitAreaId, Long buildingId);
-
 }

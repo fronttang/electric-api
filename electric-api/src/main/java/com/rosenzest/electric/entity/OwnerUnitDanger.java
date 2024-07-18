@@ -1,6 +1,7 @@
 package com.rosenzest.electric.entity;
 
 import java.util.Date;
+import java.util.List;
 
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.annotation.IdType;
@@ -9,6 +10,7 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.rosenzest.model.base.entity.BaseEntity;
 import com.rosenzest.model.base.type.JsonObjectTypeHandler;
+import com.rosenzest.model.base.type.LongListTypeHandler;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -50,6 +52,17 @@ public class OwnerUnitDanger extends BaseEntity<OwnerUnitDanger> {
 	private Long unitAreaId;
 
 	/**
+	 * 充电桩ID
+	 */
+	@TableField(typeHandler = LongListTypeHandler.class)
+	private List<Long> chargingPileId;
+
+	/**
+	 * 轮次
+	 */
+	private Integer rounds;
+
+	/**
 	 * 隐患ID
 	 */
 	private Long dangerId;
@@ -68,6 +81,11 @@ public class OwnerUnitDanger extends BaseEntity<OwnerUnitDanger> {
 	 * 检测表类型A/B/C
 	 */
 	private String formType;
+
+	/**
+	 * 检测表数据ID
+	 */
+	private Long formDataId;
 
 	/**
 	 * 隐患等级

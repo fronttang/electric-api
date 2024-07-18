@@ -27,6 +27,4 @@ public class OwnerUnitBuildingQuery extends PageQuery {
 
 	@ApiModelProperty("名称/地址")
 	private String keyword;
-
-	private Long workerId;
 }

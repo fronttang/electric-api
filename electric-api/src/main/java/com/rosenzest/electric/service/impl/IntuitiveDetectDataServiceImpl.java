@@ -11,6 +11,8 @@ import com.rosenzest.electric.mapper.IntuitiveDetectDataMapper;
 import com.rosenzest.electric.service.IIntuitiveDetectDataService;
 import com.rosenzest.model.base.service.ModelBaseServiceImpl;
 
+import cn.hutool.core.util.StrUtil;
+
 /**
  * <p>
  * 检测表内容 服务实现类
@@ -43,6 +45,18 @@ public class IntuitiveDetectDataServiceImpl extends ModelBaseServiceImpl<Intuiti
 		queryWrapper.eq(IntuitiveDetectData::getViewParentId, viewParentId);
 		queryWrapper.eq(IntuitiveDetectData::getUnitType, type.code());
 		queryWrapper.eq(IntuitiveDetectData::getView, "2");
+		queryWrapper.orderByAsc(IntuitiveDetectData::getWeights);
+		return this.baseMapper.selectList(queryWrapper);
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<IntuitiveDetectData> getByTemplateIdAndDetectModule(Long templateId, String module) {
+		LambdaQueryWrapper<IntuitiveDetectData> queryWrapper = new LambdaQueryWrapper<IntuitiveDetectData>();
+		queryWrapper.eq(IntuitiveDetectData::getTemplateId, templateId);
+		if (StrUtil.isNotBlank(module)) {
+			queryWrapper.eq(IntuitiveDetectData::getDetectModule, module);
+		}
 		queryWrapper.orderByAsc(IntuitiveDetectData::getWeights);
 		return this.baseMapper.selectList(queryWrapper);
 	}

@@ -4,14 +4,15 @@
 
 
 	<select id="queryInitialList" parameterType="com.rosenzest.electric.dto.OwnerUnitQuery" resultType="com.rosenzest.electric.vo.InitialOwnerUnitVo" >
-		select t.* from (select o.id, o.name, o.layers, o.address, o.high_risk_type, 
+		select t.* from (select o.id, o.name, o.layers, o.address, o.high_risk_type, o.rounds, o.detect_module,
 		o.district, o.street, o.community, o.hamlet, a.dict_label as district_name, b.dict_label as street_name, c.dict_label as community_name, d.dict_label as hamlet_name,
 		(select count(1) from owner_unit_area a where a.unit_id = o.id and a.type = '2') as doors, 
 		(select count(1) from ( select ua.id, (select count(1) from owner_unit_danger d where d.unit_area_id = ua.id) as dangers from owner_unit_area ua where ua.unit_id = o.id ) t where t.dangers>0) as households,
-		(select count(1) as dangers from owner_unit_danger ud1 where ud1.unit_id = o.id and ud1.status = 0 ) as rectifications,
-		(select count(1) as dangers from owner_unit_danger ud2 where ud2.unit_id = o.id and ud2.status = 1 ) as reexaminations,
-		(select count(1) as dangers from owner_unit_danger ud3 where ud3.unit_id = o.id and ud3.status = 2 ) as finishs,
-		(select count(1) from owner_unit_danger t where t.unit_id = o.id ) as dangers,
+		(select count(1) as dangers from owner_unit_danger ud1 where ud1.unit_id = o.id and ud1.status = 0 and ud1.rounds = o.rounds ) as rectifications,
+		(select count(1) as dangers from owner_unit_danger ud2 where ud2.unit_id = o.id and ud2.status = 1 and ud2.rounds = o.rounds ) as reexaminations,
+		(select count(1) as dangers from owner_unit_danger ud3 where ud3.unit_id = o.id and ud3.status = 2 and ud3.rounds = o.rounds ) as finishs,
+		(select count(1) as piles from charging_pile cp where cp.unit_id = o.id and cp.rounds = o.rounds ) as piles,
+		(select count(1) from owner_unit_danger t where t.unit_id = o.id and t.rounds = o.rounds ) as dangers,
 		o.project_id, CASE WHEN r.detect_status is null THEN 0 ELSE r.detect_status END as status 
 		
 		from owner_unit o left join owner_unit_report r on (r.unit_id = o.id and r.type = '1' )
@@ -72,11 +73,13 @@
 	</select>
 	
 	<select id="queryReviewList" parameterType="com.rosenzest.electric.dto.OwnerUnitReviewQuery" resultType="com.rosenzest.electric.vo.OwnerUnitReviewVo" >
-		select t.* from (select o.id, o.name, o.address, o.high_risk_type, o.district, o.street, o.community, o.hamlet, a.dict_label as district_name,b.dict_label as street_name,c.dict_label as community_name,d.dict_label as hamlet_name,
-		(select count(1) as dangers from owner_unit_danger ud1 where ud1.unit_id = o.id and ud1.status = 0 ) as rectifications,
-		(select count(1) as dangers from owner_unit_danger ud2 where ud2.unit_id = o.id and ud2.status = 1 ) as reexaminations,
-		(select count(1) as dangers from owner_unit_danger ud3 where ud3.unit_id = o.id and ud3.status = 2 ) as finishs,
-		(select count(1) from owner_unit_danger t where t.unit_id = o.id ) as dangers, 
+		select t.* from (select o.id, o.name, o.address, o.high_risk_type, o.rounds, o.detect_module,
+		o.district, o.street, o.community, o.hamlet, a.dict_label as district_name,b.dict_label as street_name,c.dict_label as community_name,d.dict_label as hamlet_name,
+		(select count(1) as dangers from owner_unit_danger ud1 where ud1.unit_id = o.id and ud1.status = 0 and ud1.rounds = o.rounds) as rectifications,
+		(select count(1) as dangers from owner_unit_danger ud2 where ud2.unit_id = o.id and ud2.status = 1 and ud2.rounds = o.rounds) as reexaminations,
+		(select count(1) as dangers from owner_unit_danger ud3 where ud3.unit_id = o.id and ud3.status = 2 and ud3.rounds = o.rounds) as finishs,
+		(select count(1) from owner_unit_danger t where t.unit_id = o.id and t.rounds = o.rounds ) as dangers, 
+		(select count(1) as piles from charging_pile cp where cp.unit_id = o.id and cp.rounds = o.rounds ) as piles,
 		CASE WHEN ur.detect_status is null THEN 0 ELSE ur.detect_status END as status,
 		o.project_id
 		from owner_unit o 

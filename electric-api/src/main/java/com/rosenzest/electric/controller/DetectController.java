@@ -25,6 +25,7 @@ import com.rosenzest.electric.service.IDetectTemplateBService;
 import com.rosenzest.electric.service.IIntuitiveDetectDangerService;
 import com.rosenzest.electric.service.IIntuitiveDetectDataService;
 import com.rosenzest.electric.service.IIntuitiveDetectService;
+import com.rosenzest.electric.service.IOwnerUnitDangerService;
 import com.rosenzest.electric.service.IOwnerUnitService;
 import com.rosenzest.electric.service.IProjectService;
 import com.rosenzest.electric.vo.DetectDataDangerVo;
@@ -58,6 +59,9 @@ public class DetectController extends ServerBaseController {
 
 	@Autowired
 	private IIntuitiveDetectDangerService detectDangerService;
+
+	@Autowired
+	private IOwnerUnitDangerService unitDangerService;
 
 	@ApiOperation(tags = "检测表", value = "检测表")
 	@GetMapping("/form")
@@ -96,7 +100,7 @@ public class DetectController extends ServerBaseController {
 		results.forEach((form) -> {
 
 			// 查询该表隐患数
-			Integer dangers = intuitiveDetectService.getFormDangers(form.getId(), unitId, unitAreaId, buildingId);
+			Integer dangers = unitDangerService.countFormDangers(form.getId(), unitId, unitAreaId, buildingId);
 			form.setDangers(dangers);
 
 			List<IntuitiveDetectData> detectDatas = detectDataService.getByDetectId(form.getId(), type);
@@ -149,8 +153,7 @@ public class DetectController extends ServerBaseController {
 
 			formBList.forEach((form) -> {
 				// 查询该表隐患数
-				Integer dangers = intuitiveDetectService.getFormbDangers(form.getCode(), unitId, unitAreaId,
-						buildingId);
+				Integer dangers = unitDangerService.countFormbDangers(form.getCode(), unitId, unitAreaId, buildingId);
 				form.setDangers(dangers);
 			});
 

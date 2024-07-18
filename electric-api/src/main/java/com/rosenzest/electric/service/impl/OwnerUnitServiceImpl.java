@@ -17,7 +17,6 @@ import com.rosenzest.electric.dto.OwnerUnitQuery;
 import com.rosenzest.electric.dto.OwnerUnitReviewQuery;
 import com.rosenzest.electric.entity.OwnerUnit;
 import com.rosenzest.electric.entity.OwnerUnitReport;
-import com.rosenzest.electric.entity.Project;
 import com.rosenzest.electric.enums.InitialInspectionStatus;
 import com.rosenzest.electric.enums.ReviewStatus;
 import com.rosenzest.electric.enums.UnitReportType;
@@ -75,13 +74,6 @@ public class OwnerUnitServiceImpl extends ModelBaseServiceImpl<OwnerUnitMapper, 
 
 		IRequestContext current = RequestContextHolder.getCurrent();
 		LoginUser loginUser = current.getLoginUser();
-
-		Project project = projectService.getById(data.getProjectId());
-		if (project != null) {
-			data.setProjectName(project.getName());
-			data.setDetectId(project.getDetectId());
-			data.setType(project.getType());
-		}
 
 		OwnerUnit unit = new OwnerUnit();
 		BeanUtils.copyProperties(data, unit);

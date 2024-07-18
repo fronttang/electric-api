@@ -47,7 +47,7 @@ import cn.hutool.core.util.StrUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
-@Api(tags = "业主单元(城中村/工业园)")
+@Api(tags = "业主单元")
 @RestController
 @RequestMapping("/unit")
 public class OwnerUnitController extends ServerBaseController {
@@ -67,7 +67,7 @@ public class OwnerUnitController extends ServerBaseController {
 	@Autowired
 	private IOwnerUnitDangerService ownerUnitDangerService;
 
-	@ApiOperation(tags = "业主单元(城中村/工业园)", value = "业主单元列表(初检)")
+	@ApiOperation(tags = "业主单元", value = "业主单元列表(初检)")
 	@PostMapping("/initial/list")
 	public ListResult<InitialOwnerUnitVo> list(@RequestBody @Valid OwnerUnitQuery query) {
 
@@ -92,7 +92,7 @@ public class OwnerUnitController extends ServerBaseController {
 		return ListResult.SUCCESS(pageList.getTotalNum(), unitList);
 	}
 
-	@ApiOperation(tags = "业主单元(城中村/工业园)", value = "设置初检状态")
+	@ApiOperation(tags = "业主单元", value = "设置初检状态")
 	@PostMapping("/setting")
 	public Result<?> setting(@RequestBody @Valid InitialOwnerUnitSettingDto data) {
 
@@ -103,10 +103,12 @@ public class OwnerUnitController extends ServerBaseController {
 			throw new BusinessException(400, "业主单元不存在");
 		}
 
-		// 工作人员权限检查
-		if (!projectWorkerService.checkWorkerAreaRole(ownerUnit, loginUser.getUserId(),
-				ProjectWorkerAreaRoleType.EDIT)) {
-			return Result.ERROR(400, "无操作权限");
+		if (!String.valueOf(loginUser.getUserId()).equalsIgnoreCase(ownerUnit.getCreateBy())) {
+			// 工作人员权限检查
+			if (!projectWorkerService.checkWorkerAreaRole(ownerUnit, loginUser.getUserId(),
+					ProjectWorkerAreaRoleType.EDIT)) {
+				return Result.ERROR(400, "无操作权限");
+			}
 		}
 
 		OwnerUnitReport report = ownerUnitReportService.getReportByUnitIdAndType(data.getId(), UnitReportType.INITIAL);
@@ -147,16 +149,22 @@ public class OwnerUnitController extends ServerBaseController {
 		}
 	}
 
-	@ApiOperation(tags = "业主单元(城中村/工业园)", value = "查询业主单元信息")
+	@ApiOperation(tags = "业主单元", value = "查询业主单元信息(城中村/工业园)")
 	@GetMapping("/{unitId}")
 	public Result<OwnerUnitVo> unitInfo(@PathVariable Long unitId) {
 
 		OwnerUnitVo ownerUnit = ownerUnitService.getOwnerUnitById(unitId);
 
-		return Result.SUCCESS(ownerUnit);
+		if (ownerUnit != null) {
+			if (ProjectType.URBAN_VILLAGE.code().equalsIgnoreCase(ownerUnit.getType())
+					|| ProjectType.INDUSTRIAL_AREA.code().equalsIgnoreCase(ownerUnit.getType())) {
+				return Result.SUCCESS(ownerUnit);
+			}
+		}
+		return Result.SUCCESS();
 	}
 
-	@ApiOperation(tags = "业主单元(城中村/工业园)", value = "添加/修改业主单元")
+	@ApiOperation(tags = "业主单元", value = "添加/修改业主单元(城中村/工业园)")
 	@PostMapping("")
 	public Result<OwnerUnitVo> saveUnit(@RequestBody @Valid OwnerUnitDto data) {
 
@@ -167,6 +175,11 @@ public class OwnerUnitController extends ServerBaseController {
 		Project project = projectService.getById(data.getProjectId());
 		if (project == null) {
 			return Result.ERROR(400, "无操作权限");
+		}
+
+		if (!ProjectType.URBAN_VILLAGE.code().equalsIgnoreCase(project.getType())
+				&& !ProjectType.INDUSTRIAL_AREA.code().equalsIgnoreCase(project.getType())) {
+			return Result.ERROR(400, "非城中村/工业园项目");
 		}
 
 		if (StrUtil.isBlank(unit.getDistrict())) {
@@ -187,6 +200,10 @@ public class OwnerUnitController extends ServerBaseController {
 			return Result.ERROR(400, "无操作权限");
 		}
 
+		data.setProjectName(project.getName());
+		data.setDetectId(project.getDetectId());
+		data.setType(project.getType());
+
 		if (ownerUnitService.saveOwnerUnit(data)) {
 			return this.unitInfo(data.getId());
 		} else {
@@ -194,7 +211,7 @@ public class OwnerUnitController extends ServerBaseController {
 		}
 	}
 
-	@ApiOperation(tags = "业主单元(城中村/工业园)", value = "删除业主单元")
+	@ApiOperation(tags = "业主单元", value = "删除业主单元")
 	@DeleteMapping("/{unitId}")
 	public Result<?> deleteUnit(@PathVariable Long unitId) {
 
@@ -213,6 +230,10 @@ public class OwnerUnitController extends ServerBaseController {
 		// 检查是否有隐患
 		if (ownerUnitDangerService.countByUnitId(unitId) > 0) {
 			return Result.ERROR(400, "请先删除隐患数据！");
+		}
+
+		if (ProjectType.CHARGING_STATION.code().equalsIgnoreCase(ownerUnit.getType())) {
+			// 充电站
 		}
 
 		if (ownerUnitService.removeById(unitId)) {

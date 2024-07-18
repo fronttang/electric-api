@@ -114,6 +114,13 @@ public class DetectDataVo {
 	 * 二级模块（高风险）
 	 */
 	private List<DetectDataVo> subDatas;
+
+	/**
+	 * 隐患数
+	 */
+	@ApiModelProperty("隐患数")
+	private Integer danger;
+
 	/**
 	 * 隐患数据列表
 	 */
