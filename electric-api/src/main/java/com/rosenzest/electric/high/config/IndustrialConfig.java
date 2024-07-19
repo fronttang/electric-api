@@ -1,31 +1,42 @@
-package com.rosenzest.electric.high.entity;
+package com.rosenzest.electric.high.config;
 
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 /**
  * <p>
- * 住宅小区
+ * 工业企业
  * </p>
  *
  * @author fronttang
- * @since 2024-07-11
+ * @since 2024-07-12
  */
 @Data
-@EqualsAndHashCode(callSuper = true)
-public class ResidentialConfig extends BaseHighConfigEntity<ResidentialConfig> {
-
-	private static final long serialVersionUID = 1L;
+public class IndustrialConfig {
 
 	/**
-	 * 4KgABC手提干粉灭火器数量
+	 * 是否属于消防安全重点单位1是0否
 	 */
-	private Integer fireExtinguisherQuantity;
+	private String fireSafetyUnit;
 
 	/**
-	 * 4KgABC手提干粉灭火器是否完好1是0否
+	 * 是否建立逐级消防安全责任制，明确单位消防安全管理人员
 	 */
-	private String fireExtinguisherStatus;
+	private String accountability;
+
+	/**
+	 * 是否制定符合本单位实际的消防安全制度1是0否
+	 */
+	private String fireSafetySystem;
+
+	/**
+	 * ABC干粉灭火器数量
+	 */
+	private Integer abcDpfeQuantity;
+
+	/**
+	 * ABC干粉灭火器是否完好1是0否
+	 */
+	private String abcDpfeStatus;
 
 	/**
 	 * 消防给水及消火栓系统有无1有0无
@@ -103,9 +114,39 @@ public class ResidentialConfig extends BaseHighConfigEntity<ResidentialConfig> {
 	private String electricalEquipment;
 
 	/**
-	 * 营业执照
+	 * 是否开展经常性消防安全宣传工作1是0否
 	 */
-	private String businessLicense;
+	private String safetyPromotion;
+
+	/**
+	 * 是否组织员工每半年至少开展一次消防培训1是0否
+	 */
+	private String fireTraining;
+
+	/**
+	 * 新上岗的员工是否开展岗前消防培训1是0否
+	 */
+	private String prejobFireTraining;
+
+	/**
+	 * 是否在人群密集场所区域内张贴通知1是0否
+	 */
+	private String postNotice;
+
+	/**
+	 * 用火、动火是否符合要求1是0否
+	 */
+	private String meetsEquirements;
+
+	/**
+	 * 是否每日开展防火巡查1是0否
+	 */
+	private String fireInspection;
+
+	/**
+	 * 是否制定灭火和应急疏散预案，并定期开展演练1是0否
+	 */
+	private String emergencyEvacuationPlan;
 
 	/**
 	 * 门头照

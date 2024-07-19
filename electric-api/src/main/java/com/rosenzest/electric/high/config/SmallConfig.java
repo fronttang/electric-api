@@ -1,31 +1,27 @@
-package com.rosenzest.electric.high.entity;
+package com.rosenzest.electric.high.config;
 
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 /**
  * <p>
- * 出租屋消防配置
+ * 三小场所
  * </p>
  *
  * @author fronttang
- * @since 2024-07-11
+ * @since 2024-07-12
  */
 @Data
-@EqualsAndHashCode(callSuper = true)
-public class RentalHouseConfig extends BaseHighConfigEntity<RentalHouseConfig> {
-
-	private static final long serialVersionUID = 1L;
+public class SmallConfig {
 
 	/**
-	 * 是否张贴电动自行车禁止入内标识
+	 * 签订安全承诺书1是0否
 	 */
-	private String isBicycles;
+	private String safetyCommitment;
 
 	/**
-	 * 是否张贴消防通道严禁堵塞标识
+	 * 张贴违规住人海报1是0否
 	 */
-	private String isFirePassages;
+	private String illegalResidence;
 
 	/**
 	 * ABC干粉灭火器数量
@@ -76,26 +72,6 @@ public class RentalHouseConfig extends BaseHighConfigEntity<RentalHouseConfig> {
 	 * 消防软管卷盘是否完好1是0否
 	 */
 	private String fireHoseReelsStatus;
-
-	/**
-	 * 室内消火栓系统有无1有0无
-	 */
-	private String hydrantSystemHas;
-
-	/**
-	 * 室内消火栓系统是否完好1是0否
-	 */
-	private String hydrantSystemStatus;
-
-	/**
-	 * 火灾自动报警系统有无1有0无
-	 */
-	private String alarmSystemHas;
-
-	/**
-	 * 火灾自动报警系统是否完好1是0否
-	 */
-	private String alarmSystemStatus;
 
 	/**
 	 * 防火分隔设施有无1有0无

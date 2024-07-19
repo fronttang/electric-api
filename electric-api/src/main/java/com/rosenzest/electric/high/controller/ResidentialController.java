@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.rosenzest.base.Result;
+import com.rosenzest.electric.high.config.ResidentialConfig;
 import com.rosenzest.electric.high.dto.UnitResidentialDto;
-import com.rosenzest.electric.high.entity.ResidentialConfig;
 import com.rosenzest.electric.high.service.IResidentialConfigService;
 import com.rosenzest.electric.high.vo.UnitResidentialVo;
 

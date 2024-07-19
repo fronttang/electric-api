@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.rosenzest.base.Result;
+import com.rosenzest.electric.high.config.SmallConfig;
 import com.rosenzest.electric.high.dto.UnitSmallDto;
-import com.rosenzest.electric.high.entity.SmallConfig;
 import com.rosenzest.electric.high.service.ISmallConfigService;
 import com.rosenzest.electric.high.vo.UnitSmallVo;
 

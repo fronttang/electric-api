@@ -3,9 +3,8 @@ package com.rosenzest.electric.high.service.impl;
 import org.springframework.stereotype.Service;
 
 import com.rosenzest.electric.enums.HighRiskType;
+import com.rosenzest.electric.high.config.SmallConfig;
 import com.rosenzest.electric.high.dto.UnitSmallDto;
-import com.rosenzest.electric.high.entity.SmallConfig;
-import com.rosenzest.electric.high.mapper.SmallConfigMapper;
 import com.rosenzest.electric.high.service.ISmallConfigService;
 import com.rosenzest.electric.high.vo.UnitSmallVo;
 
@@ -18,8 +17,7 @@ import com.rosenzest.electric.high.vo.UnitSmallVo;
  * @since 2024-07-12
  */
 @Service
-public class SmallConfigServiceImpl
-		extends BaseHighConfigServiceImpl<SmallConfigMapper, SmallConfig, UnitSmallDto, UnitSmallVo>
+public class SmallConfigServiceImpl extends BaseHighConfigServiceImpl<SmallConfig, UnitSmallDto, UnitSmallVo>
 		implements ISmallConfigService {
 
 	@Override

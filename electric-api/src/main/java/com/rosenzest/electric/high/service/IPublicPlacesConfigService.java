@@ -1,7 +1,7 @@
 package com.rosenzest.electric.high.service;
 
+import com.rosenzest.electric.high.config.PublicPlacesConfig;
 import com.rosenzest.electric.high.dto.UnitPublicPlacesDto;
-import com.rosenzest.electric.high.entity.PublicPlacesConfig;
 import com.rosenzest.electric.high.vo.UnitPublicPlacesVo;
 
 /**

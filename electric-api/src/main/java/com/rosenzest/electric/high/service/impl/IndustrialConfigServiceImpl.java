@@ -3,9 +3,8 @@ package com.rosenzest.electric.high.service.impl;
 import org.springframework.stereotype.Service;
 
 import com.rosenzest.electric.enums.HighRiskType;
+import com.rosenzest.electric.high.config.IndustrialConfig;
 import com.rosenzest.electric.high.dto.UnitIndustrialDto;
-import com.rosenzest.electric.high.entity.IndustrialConfig;
-import com.rosenzest.electric.high.mapper.IndustrialConfigMapper;
 import com.rosenzest.electric.high.service.IIndustrialConfigService;
 import com.rosenzest.electric.high.vo.UnitIndustrialVo;
 
@@ -19,7 +18,7 @@ import com.rosenzest.electric.high.vo.UnitIndustrialVo;
  */
 @Service
 public class IndustrialConfigServiceImpl
-		extends BaseHighConfigServiceImpl<IndustrialConfigMapper, IndustrialConfig, UnitIndustrialDto, UnitIndustrialVo>
+		extends BaseHighConfigServiceImpl<IndustrialConfig, UnitIndustrialDto, UnitIndustrialVo>
 		implements IIndustrialConfigService {
 
 	@Override

@@ -143,4 +143,28 @@ public class InitialOwnerUnitVo {
 	 */
 	@ApiModelProperty("检测模块，见数据字典：detect_module")
 	private String detectModule;
+
+	/**
+	 * 是否开启隐患通知单
+	 */
+	@ApiModelProperty("是否开启隐患通知单 0否 1是")
+	private String isDangerNotice = "0";
+
+	/**
+	 * 是否完成入户率
+	 */
+	@ApiModelProperty("是否完成/完成入户率 0否 1是")
+	private String isComplete = "0";
+
+	/**
+	 * 无法检测
+	 */
+	@ApiModelProperty("是否无法检测 0否 1是")
+	private String isTest;
+
+	/**
+	 * 无法检测原因
+	 */
+	@ApiModelProperty("无法检测原因")
+	private String isTestReason;
 }

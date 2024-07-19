@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.rosenzest.base.Result;
+import com.rosenzest.electric.high.config.ComplexConfig;
 import com.rosenzest.electric.high.dto.UnitComplexDto;
-import com.rosenzest.electric.high.entity.ComplexConfig;
 import com.rosenzest.electric.high.service.IComplexConfigService;
 import com.rosenzest.electric.high.vo.UnitComplexVo;
 
@@ -38,12 +38,14 @@ public class ComplexController extends BaseHighController<ComplexConfig, UnitCom
 	@ApiOperation(tags = "业主单元(高风险-大型综合体)", value = "添加/修改大型综合体")
 	@PostMapping("")
 	public Result<UnitComplexVo> saveComplex(@RequestBody @Valid UnitComplexDto data) throws Exception {
+
 		return super.save(data);
 	}
 
 	@ApiOperation(tags = "业主单元(高风险-大型综合体)", value = "查询大型综合体信息")
 	@GetMapping("/{unitId}")
 	public Result<UnitComplexVo> getComplex(@PathVariable Long unitId) throws Exception {
+
 		return super.getById(unitId);
 	}
 

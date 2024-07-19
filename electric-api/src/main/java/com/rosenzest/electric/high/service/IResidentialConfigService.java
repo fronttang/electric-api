@@ -1,7 +1,7 @@
 package com.rosenzest.electric.high.service;
 
+import com.rosenzest.electric.high.config.ResidentialConfig;
 import com.rosenzest.electric.high.dto.UnitResidentialDto;
-import com.rosenzest.electric.high.entity.ResidentialConfig;
 import com.rosenzest.electric.high.vo.UnitResidentialVo;
 
 /**

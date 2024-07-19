@@ -1,21 +1,17 @@
-package com.rosenzest.electric.high.entity;
+package com.rosenzest.electric.high.config;
 
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 /**
  * <p>
- * 大型综合体
+ * 公共场所
  * </p>
  *
  * @author fronttang
  * @since 2024-07-12
  */
 @Data
-@EqualsAndHashCode(callSuper = true)
-public class ComplexConfig extends BaseHighConfigEntity<ComplexConfig> {
-
-	private static final long serialVersionUID = 1L;
+public class PublicPlacesConfig {
 
 	/**
 	 * 是否属于消防安全重点单位1是0否

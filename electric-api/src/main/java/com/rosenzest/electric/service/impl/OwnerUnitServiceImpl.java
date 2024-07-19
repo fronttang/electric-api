@@ -24,7 +24,6 @@ import com.rosenzest.electric.mapper.OwnerUnitMapper;
 import com.rosenzest.electric.service.IOwnerUnitAreaService;
 import com.rosenzest.electric.service.IOwnerUnitReportService;
 import com.rosenzest.electric.service.IOwnerUnitService;
-import com.rosenzest.electric.service.IProjectService;
 import com.rosenzest.electric.vo.InitialOwnerUnitVo;
 import com.rosenzest.electric.vo.OwnerUnitReviewVo;
 import com.rosenzest.electric.vo.OwnerUnitVo;
@@ -43,9 +42,6 @@ import com.rosenzest.server.base.context.RequestContextHolder;
 @Service
 public class OwnerUnitServiceImpl extends ModelBaseServiceImpl<OwnerUnitMapper, OwnerUnit>
 		implements IOwnerUnitService {
-
-	@Autowired
-	private IProjectService projectService;
 
 	@Autowired
 	private IOwnerUnitReportService ownerUnitReportService;
@@ -89,31 +85,30 @@ public class OwnerUnitServiceImpl extends ModelBaseServiceImpl<OwnerUnitMapper, 
 		OwnerUnitReport report = ownerUnitReportService.getReportByUnitIdAndType(unit.getId(), UnitReportType.INITIAL);
 		if (report == null) {
 			report = new OwnerUnitReport();
+			report.setUnitId(unit.getId());
+			report.setType(UnitReportType.INITIAL.code());
+			report.setCode(data.getInitialTestNo());
+			report.setDetectData(new Date());
+			report.setDetectStatus(InitialInspectionStatus.CHECKING.code());
+			report.setInspector(loginUser.getName());
+			report.setInspectorId(loginUser.getUserId());
+			ownerUnitReportService.saveOrUpdate(report);
 		}
-		report.setUnitId(unit.getId());
-		report.setType(UnitReportType.INITIAL.code());
-		report.setCode(data.getInitialTestNo());
-		report.setDetectData(new Date());
-		report.setDetectStatus(InitialInspectionStatus.CHECKING.code());
-		report.setInspector(loginUser.getName());
-		report.setInspectorId(loginUser.getUserId());
 
 		// 复检报告
 		OwnerUnitReport againReport = ownerUnitReportService.getReportByUnitIdAndType(unit.getId(),
 				UnitReportType.REVIEW);
 		if (againReport == null) {
 			againReport = new OwnerUnitReport();
+			againReport.setUnitId(unit.getId());
+			againReport.setType(UnitReportType.REVIEW.code());
+			againReport.setCode(data.getAgainTestNo());
+			againReport.setDetectData(data.getAgainTestData());
+			againReport.setDetectStatus(ReviewStatus.RECTIFIED.code());
+			againReport.setInspector(loginUser.getName());
+			againReport.setInspectorId(loginUser.getUserId());
+			ownerUnitReportService.saveOrUpdate(againReport);
 		}
-		againReport.setUnitId(unit.getId());
-		againReport.setType(UnitReportType.REVIEW.code());
-		againReport.setCode(data.getAgainTestNo());
-		againReport.setDetectData(data.getAgainTestData());
-		againReport.setDetectStatus(ReviewStatus.RECTIFIED.code());
-		againReport.setInspector(loginUser.getName());
-		againReport.setInspectorId(loginUser.getUserId());
-
-		ownerUnitReportService.saveOrUpdate(againReport);
-		ownerUnitReportService.saveOrUpdate(report);
 
 		return true;
 	}

@@ -16,7 +16,7 @@ import com.rosenzest.electric.service.IProjectService;
 import com.rosenzest.electric.service.IProjectWorkerService;
 import com.rosenzest.server.base.controller.ServerBaseController;
 
-public abstract class BaseHighController<T, DTO extends BaseHighDto, VO> extends ServerBaseController {
+public abstract class BaseHighController<C, DTO extends BaseHighDto, VO> extends ServerBaseController {
 
 	@Autowired
 	private IProjectService projectService;
@@ -24,7 +24,7 @@ public abstract class BaseHighController<T, DTO extends BaseHighDto, VO> extends
 	@Autowired
 	private IProjectWorkerService projectWorkerService;
 
-	public abstract BaseHighConfigService<T, DTO, VO> getConfigService();
+	public abstract BaseHighConfigService<C, DTO, VO> getConfigService();
 
 	public Result<VO> save(DTO data) throws Exception {
 

@@ -1,9 +1,8 @@
 package com.rosenzest.electric.high.service;
 
 import com.rosenzest.electric.high.dto.BaseHighDto;
-import com.rosenzest.model.base.service.IModelBaseService;
 
-public interface BaseHighConfigService<T, DTO extends BaseHighDto, VO> extends IModelBaseService<T> {
+public interface BaseHighConfigService<C, DTO extends BaseHighDto, VO> extends IOwnerUnitConfigService {
 
 	boolean saveOwnerUnit(DTO data) throws Exception;
 

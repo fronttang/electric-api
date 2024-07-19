@@ -1,7 +1,7 @@
 package com.rosenzest.electric.high.service;
 
+import com.rosenzest.electric.high.config.IndustrialConfig;
 import com.rosenzest.electric.high.dto.UnitIndustrialDto;
-import com.rosenzest.electric.high.entity.IndustrialConfig;
 import com.rosenzest.electric.high.vo.UnitIndustrialVo;
 
 /**

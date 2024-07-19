@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.rosenzest.base.Result;
+import com.rosenzest.electric.high.config.PublicPlacesConfig;
 import com.rosenzest.electric.high.dto.UnitPublicPlacesDto;
-import com.rosenzest.electric.high.entity.PublicPlacesConfig;
 import com.rosenzest.electric.high.service.IPublicPlacesConfigService;
 import com.rosenzest.electric.high.vo.UnitPublicPlacesVo;
 

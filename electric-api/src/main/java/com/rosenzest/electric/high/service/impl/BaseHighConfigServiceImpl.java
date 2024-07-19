@@ -4,6 +4,7 @@ import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.alibaba.fastjson.JSONObject;
 import com.rosenzest.base.LoginUser;
 import com.rosenzest.base.exception.BusinessException;
 import com.rosenzest.base.util.BeanUtils;
@@ -15,19 +16,19 @@ import com.rosenzest.electric.enums.InitialInspectionStatus;
 import com.rosenzest.electric.enums.ReviewStatus;
 import com.rosenzest.electric.enums.UnitReportType;
 import com.rosenzest.electric.high.dto.BaseHighDto;
-import com.rosenzest.electric.high.entity.BaseHighConfigEntity;
+import com.rosenzest.electric.high.entity.OwnerUnitConfig;
 import com.rosenzest.electric.high.service.BaseHighConfigService;
 import com.rosenzest.electric.service.IOwnerUnitReportService;
 import com.rosenzest.electric.service.IOwnerUnitService;
 import com.rosenzest.electric.service.IProjectService;
-import com.rosenzest.model.base.mapper.ModelBaseMapper;
-import com.rosenzest.model.base.service.ModelBaseServiceImpl;
 import com.rosenzest.server.base.context.IRequestContext;
 import com.rosenzest.server.base.context.RequestContextHolder;
 
+import cn.hutool.core.bean.BeanUtil;
+
 @SuppressWarnings("unchecked")
-public abstract class BaseHighConfigServiceImpl<M extends ModelBaseMapper<T>, T extends BaseHighConfigEntity<T>, DTO extends BaseHighDto, VO>
-		extends ModelBaseServiceImpl<M, T> implements BaseHighConfigService<T, DTO, VO> {
+public abstract class BaseHighConfigServiceImpl<C, DTO extends BaseHighDto, VO> extends OwnerUnitConfigServiceImpl
+		implements BaseHighConfigService<C, DTO, VO> {
 
 	@Autowired
 	private IProjectService projectService;
@@ -40,21 +41,16 @@ public abstract class BaseHighConfigServiceImpl<M extends ModelBaseMapper<T>, T 
 
 	protected Class<VO> voClass = currentVoClass();
 
+	protected Class<C> configClass = currentConfigClass();
+
 	protected Class<VO> currentVoClass() {
 		// (Class<T>)ReflectionKit.getSuperClassGenericType(getClass(), 0);
-		return (Class<VO>) this.getResolvableType().as(BaseHighConfigServiceImpl.class).getGeneric(3).getType();
+		return (Class<VO>) this.getResolvableType().as(BaseHighConfigServiceImpl.class).getGeneric(2).getType();
 	}
 
-	@Override
-	protected Class<T> currentMapperClass() {
+	protected Class<C> currentConfigClass() {
 		// (Class<T>)ReflectionKit.getSuperClassGenericType(getClass(), 0);
-		return (Class<T>) this.getResolvableType().as(BaseHighConfigServiceImpl.class).getGeneric(0).getType();
-	}
-
-	@Override
-	protected Class<T> currentModelClass() {
-		// (Class<T>)ReflectionKit.getSuperClassGenericType(getClass(), 1);
-		return (Class<T>) this.getResolvableType().as(BaseHighConfigServiceImpl.class).getGeneric(1).getType();
+		return (Class<C>) this.getResolvableType().as(BaseHighConfigServiceImpl.class).getGeneric(0).getType();
 	}
 
 	protected abstract HighRiskType getHighRiskType();
@@ -84,45 +80,50 @@ public abstract class BaseHighConfigServiceImpl<M extends ModelBaseMapper<T>, T 
 		ownerUnitService.saveOrUpdate(unit);
 		data.setId(unit.getId());
 
-		T config = this.getById(unit.getId());
-		if (config == null) {
-			config = this.entityClass.newInstance();
+		OwnerUnitConfig unitConfig = super.getById(unit.getId());
+		if (unitConfig == null) {
+			unitConfig = new OwnerUnitConfig();
+			unitConfig.setUnitId(unit.getId());
+			unitConfig.setCreateBy(String.valueOf(loginUser.getUserId()));
 		}
 
+		C config = configClass.newInstance();
 		BeanUtils.copyProperties(data, config);
-		config.setUnitId(unit.getId());
-		this.saveOrUpdate(config);
+
+		JSONObject bean = BeanUtil.toBean(config, JSONObject.class);
+		unitConfig.setConfig(bean);
+		this.saveOrUpdate(unitConfig);
 
 		// 初检报告
 		OwnerUnitReport report = ownerUnitReportService.getReportByUnitIdAndType(unit.getId(), UnitReportType.INITIAL);
 		if (report == null) {
 			report = new OwnerUnitReport();
+			report.setUnitId(unit.getId());
+			report.setType(UnitReportType.INITIAL.code());
+			// report.setCode(data.getInitialTestNo());
+			report.setDetectData(new Date());
+			report.setDetectStatus(InitialInspectionStatus.CHECKING.code());
+			report.setInspector(loginUser.getName());
+			report.setInspectorId(loginUser.getUserId());
+
+			ownerUnitReportService.saveOrUpdate(report);
 		}
-		report.setUnitId(unit.getId());
-		report.setType(UnitReportType.INITIAL.code());
-		// report.setCode(data.getInitialTestNo());
-		report.setDetectData(new Date());
-		report.setDetectStatus(InitialInspectionStatus.CHECKING.code());
-		report.setInspector(loginUser.getName());
-		report.setInspectorId(loginUser.getUserId());
 
 		// 复检报告
 		OwnerUnitReport againReport = ownerUnitReportService.getReportByUnitIdAndType(unit.getId(),
 				UnitReportType.REVIEW);
 		if (againReport == null) {
 			againReport = new OwnerUnitReport();
+			againReport.setUnitId(unit.getId());
+			againReport.setType(UnitReportType.REVIEW.code());
+			// againReport.setCode(data.getAgainTestNo());
+			// againReport.setDetectData(data.getAgainTestData());
+			againReport.setDetectStatus(ReviewStatus.RECTIFIED.code());
+			againReport.setInspector(loginUser.getName());
+			againReport.setInspectorId(loginUser.getUserId());
+
+			ownerUnitReportService.saveOrUpdate(againReport);
 		}
-		againReport.setUnitId(unit.getId());
-		againReport.setType(UnitReportType.REVIEW.code());
-		// againReport.setCode(data.getAgainTestNo());
-		// againReport.setDetectData(data.getAgainTestData());
-		againReport.setDetectStatus(ReviewStatus.RECTIFIED.code());
-		againReport.setInspector(loginUser.getName());
-		againReport.setInspectorId(loginUser.getUserId());
-
-		ownerUnitReportService.saveOrUpdate(againReport);
-		ownerUnitReportService.saveOrUpdate(report);
-
 		return true;
 	}
 
@@ -141,9 +142,11 @@ public abstract class BaseHighConfigServiceImpl<M extends ModelBaseMapper<T>, T 
 			BeanUtils.copyProperties(ownerUnit, vo);
 		}
 
-		T config = this.getById(unitId);
+		OwnerUnitConfig config = super.getById(unitId);
 		if (config != null) {
-			BeanUtils.copyProperties(config, vo);
+			JSONObject jsonConfig = config.getConfig();
+			C bean = jsonConfig.toJavaObject(configClass);
+			BeanUtils.copyProperties(bean, vo);
 		}
 
 		return vo;
