@@ -79,7 +79,7 @@ public class FormB13 {
 	private ABCData bc;
 
 	@Data
-	public class ABCData {
+	public static class ABCData {
 
 		/**
 		 * 绝缘电阻值（MΩ）

@@ -94,7 +94,7 @@ public class FormB1 {
 	 * 单相检测
 	 */
 	@Data
-	public class SinglePhase {
+	public static class SinglePhase {
 		/**
 		 * L
 		 */
@@ -112,7 +112,7 @@ public class FormB1 {
 	 * 三相检测
 	 */
 	@Data
-	public class ThreePhase {
+	public static class ThreePhase {
 
 		/**
 		 * A
@@ -146,7 +146,7 @@ public class FormB1 {
 	}
 
 	@Data
-	public class ABNCLData {
+	public static class ABNCLData {
 
 		/**
 		 * 电源侧温度（℃）
@@ -172,7 +172,7 @@ public class FormB1 {
 	 * 电压（V）
 	 */
 	@Data
-	public class VoltageData {
+	public static class VoltageData {
 
 		/**
 		 * A-B

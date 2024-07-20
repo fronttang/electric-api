@@ -22,7 +22,7 @@ public class FormB14 {
 	 * 报警时间检测
 	 */
 	@Data
-	public class AlarmTime {
+	public static class AlarmTime {
 		/**
 		 * 检测地点
 		 */
@@ -55,7 +55,7 @@ public class FormB14 {
 	}
 
 	@Data
-	public class ResidualCurrent {
+	public static class ResidualCurrent {
 		/**
 		 * 检测地点
 		 */

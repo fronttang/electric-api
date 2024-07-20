@@ -23,6 +23,9 @@ import com.rosenzest.electric.enums.InitialInspectionStatus;
 import com.rosenzest.electric.enums.ProjectType;
 import com.rosenzest.electric.enums.ProjectWorkerAreaRoleType;
 import com.rosenzest.electric.enums.UnitReportType;
+import com.rosenzest.electric.high.dto.MissDeviceDataDto.RentalHouseType1;
+import com.rosenzest.electric.high.dto.MissDeviceDataDto.RentalHouseType2;
+import com.rosenzest.electric.high.dto.MissDeviceDataDto.Small;
 import com.rosenzest.electric.high.dto.OwnerUnitMissDeviceDto;
 import com.rosenzest.electric.high.entity.OwnerUnitMissDevice;
 import com.rosenzest.electric.high.service.IOwnerUnitMissDeviceService;
@@ -146,6 +149,27 @@ public class OwnerUnitMissDeviceController extends ServerBaseController {
 			return Result.SUCCESS();
 		}
 		return Result.ERROR();
+	}
+
+	@ApiOperation(tags = "高风险-缺失设备", value = "出租屋楼层设备数据结构")
+	@PostMapping("/rentalHouseType1")
+	public Result<RentalHouseType1> rentalHouseType1(@RequestBody RentalHouseType1 data) {
+
+		return Result.SUCCESS();
+	}
+
+	@ApiOperation(tags = "高风险-缺失设备", value = "出租屋楼栋设备数据结构")
+	@PostMapping("/rentalHouseType2")
+	public Result<RentalHouseType2> rentalHouseType2(@RequestBody RentalHouseType2 data) {
+
+		return Result.SUCCESS();
+	}
+
+	@ApiOperation(tags = "高风险-缺失设备", value = "三小场所缺失设备数据结构")
+	@PostMapping("/small")
+	public Result<Small> small(@RequestBody Small data) {
+
+		return Result.SUCCESS();
 	}
 
 }
