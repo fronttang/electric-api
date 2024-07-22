@@ -1,6 +1,6 @@
 system: 
   # 文件路径 示例（ Windows配置D:/ruoyi/uploadPath，Linux配置 /home/ruoyi/uploadPath）
-  profile: /Users/fronttang/api-workspace/electric/electric-api
+  profile: /Users/fronttang/develop/dat
 
 server:
   port: 8083

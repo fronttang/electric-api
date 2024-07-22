@@ -1,5 +1,6 @@
 system: 
   profile: /dat/upload
+  domain: http://129.211.210.175:8083
 
 #端口號
 server:

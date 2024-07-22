@@ -89,4 +89,34 @@ public class OwnerUnitReport extends BaseEntity<OwnerUnitReport> {
 	 */
 	private String status;
 
+	/**
+	 * 驳回状态1是0否
+	 */
+	private String reject;
+
+	/**
+	 * 制式WORD报告
+	 */
+	private String wordFile;
+
+	/**
+	 * 制式WORD报告版本号
+	 */
+	private Integer wordFileVersion;
+
+	/**
+	 * 归档PDF报告地址
+	 */
+	private String archivedPdf;
+
+	/**
+	 * 归档WORD报告地址
+	 */
+	private String archivedWord;
+
+	/**
+	 * 归档WORD报告版本号
+	 */
+	private Integer archivedWordVersion;
+
 }

@@ -17,6 +17,11 @@ public class SystemProperties {
 	 */
 	private static String profile = "/dat/upload";
 
+	/**
+	 * 访问地址
+	 */
+	private String domain;
+
 	public static String getProfile() {
 		return profile;
 	}
