@@ -1,5 +1,7 @@
 package com.rosenzest.electric.station.entity;
 
+import java.util.Date;
+
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.rosenzest.model.base.entity.BaseEntity;
@@ -71,5 +73,10 @@ public class ChargingPile extends BaseEntity<ChargingPile> {
 	 * 出厂编号
 	 */
 	private String serialNumber;
+
+	/**
+	 * 生产日期
+	 */
+	private Date productionDate;
 
 }

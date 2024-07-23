@@ -108,7 +108,9 @@ public class ChargingPileController extends ServerBaseController {
 		}
 
 		if (chargingPileService.saveOrUpdate(chargingPile)) {
-			return Result.SUCCESS();
+			ChargingPileVo vo = new ChargingPileVo();
+			BeanUtils.copyProperties(chargingPile, vo);
+			return Result.SUCCESS(vo);
 		} else {
 			return Result.ERROR();
 		}

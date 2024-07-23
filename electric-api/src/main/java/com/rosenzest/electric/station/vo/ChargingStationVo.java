@@ -52,6 +52,11 @@ public class ChargingStationVo {
 	private Long projectId;
 
 	/**
+	 * 轮次
+	 */
+	private Integer rounds;
+
+	/**
 	 * 项目名称
 	 */
 	// private String projectName;

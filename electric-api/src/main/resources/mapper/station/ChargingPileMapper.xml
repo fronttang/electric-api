@@ -3,11 +3,11 @@
 <mapper namespace="com.rosenzest.electric.station.mapper.ChargingPileMapper">
 
 	<select id="queryList" parameterType="com.rosenzest.electric.station.dto.ChargingPileQuery" resultType="com.rosenzest.electric.station.vo.ChargingPileVo">
-		select p.id, p.unit_id, p.name, p.code, p.type, p.brand, p.model, p.power, p.serial_number, p.rounds,
+		select p.id, p.unit_id, p.name, p.code, p.type, p.brand, p.model, p.power, p.serial_number, p.rounds, p.production_date,
 		(select count(1) from owner_unit_danger ud where ud.unit_id = p.unit_id and p.id member of(ud.charging_pile_id)) as dangers,
-		(select count(1) as dangers from owner_unit_danger ud1 where ud1.unit_id = P.unit_id and p.id member of(ud1.charging_pile_id) and ud1.status = 0 ) as rectifications,
-		(select count(1) as dangers from owner_unit_danger ud2 where ud2.unit_id = P.unit_id and p.id member of(ud2.charging_pile_id) and ud2.status = 1 ) as reexaminations,
-		(select count(1) as dangers from owner_unit_danger ud3 where ud3.unit_id = P.unit_id and p.id member of(ud3.charging_pile_id) and ud3.status = 2 ) as finishs 
+		(select count(1) as dangers from owner_unit_danger ud1 where ud1.unit_id = p.unit_id and p.id member of(ud1.charging_pile_id) and ud1.status = 0 ) as rectifications,
+		(select count(1) as dangers from owner_unit_danger ud2 where ud2.unit_id = p.unit_id and p.id member of(ud2.charging_pile_id) and ud2.status = 1 ) as reexaminations,
+		(select count(1) as dangers from owner_unit_danger ud3 where ud3.unit_id = p.unit_id and p.id member of(ud3.charging_pile_id) and ud3.status = 2 ) as finishs 
 		from charging_pile p where p.unit_id = #{unitId} and p.rounds = #{rounds}
 		<if test="type != null and type != ''">
 			and p.type = #{type}

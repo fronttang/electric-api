@@ -1,6 +1,10 @@
 package com.rosenzest.electric.station.dto;
 
+import java.util.Date;
+
 import javax.validation.constraints.NotNull;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -32,7 +36,8 @@ public class ChargingPileDto {
 	/**
 	 * 名称
 	 */
-	@ApiModelProperty("名称")
+	@NotNull(message = "充电桩名称不能为空")
+	@ApiModelProperty(value = "名称", required = true)
 	private String name;
 
 	/**
@@ -70,5 +75,12 @@ public class ChargingPileDto {
 	 */
 	@ApiModelProperty("出厂编号")
 	private String serialNumber;
+
+	/**
+	 * 生产日期
+	 */
+	@ApiModelProperty("生产日期")
+	@JsonFormat(pattern = "yyyy-MM-dd")
+	private Date productionDate;
 
 }

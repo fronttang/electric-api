@@ -1,6 +1,10 @@
 package com.rosenzest.electric.station.vo;
 
+import java.util.Date;
+
 import javax.validation.constraints.NotNull;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -100,5 +104,12 @@ public class ChargingPileVo {
 	 */
 	@ApiModelProperty("完成数")
 	private Integer finishs;
+
+	/**
+	 * 生产日期
+	 */
+	@ApiModelProperty("生产日期")
+	@JsonFormat(pattern = "yyyy-MM-dd")
+	private Date productionDate;
 
 }
