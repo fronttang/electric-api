@@ -106,6 +106,12 @@ public class FormB1 {
 		 */
 		@ApiModelProperty("N")
 		private ABNCLData N;
+
+		/**
+		 * 电压（V）LN
+		 */
+		@ApiModelProperty("电压（V）LN")
+		private String ln;
 	}
 
 	/**
