@@ -24,11 +24,15 @@ public class IntuitiveDetectServiceImpl extends ModelBaseServiceImpl<IntuitiveDe
 		implements IIntuitiveDetectService {
 
 	@Override
-	public List<IntuitiveDetect> getIntuitiveDetectByTemplateId(Long templateId, HighRiskType type) {
+	public List<IntuitiveDetect> getIntuitiveDetectByTemplateId(Long templateId, String attribution,
+			HighRiskType type) {
 		LambdaQueryWrapper<IntuitiveDetect> queryWrapper = new LambdaQueryWrapper<IntuitiveDetect>();
 		queryWrapper.eq(IntuitiveDetect::getTemplateId, templateId);
 		if (type != null) {
 			queryWrapper.eq(IntuitiveDetect::getUnitType, type.code());
+		}
+		if (attribution != null) {
+			queryWrapper.apply(" {0} member of(attribution) ", attribution);
 		}
 		return this.baseMapper.selectList(queryWrapper);
 	}

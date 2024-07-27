@@ -16,6 +16,6 @@ import com.rosenzest.model.base.service.IModelBaseService;
  */
 public interface IIntuitiveDetectService extends IModelBaseService<IntuitiveDetect> {
 
-	List<IntuitiveDetect> getIntuitiveDetectByTemplateId(Long templateId, HighRiskType type);
+	List<IntuitiveDetect> getIntuitiveDetectByTemplateId(Long templateId, String attribution, HighRiskType type);
 
 }

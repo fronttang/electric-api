@@ -144,7 +144,7 @@ public class CodeGenerator {
 		strategy.setSuperEntityColumns("SEQ_NO", "CRE_TLR", "CRE_DTE", "CRE_BR", "CRE_BK", "UPD_TLR", "UPD_DTE",
 				"UPD_BR", "UPD_BK", "CREATE_TIME", "CREATE_BY", "UPDATE_TIME", "UPDATE_BY");
 		// strategy.setInclude(scanner("表名，多个英文逗号分割").split(","));
-		strategy.setInclude("charging_pile");
+		strategy.setInclude("intuitive_detect");
 		// strategy.setTablePrefix("xm_");
 		strategy.setControllerMappingHyphenStyle(true);
 		// strategy.setTablePrefix(pc.getModuleName() + "_");

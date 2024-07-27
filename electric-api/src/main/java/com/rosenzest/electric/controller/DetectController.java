@@ -18,6 +18,8 @@ import com.rosenzest.electric.entity.IntuitiveDetect;
 import com.rosenzest.electric.entity.IntuitiveDetectDanger;
 import com.rosenzest.electric.entity.IntuitiveDetectData;
 import com.rosenzest.electric.entity.OwnerUnit;
+import com.rosenzest.electric.entity.OwnerUnitArea;
+import com.rosenzest.electric.entity.OwnerUnitBuilding;
 import com.rosenzest.electric.entity.Project;
 import com.rosenzest.electric.enums.HighRiskType;
 import com.rosenzest.electric.enums.ProjectType;
@@ -25,6 +27,8 @@ import com.rosenzest.electric.service.IDetectTemplateBService;
 import com.rosenzest.electric.service.IIntuitiveDetectDangerService;
 import com.rosenzest.electric.service.IIntuitiveDetectDataService;
 import com.rosenzest.electric.service.IIntuitiveDetectService;
+import com.rosenzest.electric.service.IOwnerUnitAreaService;
+import com.rosenzest.electric.service.IOwnerUnitBuildingService;
 import com.rosenzest.electric.service.IOwnerUnitDangerService;
 import com.rosenzest.electric.service.IOwnerUnitService;
 import com.rosenzest.electric.service.IProjectService;
@@ -63,6 +67,12 @@ public class DetectController extends ServerBaseController {
 	@Autowired
 	private IOwnerUnitDangerService unitDangerService;
 
+	@Autowired
+	private IOwnerUnitAreaService ownerUnitAreaService;
+
+	@Autowired
+	private IOwnerUnitBuildingService ownerUnitBuildingService;
+
 	@ApiOperation(tags = "检测表", value = "检测表")
 	@GetMapping("/form")
 	public Result<List<DetectFormVo>> formList(@RequestParam(value = "unitId") Long unitId,
@@ -80,6 +90,23 @@ public class DetectController extends ServerBaseController {
 			return Result.SUCCESS();
 		}
 
+		String attribution = null;
+
+		if (unitAreaId != null) {
+			OwnerUnitArea area = ownerUnitAreaService.getById(unitAreaId);
+			if (area != null) {
+				attribution = area.getType();
+			}
+		}
+
+		if (buildingId != null) {
+			OwnerUnitBuilding building = ownerUnitBuildingService.getById(buildingId);
+			// 配电房
+			if (building != null && "1".equalsIgnoreCase(building.getType())) {
+				attribution = "3";
+			}
+		}
+
 		boolean isHighRisk = ProjectType.HIGH_RISK.code().equalsIgnoreCase(project.getType());
 
 		final HighRiskType type = isHighRisk ? EnumUtils.init(HighRiskType.class).fromCode(ownerUnit.getHighRiskType())
@@ -91,7 +118,8 @@ public class DetectController extends ServerBaseController {
 		List<DetectFormVo> results = new ArrayList<DetectFormVo>();
 
 		// 直观检测表 A类 C类
-		List<IntuitiveDetect> intuitiveDetect = intuitiveDetectService.getIntuitiveDetectByTemplateId(templateId, type);
+		List<IntuitiveDetect> intuitiveDetect = intuitiveDetectService.getIntuitiveDetectByTemplateId(templateId,
+				attribution, type);
 
 		if (CollUtil.isNotEmpty(intuitiveDetect)) {
 			results.addAll(BeanUtils.copyList(intuitiveDetect, DetectFormVo.class));
@@ -149,7 +177,7 @@ public class DetectController extends ServerBaseController {
 		if (!isHighRisk) {
 			// 仪器检测 B类表
 
-			List<DetectFormVo> formBList = templateBService.getTableBByTemplateId(templateId, "1");
+			List<DetectFormVo> formBList = templateBService.getTableBByTemplateId(templateId, "1" + attribution);
 
 			formBList.forEach((form) -> {
 				// 查询该表隐患数
@@ -190,7 +218,7 @@ public class DetectController extends ServerBaseController {
 		List<DetectFormVo> results = new ArrayList<DetectFormVo>();
 
 		// 直观检测表 A类 C类
-		List<IntuitiveDetect> intuitiveDetect = intuitiveDetectService.getIntuitiveDetectByTemplateId(templateId,
+		List<IntuitiveDetect> intuitiveDetect = intuitiveDetectService.getIntuitiveDetectByTemplateId(templateId, null,
 				highRiskType);
 
 		if (CollUtil.isNotEmpty(intuitiveDetect)) {

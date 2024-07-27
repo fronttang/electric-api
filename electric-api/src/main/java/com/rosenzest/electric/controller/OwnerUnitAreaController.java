@@ -144,7 +144,11 @@ public class OwnerUnitAreaController extends ServerBaseController {
 		}
 
 		if (ownerUnitAreaService.saveOrUpdate(entity)) {
-			return Result.SUCCESS(entity);
+
+			OwnerUnitAreaVo vo = new OwnerUnitAreaVo();
+			BeanUtils.copyProperties(entity, vo);
+
+			return Result.SUCCESS(vo);
 		} else {
 			return Result.ERROR();
 		}
