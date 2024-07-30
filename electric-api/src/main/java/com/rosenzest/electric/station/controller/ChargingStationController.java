@@ -25,6 +25,7 @@ import com.rosenzest.electric.station.service.IChargingStationService;
 import com.rosenzest.electric.station.vo.ChargingStationVo;
 import com.rosenzest.server.base.controller.ServerBaseController;
 
+import cn.hutool.core.util.StrUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
@@ -64,6 +65,10 @@ public class ChargingStationController extends ServerBaseController {
 		// 工作人员权限检查
 		if (!projectWorkerService.checkWorkerAreaRole(unit, loginUser.getUserId(), ProjectWorkerAreaRoleType.EDIT)) {
 			return Result.ERROR(400, "无操作权限");
+		}
+
+		if (ownerUnitService.checkOwnerUnitName(unit)) {
+			return Result.ERROR(400, StrUtil.format("该项目区域下已存在名为[{}]的充电场站", unit.getName()));
 		}
 
 		if (stationUnitService.saveChargingStation(data)) {

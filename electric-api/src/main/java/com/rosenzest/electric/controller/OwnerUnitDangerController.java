@@ -26,19 +26,15 @@ import com.rosenzest.electric.entity.OwnerUnit;
 import com.rosenzest.electric.entity.OwnerUnitArea;
 import com.rosenzest.electric.entity.OwnerUnitBuilding;
 import com.rosenzest.electric.entity.OwnerUnitDanger;
-import com.rosenzest.electric.entity.OwnerUnitReport;
 import com.rosenzest.electric.enums.DetectFormB;
 import com.rosenzest.electric.enums.IndustrialAreaBuildingType;
-import com.rosenzest.electric.enums.InitialInspectionStatus;
 import com.rosenzest.electric.enums.ProjectType;
 import com.rosenzest.electric.enums.ProjectWorkerAreaRoleType;
 import com.rosenzest.electric.enums.ReviewStatus;
-import com.rosenzest.electric.enums.UnitReportType;
 import com.rosenzest.electric.service.IIntuitiveDetectDangerService;
 import com.rosenzest.electric.service.IOwnerUnitAreaService;
 import com.rosenzest.electric.service.IOwnerUnitBuildingService;
 import com.rosenzest.electric.service.IOwnerUnitDangerService;
-import com.rosenzest.electric.service.IOwnerUnitReportService;
 import com.rosenzest.electric.service.IOwnerUnitService;
 import com.rosenzest.electric.service.IProjectWorkerService;
 import com.rosenzest.electric.vo.OwnerUnitDangerVo;
@@ -62,8 +58,8 @@ public class OwnerUnitDangerController extends ServerBaseController {
 	@Autowired
 	private IProjectWorkerService projectWorkerService;
 
-	@Autowired
-	private IOwnerUnitReportService unitReportService;
+	// @Autowired
+	// private IOwnerUnitReportService unitReportService;
 
 	@Autowired
 	private IOwnerUnitDangerService unitDangerService;
@@ -102,9 +98,9 @@ public class OwnerUnitDangerController extends ServerBaseController {
 				}
 			}
 
-			if (ReviewStatus.FINISH.code().equalsIgnoreCase(dbDanger.getStatus())) {
-				return Result.ERROR(400, "隐患已整改完成");
-			}
+//			if (ReviewStatus.FINISH.code().equalsIgnoreCase(dbDanger.getStatus())) {
+//				return Result.ERROR(400, "隐患已整改完成");
+//			}
 
 			// 非自己数据才需要判断编辑权限
 			if (!String.valueOf(loginUser.getUserId()).equalsIgnoreCase(dbDanger.getCreateBy())) {
@@ -149,9 +145,9 @@ public class OwnerUnitDangerController extends ServerBaseController {
 				}
 			}
 
-			if (building != null && InitialInspectionStatus.FINISH.code().equalsIgnoreCase(building.getStatus())) {
-				return Result.ERROR(400, "楼栋已完成初检");
-			}
+//			if (building != null && InitialInspectionStatus.FINISH.code().equalsIgnoreCase(building.getStatus())) {
+//				return Result.ERROR(400, "楼栋已完成初检");
+//			}
 		}
 
 		if ("B".equalsIgnoreCase(danger.getFormType())) {
@@ -170,10 +166,10 @@ public class OwnerUnitDangerController extends ServerBaseController {
 			}
 		}
 		// 检测业主单元报告状态
-		OwnerUnitReport report = unitReportService.getReportByUnitIdAndType(danger.getUnitId(), UnitReportType.INITIAL);
-		if (report != null && InitialInspectionStatus.FINISH.code().equalsIgnoreCase(report.getDetectStatus())) {
-			return Result.ERROR(400, "已完成初检");
-		}
+//		OwnerUnitReport report = unitReportService.getReportByUnitIdAndType(danger.getUnitId(), UnitReportType.INITIAL);
+//		if (report != null && InitialInspectionStatus.FINISH.code().equalsIgnoreCase(report.getDetectStatus())) {
+//			return Result.ERROR(400, "已完成初检");
+//		}
 
 		if (danger.getDangerId() != null) {
 			IntuitiveDetectDanger detectDanger = detectDangerService.getById(danger.getDangerId());
@@ -242,18 +238,18 @@ public class OwnerUnitDangerController extends ServerBaseController {
 		}
 
 		// 检测业主单元报告状态
-		OwnerUnitReport report = unitReportService.getReportByUnitIdAndType(danger.getUnitId(), UnitReportType.INITIAL);
-		if (report != null && InitialInspectionStatus.FINISH.code().equalsIgnoreCase(report.getDetectStatus())) {
-			return Result.ERROR(400, "业主单元已完成初检");
-		}
+//		OwnerUnitReport report = unitReportService.getReportByUnitIdAndType(danger.getUnitId(), UnitReportType.INITIAL);
+//		if (report != null && InitialInspectionStatus.FINISH.code().equalsIgnoreCase(report.getDetectStatus())) {
+//			return Result.ERROR(400, "业主单元已完成初检");
+//		}
 
-		if (danger.getBuildingId() != null) {
-			OwnerUnitBuilding building = unitBuildingService.getById(danger.getBuildingId());
-
-			if (building != null && InitialInspectionStatus.FINISH.code().equalsIgnoreCase(building.getStatus())) {
-				return Result.ERROR(400, "楼栋已完成初检");
-			}
-		}
+//		if (danger.getBuildingId() != null) {
+//			OwnerUnitBuilding building = unitBuildingService.getById(danger.getBuildingId());
+//
+//			if (building != null && InitialInspectionStatus.FINISH.code().equalsIgnoreCase(building.getStatus())) {
+//				return Result.ERROR(400, "楼栋已完成初检");
+//			}
+//		}
 
 		if (unitDangerService.removeDanger(danger)) {
 			return Result.SUCCESS();

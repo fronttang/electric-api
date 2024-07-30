@@ -25,6 +25,7 @@ import com.rosenzest.electric.service.IProjectWorkerAreaService;
 import com.rosenzest.electric.service.IProjectWorkerService;
 import com.rosenzest.electric.vo.ProjectAreaVo;
 import com.rosenzest.electric.vo.ProjectVo;
+import com.rosenzest.server.base.annotation.TokenRule;
 import com.rosenzest.server.base.controller.ServerBaseController;
 
 import cn.hutool.core.collection.CollUtil;
@@ -132,6 +133,7 @@ public class ProjectController extends ServerBaseController {
 		return Result.SUCCESS(result);
 	}
 
+	@TokenRule(project = false)
 	@ApiOperation(tags = "项目", value = "用户项目列表")
 	@GetMapping("/list")
 	public Result<List<ProjectVo>> projectList() {

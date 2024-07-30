@@ -4,6 +4,7 @@
 package com.rosenzest.server.base.interceptor;
 
 import java.lang.reflect.Method;
+import java.util.Objects;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -39,78 +40,89 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class SecurityInterceptor extends HandlerInterceptorAdapter {
 
-    @Autowired
-    private TokenProperties tokenProperties;
+	@Autowired
+	private TokenProperties tokenProperties;
 
-    @Resource
-    private AuthService authService;
+	@Resource
+	private AuthService authService;
 
-    @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
-        throws Exception {
-        try {
+	@Override
+	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
+			throws Exception {
+		try {
 
-            // 不处理静态资源请求
-            if (handler instanceof ResourceHttpRequestHandler) {
-                return true;
-            }
+			// 不处理静态资源请求
+			if (handler instanceof ResourceHttpRequestHandler) {
+				return true;
+			}
 
-            HandlerMethod handlerMethod = (HandlerMethod)handler;
-            Method method = handlerMethod.getMethod();
+			HandlerMethod handlerMethod = (HandlerMethod) handler;
+			Method method = handlerMethod.getMethod();
 
-            TokenRule tokenRole = AnnotationUtils.findAnnotationAndDeclaringAnnotation(method, TokenRule.class);
+			TokenRule tokenRole = AnnotationUtils.findAnnotationAndDeclaringAnnotation(method, TokenRule.class);
 
-            // 不是必须就是跳过token
-            if (tokenRole != null && !tokenRole.required()) {
-                return true;
-            }
+			// 是否必须选择项目
+			boolean projectRequired = true;
+			// 不是必须就是跳过token
+			if (tokenRole != null && !tokenRole.required()) {
+				return true;
+			}
 
-            String token = authService.getTokenFromRequestHeader(request);
-            if (StringUtils.isNotBlank(token)) {
+			if (tokenRole != null) {
+				projectRequired = tokenRole.project();
+			}
 
-                // token加密是否开启
-                if (TokenSM.SM_ON.equals(tokenProperties.getSm().getSts())) {
-                    token = checkSecurity(request, token, tokenRole);
-                }
+			String token = authService.getTokenFromRequestHeader(request);
+			if (StringUtils.isNotBlank(token)) {
 
-                // 不需要验证登录信息
-                if (tokenRole != null && !tokenRole.login()) {
-                    return true;
-                }
+				// token加密是否开启
+				if (TokenSM.SM_ON.equals(tokenProperties.getSm().getSts())) {
+					token = checkSecurity(request, token, tokenRole);
+				}
 
-                LoginUser loginUser = authService.getLoginUserByToken(token);
-                if (loginUser == null) {
-                    throw new BusinessException(ResultCodeConstants.UNAUTHOZIED, "无效用户信息");
-                }
+				// 不需要验证登录信息
+				if (tokenRole != null && !tokenRole.login()) {
+					return true;
+				}
 
-                // 将token信息存储到request中，供后续接口调用
-                request.setAttribute(SystemConstants.REQUEST_TOKEN, token);
+				LoginUser loginUser = authService.getLoginUserByToken(token);
+				if (loginUser == null) {
+					throw new BusinessException(ResultCodeConstants.UNAUTHOZIED, "无效用户信息");
+				}
 
-                // 将用户信息存储到request中，供后续接口调用
-                request.setAttribute(SystemConstants.REQUEST_USER, JSON.toJSONString(loginUser));
+				// 必须选择项目
+				if (projectRequired && Objects.isNull(loginUser.getProjectId())) {
+					throw new BusinessException(ResultCodeConstants.FORBIDDEN, "请先选择项目");
+				}
 
-                // 将用户信息放在线程上下文中
-                IRequestContext current = RequestContextHolder.getCurrent();
-                RequestContextHolder requestContext = (RequestContextHolder)current;
-                requestContext.setUser(loginUser);
+				// 将token信息存储到request中，供后续接口调用
+				request.setAttribute(SystemConstants.REQUEST_TOKEN, token);
 
-                log.info("用户信息:{}", JSON.toJSONString(loginUser));
+				// 将用户信息存储到request中，供后续接口调用
+				request.setAttribute(SystemConstants.REQUEST_USER, JSON.toJSONString(loginUser));
 
-            } else {
-                throw new BusinessException(ResultCodeConstants.UNAUTHOZIED, "无token信息");
-            }
-            return super.preHandle(request, response, handler);
-        } catch (BusinessException e) {
-            throw e;
-        } catch (Exception e) {
-            log.error("", e);
-            throw new BusinessException(ResultCodeConstants.UNAUTHOZIED, "无token信息");
-        }
-    }
+				// 将用户信息放在线程上下文中
+				IRequestContext current = RequestContextHolder.getCurrent();
+				RequestContextHolder requestContext = (RequestContextHolder) current;
+				requestContext.setUser(loginUser);
 
-    private String checkSecurity(HttpServletRequest request, String token, TokenRule tokenRole) {
+				log.info("用户信息:{}", JSON.toJSONString(loginUser));
 
-        // 如果非必须加密则直接返回token
+			} else {
+				throw new BusinessException(ResultCodeConstants.UNAUTHOZIED, "无token信息");
+			}
+			return super.preHandle(request, response, handler);
+		} catch (BusinessException e) {
+			throw e;
+		} catch (Exception e) {
+			log.error("", e);
+			throw new BusinessException(ResultCodeConstants.UNAUTHOZIED, "无token信息");
+		}
+	}
+
+	private String checkSecurity(HttpServletRequest request, String token, TokenRule tokenRole) {
+
+		// 如果非必须加密则直接返回token
 //        if (tokenRole != null && !tokenRole.security()) {
 //            return token;
 //        }
@@ -138,8 +150,8 @@ public class SecurityInterceptor extends HandlerInterceptorAdapter {
 //        }
 //        // 获取jwt token值
 //        token = jsonObject.getString(tokenProperties.getHeader());
-        return token;
-    }
+		return token;
+	}
 
 //    private SM2 initSm2() throws Exception {
 //        return SmUtil.sm2(getPrivateKey(), null);

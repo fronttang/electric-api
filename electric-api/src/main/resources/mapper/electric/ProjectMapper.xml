@@ -6,4 +6,10 @@
 		select id, name, type, detect_id, detect_name, household_rate, template_id from project p 
 		where  exists (select project_id from project_worker w where w.project_id = p.id and w.user_id = #{userId} and w.bind_type = '1' )
 	</select>
+	
+	<select id="getProjectByWorkerIdAndProjectId" resultType="com.rosenzest.electric.entity.Project">
+		select id, name, type, detect_id, detect_name, household_rate, template_id from project p 
+		where p.id = #{projectId} and exists (select project_id from project_worker w where w.project_id = p.id and w.user_id = #{userId} and w.bind_type = '1' )
+	</select>
+	
 </mapper>

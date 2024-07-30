@@ -1,7 +1,5 @@
 package com.rosenzest.electric.dto;
 
-import javax.validation.constraints.NotNull;
-
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -17,7 +15,7 @@ import lombok.ToString;
 public class OwnerUnitQuery extends PageQuery {
 
 	@ApiModelProperty(value = "项目ID", required = true)
-	@NotNull(message = "项目ID不能为空")
+	// @NotNull(message = "项目ID不能为空")
 	private Long projectId;
 
 	@ApiModelProperty("类型,见字典:project_type")

@@ -6,11 +6,11 @@ import org.springframework.stereotype.Service;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.rosenzest.base.LoginUser;
-import com.rosenzest.base.constant.SystemConstants;
 import com.rosenzest.base.enums.TerminalType;
 import com.rosenzest.base.exception.BusinessException;
 import com.rosenzest.base.util.BeanUtils;
 import com.rosenzest.base.util.RedisUtil;
+import com.rosenzest.base.util.SnowFlakeUtil;
 import com.rosenzest.electric.constant.ElectricErrorCode;
 import com.rosenzest.electric.dto.LoginDto;
 import com.rosenzest.electric.entity.DetectUnit;
@@ -105,8 +105,13 @@ public class SysUserServiceImpl extends ModelBaseServiceImpl<SysUserMapper, SysU
 			terminalType = TerminalType.APP;
 		}
 
-		Long userId = user.getUserId();
-		String tokenKey = CacheKeyBuilder.getCustTokenKey(terminalType.code(), userId);
+		// Long userId = user.getUserId();
+
+		// 用户登录标识
+		// 20240730 可重复登录
+		String uuid = SnowFlakeUtil.uniqueString();
+
+		String tokenKey = CacheKeyBuilder.getCustTokenKey(terminalType.code(), uuid);
 
 		// 构建TOKEN
 		LoginUser payload = new LoginUser();
@@ -116,11 +121,13 @@ public class SysUserServiceImpl extends ModelBaseServiceImpl<SysUserMapper, SysU
 		payload.setTerminal(terminalType.code());
 		payload.setDetectId(user.getDetectId());
 		payload.setName(user.getNickName());
+		payload.setUuid(uuid);
 		String token = JwtTokenUtil.generateToken(payload);
 
 		// 用户token及用户信息缓存
 		RedisUtil.set(tokenKey, token, tokenProperties.getExpire());
-		RedisUtil.set(CacheKeyBuilder.getCustInfoKey(userId), payload, SystemConstants.ONE_DAY_OF_SECONDS);
+		// RedisUtil.set(CacheKeyBuilder.getCustInfoKey(userId), payload,
+		// SystemConstants.ONE_DAY_OF_SECONDS);
 
 		return token;
 	}

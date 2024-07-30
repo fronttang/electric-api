@@ -1,6 +1,8 @@
 package com.rosenzest.electric.controller;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,11 +13,16 @@ import org.springframework.web.bind.annotation.RestController;
 import com.rosenzest.base.LoginUser;
 import com.rosenzest.base.Result;
 import com.rosenzest.base.util.BeanUtils;
+import com.rosenzest.electric.dto.BrandDto;
 import com.rosenzest.electric.entity.DetectDevice;
+import com.rosenzest.electric.entity.SysDictData;
 import com.rosenzest.electric.service.IDetectDeviceService;
+import com.rosenzest.electric.service.ISysDictDataService;
 import com.rosenzest.electric.vo.DeviceVo;
+import com.rosenzest.server.base.annotation.TokenRule;
 import com.rosenzest.server.base.controller.ServerBaseController;
 
+import cn.hutool.core.collection.CollUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -37,11 +44,15 @@ public class DetectUnitController extends ServerBaseController {
 	@Autowired
 	private IDetectDeviceService detectDeviceService;
 
+	@Autowired
+	private ISysDictDataService dictDataService;
+
 	/**
 	 * 检测单位所有检测仪器
 	 * 
 	 * @return
 	 */
+	@TokenRule(project = false)
 	@ApiOperation(tags = "检测单位", value = "检测仪器查询")
 	@ApiImplicitParams({ @ApiImplicitParam(name = "type", required = false, value = "仪器类型,见字典:detect_device_type") })
 	@GetMapping("/device/list")
@@ -56,6 +67,30 @@ public class DetectUnitController extends ServerBaseController {
 		List<DeviceVo> devices = BeanUtils.copyList(detectDevices, DeviceVo.class);
 
 		return Result.SUCCESS(devices);
+	}
+
+	@ApiOperation(tags = "检测单位", value = "生产厂家/品牌列表")
+	@GetMapping("/brand/list")
+	public Result<List<BrandDto>> listBrand() {
+		LoginUser loginUser = getLoginUser();
+		Long detectId = loginUser.getDetectId();
+		if (detectId == null) {
+			return Result.SUCCESS();
+		}
+
+		List<SysDictData> brandDict = dictDataService.getBrandDict(detectId);
+
+		List<BrandDto> result = new ArrayList<BrandDto>();
+
+		if (CollUtil.isNotEmpty(brandDict)) {
+			result = brandDict.stream().map((data) -> {
+				BrandDto brand = new BrandDto();
+				brand.setId(data.getDictValue());
+				brand.setName(data.getDictLabel());
+				return brand;
+			}).collect(Collectors.toList());
+		}
+		return Result.SUCCESS(result);
 	}
 
 }

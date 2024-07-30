@@ -2,6 +2,8 @@ package com.rosenzest.electric.mapper;
 
 import java.util.List;
 
+import org.apache.ibatis.annotations.Param;
+
 import com.rosenzest.electric.entity.Project;
 import com.rosenzest.model.base.mapper.ModelBaseMapper;
 
@@ -16,5 +18,7 @@ import com.rosenzest.model.base.mapper.ModelBaseMapper;
 public interface ProjectMapper extends ModelBaseMapper<Project> {
 
 	List<Project> getProjectByWorkerId(Long userId);
+
+	Project getProjectByWorkerIdAndProjectId(@Param("userId") Long userId, @Param("projectId") Long projectId);
 
 }

@@ -28,7 +28,6 @@ import com.rosenzest.electric.entity.Project;
 import com.rosenzest.electric.entity.ProjectWorker;
 import com.rosenzest.electric.enums.ProjectWorkerAreaRoleType;
 import com.rosenzest.electric.enums.ProjectWorkerType;
-import com.rosenzest.electric.enums.ReviewStatus;
 import com.rosenzest.electric.service.IOwnerUnitDangerLogService;
 import com.rosenzest.electric.service.IOwnerUnitDangerService;
 import com.rosenzest.electric.service.IOwnerUnitService;
@@ -97,9 +96,9 @@ public class OwnerUnitReviewController extends ServerBaseController {
 			return Result.ERROR();
 		}
 
-		if (ReviewStatus.FINISH.code().equalsIgnoreCase(danger.getStatus())) {
-			return Result.SUCCESS();
-		}
+//		if (ReviewStatus.FINISH.code().equalsIgnoreCase(danger.getStatus())) {
+//			return Result.SUCCESS();
+//		}
 
 		OwnerUnit ownerUnit = ownerUnitService.getById(danger.getUnitId());
 		if (ownerUnit == null) {
@@ -130,9 +129,9 @@ public class OwnerUnitReviewController extends ServerBaseController {
 			return Result.ERROR();
 		}
 
-		if (ReviewStatus.FINISH.code().equalsIgnoreCase(danger.getStatus())) {
-			return Result.SUCCESS();
-		}
+//		if (ReviewStatus.FINISH.code().equalsIgnoreCase(danger.getStatus())) {
+//			return Result.SUCCESS();
+//		}
 
 		OwnerUnit ownerUnit = ownerUnitService.getById(danger.getUnitId());
 		if (ownerUnit == null) {

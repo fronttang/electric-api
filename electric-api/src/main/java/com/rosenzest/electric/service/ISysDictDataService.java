@@ -17,7 +17,16 @@ public interface ISysDictDataService extends IModelBaseService<SysDictData> {
 
 	/**
 	 * 业务字典数据列表
+	 * 
 	 * @return
 	 */
-	List<SysDictData> getBusinessDictData() ;
+	List<SysDictData> getBusinessDictData();
+
+	/**
+	 * 品牌厂家字典
+	 * 
+	 * @param detectId
+	 * @return
+	 */
+	List<SysDictData> getBrandDict(Long detectId);
 }

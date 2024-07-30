@@ -17,14 +17,18 @@ public interface IProjectService extends IModelBaseService<Project> {
 
 	/**
 	 * 根据检测单位查询项目列表
+	 * 
 	 * @return
 	 */
 	List<Project> getProjectByDetectId(Long detectId);
 
 	/**
 	 * 根据工作人员查询项目
+	 * 
 	 * @param userId
 	 * @return
 	 */
 	List<Project> getProjectByWorkerId(Long userId);
+
+	Project getProjectByWorkerId(Long userId, Long projectId);
 }

@@ -64,7 +64,10 @@ public class WebOfficeController extends ServerBaseController {
 		String docName = "初检报告";
 		String fileName = null;
 
-		if ("2".equalsIgnoreCase(type)) {
+		if ("3".equalsIgnoreCase(type)) {
+			docName = "归档Pdf报告";
+			fileName = report.getArchivedPdf();
+		} else if ("2".equalsIgnoreCase(type)) {
 			docName = "归档Word报告";
 			fileName = report.getArchivedWord();
 		} else {
@@ -99,6 +102,8 @@ public class WebOfficeController extends ServerBaseController {
 		vo.setVersion(Objects.nonNull(report.getWordFileVersion()) ? report.getWordFileVersion() : 1);
 		if ("2".equalsIgnoreCase(type)) {
 			vo.setVersion(Objects.nonNull(report.getArchivedWordVersion()) ? report.getArchivedWordVersion() : 1);
+		} else if ("3".equalsIgnoreCase(type)) {
+			vo.setVersion(1);
 		}
 		vo.setSize(file.length());
 
@@ -126,6 +131,8 @@ public class WebOfficeController extends ServerBaseController {
 
 		if ("2".equalsIgnoreCase(type)) {
 			fileName = report.getArchivedWord();
+		} else if ("3".equalsIgnoreCase(type)) {
+			fileName = report.getArchivedPdf();
 		}
 
 		if (StrUtil.isBlank(fileName)) {
@@ -203,6 +210,8 @@ public class WebOfficeController extends ServerBaseController {
 			docName = "归档Word报告";
 			fileName = report.getArchivedWord();
 			version = Objects.nonNull(report.getArchivedWordVersion()) ? report.getArchivedWordVersion() + 1 : 1;
+		} else if ("3".equalsIgnoreCase(type)) {
+			return Result.SUCCESS();
 		}
 
 		if (StrUtil.isBlank(fileName)) {
@@ -226,6 +235,8 @@ public class WebOfficeController extends ServerBaseController {
 		update.setArchivedWord(fileName);
 		if ("2".equalsIgnoreCase(type)) {
 			update.setArchivedWordVersion(version);
+		} else if ("3".equalsIgnoreCase(type)) {
+			return Result.SUCCESS();
 		} else {
 			update.setWordFileVersion(version);
 		}

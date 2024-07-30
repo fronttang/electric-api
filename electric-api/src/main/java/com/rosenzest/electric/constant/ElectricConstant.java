@@ -69,4 +69,9 @@ public final class ElectricConstant {
 	 * 资源映射路径 前缀
 	 */
 	public static final String RESOURCE_PREFIX = "/profile";
+
+	/**
+	 * 品牌厂家字典类型
+	 */
+	public static final String BRAND_DICT_TYPE = "brand_dict";
 }

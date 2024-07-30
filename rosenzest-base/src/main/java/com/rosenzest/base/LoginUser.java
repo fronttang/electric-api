@@ -39,4 +39,9 @@ public class LoginUser extends JwtPayLoad {
 	 */
 	private Long detectId;
 
+	/**
+	 * 项目ID
+	 */
+	private Long projectId;
+
 }

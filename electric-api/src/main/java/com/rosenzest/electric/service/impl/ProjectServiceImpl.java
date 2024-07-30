@@ -33,4 +33,9 @@ public class ProjectServiceImpl extends ModelBaseServiceImpl<ProjectMapper, Proj
 		return this.baseMapper.getProjectByWorkerId(userId);
 	}
 
+	@Override
+	public Project getProjectByWorkerId(Long userId, Long projectId) {
+		return this.baseMapper.getProjectByWorkerIdAndProjectId(userId, projectId);
+	}
+
 }

@@ -17,33 +17,43 @@ import com.rosenzest.server.base.service.AuthService;
  */
 public class ServerBaseController {
 
-    @Autowired
-    protected AuthService authService;
+	@Autowired
+	protected AuthService authService;
 
-    /**
-     * 获取登录用户信息
-     * 
-     * @return
-     */
-    protected LoginUser getLoginUser() {
+	/**
+	 * 获取登录用户信息
+	 * 
+	 * @return
+	 */
+	protected LoginUser getLoginUser() {
 
-        IRequestContext current = RequestContextHolder.getCurrent();
-        LoginUser loginUser = current.getLoginUser();
-        if (loginUser == null) {
-            // 如果loginUser为空，则显示未授权
-            throw new BusinessException(ResultEnum.UNAUTHOZIED);
-        }
-        return loginUser;
-    }
+		IRequestContext current = RequestContextHolder.getCurrent();
+		LoginUser loginUser = current.getLoginUser();
+		if (loginUser == null) {
+			// 如果loginUser为空，则显示未授权
+			throw new BusinessException(ResultEnum.UNAUTHOZIED);
+		}
+		return loginUser;
+	}
 
-    /**
-     * 获取登录的客户号
-     * 
-     * @return
-     */
-    protected Long getUserId() {
-        LoginUser loginUser = getLoginUser();
-        return loginUser.getUserId();
-    }
+	/**
+	 * 获取登录的客户号
+	 * 
+	 * @return
+	 */
+	protected Long getUserId() {
+		LoginUser loginUser = getLoginUser();
+		return loginUser.getUserId();
+	}
+
+	protected Long getProjectId() {
+		LoginUser loginUser = getLoginUser();
+		return loginUser.getProjectId();
+	}
+
+	protected Long getDetectId() {
+		LoginUser loginUser = getLoginUser();
+		return loginUser.getDetectId();
+	}
 
 }

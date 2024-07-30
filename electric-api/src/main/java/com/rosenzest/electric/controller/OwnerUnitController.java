@@ -71,6 +71,8 @@ public class OwnerUnitController extends ServerBaseController {
 	@PostMapping("/initial/list")
 	public ListResult<InitialOwnerUnitVo> list(@RequestBody @Valid OwnerUnitQuery query) {
 
+		query.setProjectId(getProjectId());
+
 		List<InitialOwnerUnitVo> unitList = new ArrayList<InitialOwnerUnitVo>();
 		Project project = projectService.getById(query.getProjectId());
 		if (project == null) {
@@ -113,9 +115,11 @@ public class OwnerUnitController extends ServerBaseController {
 
 		OwnerUnitReport report = ownerUnitReportService.getReportByUnitIdAndType(data.getId(), UnitReportType.INITIAL);
 
-		if (report != null && InitialInspectionStatus.FINISH.code().equalsIgnoreCase(report.getDetectStatus())) {
-			return Result.ERROR(400, "已初检完成");
-		}
+		// if (report != null &&
+		// InitialInspectionStatus.FINISH.code().equalsIgnoreCase(report.getDetectStatus()))
+		// {
+		// return Result.ERROR(400, "已初检完成");
+		// }
 
 		if (report == null) {
 			report = new OwnerUnitReport();
@@ -169,6 +173,9 @@ public class OwnerUnitController extends ServerBaseController {
 	public Result<OwnerUnitVo> saveUnit(@RequestBody @Valid OwnerUnitDto data) {
 
 		LoginUser loginUser = getLoginUser();
+
+		data.setProjectId(loginUser.getProjectId());
+
 		OwnerUnit unit = new OwnerUnit();
 		BeanUtils.copyProperties(data, unit);
 
@@ -198,6 +205,10 @@ public class OwnerUnitController extends ServerBaseController {
 		// 工作人员权限检查
 		if (!projectWorkerService.checkWorkerAreaRole(unit, loginUser.getUserId(), ProjectWorkerAreaRoleType.EDIT)) {
 			return Result.ERROR(400, "无操作权限");
+		}
+
+		if (ownerUnitService.checkOwnerUnitName(unit)) {
+			return Result.ERROR(400, StrUtil.format("该项目区域下已存在名为[{}]的业主单元", unit.getName()));
 		}
 
 		data.setProjectName(project.getName());

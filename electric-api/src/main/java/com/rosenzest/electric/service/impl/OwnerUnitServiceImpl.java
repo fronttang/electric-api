@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.rosenzest.base.LoginUser;
@@ -30,6 +31,8 @@ import com.rosenzest.electric.vo.OwnerUnitVo;
 import com.rosenzest.model.base.service.ModelBaseServiceImpl;
 import com.rosenzest.server.base.context.IRequestContext;
 import com.rosenzest.server.base.context.RequestContextHolder;
+
+import cn.hutool.core.util.StrUtil;
 
 /**
  * <p>
@@ -135,6 +138,28 @@ public class OwnerUnitServiceImpl extends ModelBaseServiceImpl<OwnerUnitMapper, 
 		// 删除config
 
 		return this.removeById(unitId);
+	}
+
+	@Override
+	public boolean checkOwnerUnitName(OwnerUnit unit) {
+		LambdaQueryWrapper<OwnerUnit> queryWrapper = new LambdaQueryWrapper<OwnerUnit>();
+		queryWrapper.eq(OwnerUnit::getProjectId, unit.getProjectId());
+		queryWrapper.eq(OwnerUnit::getName, unit.getName());
+		queryWrapper.eq(OwnerUnit::getDistrict, unit.getDistrict());
+		queryWrapper.eq(OwnerUnit::getStreet, unit.getStreet());
+		if (StrUtil.isNotBlank(unit.getUnitType())) {
+			queryWrapper.eq(OwnerUnit::getUnitType, unit.getUnitType());
+		}
+		if (StrUtil.isNotBlank(unit.getCommunity())) {
+			queryWrapper.eq(OwnerUnit::getCommunity, unit.getCommunity());
+		}
+		if (StrUtil.isNotBlank(unit.getHamlet())) {
+			queryWrapper.eq(OwnerUnit::getHamlet, unit.getHamlet());
+		}
+		if (unit.getId() != null) {
+			queryWrapper.ne(OwnerUnit::getId, unit.getId());
+		}
+		return this.count(queryWrapper) > 0;
 	}
 
 }

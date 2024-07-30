@@ -12,14 +12,20 @@ import com.rosenzest.electric.enums.ProjectType;
 import com.rosenzest.electric.enums.ProjectWorkerAreaRoleType;
 import com.rosenzest.electric.high.dto.BaseHighDto;
 import com.rosenzest.electric.high.service.BaseHighConfigService;
+import com.rosenzest.electric.service.IOwnerUnitService;
 import com.rosenzest.electric.service.IProjectService;
 import com.rosenzest.electric.service.IProjectWorkerService;
 import com.rosenzest.server.base.controller.ServerBaseController;
+
+import cn.hutool.core.util.StrUtil;
 
 public abstract class BaseHighController<C, DTO extends BaseHighDto, VO> extends ServerBaseController {
 
 	@Autowired
 	private IProjectService projectService;
+
+	@Autowired
+	private IOwnerUnitService ownerUnitService;
 
 	@Autowired
 	private IProjectWorkerService projectWorkerService;
@@ -40,6 +46,10 @@ public abstract class BaseHighController<C, DTO extends BaseHighDto, VO> extends
 		// 工作人员权限检查
 		if (!projectWorkerService.checkWorkerAreaRole(unit, loginUser.getUserId(), ProjectWorkerAreaRoleType.EDIT)) {
 			return Result.ERROR(400, "无操作权限");
+		}
+
+		if (ownerUnitService.checkOwnerUnitName(unit)) {
+			return Result.ERROR(400, StrUtil.format("该项目区域下已存在名为[{}]的业主单元", unit.getName()));
 		}
 
 		if (getConfigService().saveOwnerUnit(data)) {

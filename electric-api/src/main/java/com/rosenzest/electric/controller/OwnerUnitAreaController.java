@@ -22,16 +22,12 @@ import com.rosenzest.electric.dto.OwnerUnitAreaQuery;
 import com.rosenzest.electric.entity.OwnerUnit;
 import com.rosenzest.electric.entity.OwnerUnitArea;
 import com.rosenzest.electric.entity.OwnerUnitBuilding;
-import com.rosenzest.electric.entity.OwnerUnitReport;
 import com.rosenzest.electric.enums.IndustrialAreaBuildingType;
-import com.rosenzest.electric.enums.InitialInspectionStatus;
 import com.rosenzest.electric.enums.ProjectType;
 import com.rosenzest.electric.enums.ProjectWorkerAreaRoleType;
-import com.rosenzest.electric.enums.UnitReportType;
 import com.rosenzest.electric.service.IOwnerUnitAreaService;
 import com.rosenzest.electric.service.IOwnerUnitBuildingService;
 import com.rosenzest.electric.service.IOwnerUnitDangerService;
-import com.rosenzest.electric.service.IOwnerUnitReportService;
 import com.rosenzest.electric.service.IOwnerUnitService;
 import com.rosenzest.electric.service.IProjectWorkerService;
 import com.rosenzest.electric.vo.OwnerUnitAreaVo;
@@ -60,8 +56,8 @@ public class OwnerUnitAreaController extends ServerBaseController {
 	@Autowired
 	private IOwnerUnitBuildingService unitBuildingService;
 
-	@Autowired
-	private IOwnerUnitReportService unitReportService;
+	// @Autowired
+	// private IOwnerUnitReportService unitReportService;
 
 	@ApiOperation(tags = "公共区域/户(城中村/工业园)", value = "公共区域/户列表")
 	@PostMapping("list")
@@ -120,21 +116,23 @@ public class OwnerUnitAreaController extends ServerBaseController {
 				}
 			}
 
-			if (InitialInspectionStatus.FINISH.code().equalsIgnoreCase(building.getStatus())) {
-				return Result.ERROR(400, "楼栋已完成初检");
-			}
+			// if
+			// (InitialInspectionStatus.FINISH.code().equalsIgnoreCase(building.getStatus()))
+			// {
+			// return Result.ERROR(400, "楼栋已完成初检");
+			// }
 
 			if (IndustrialAreaBuildingType.POWER_ROOM.code().equalsIgnoreCase(building.getType())) {
 				return Result.ERROR(400, "配电房无需添加公共区域或户");
 			}
 		}
 
-		OwnerUnitReport unitReport = unitReportService.getReportByUnitIdAndType(ownerUnit.getId(),
-				UnitReportType.INITIAL);
-		if (unitReport != null
-				&& InitialInspectionStatus.FINISH.code().equalsIgnoreCase(unitReport.getDetectStatus())) {
-			return Result.ERROR(400, "业主单元已完成初检");
-		}
+//		OwnerUnitReport unitReport = unitReportService.getReportByUnitIdAndType(ownerUnit.getId(),
+//				UnitReportType.INITIAL);
+//		if (unitReport != null
+//				&& InitialInspectionStatus.FINISH.code().equalsIgnoreCase(unitReport.getDetectStatus())) {
+//			return Result.ERROR(400, "业主单元已完成初检");
+//		}
 
 		OwnerUnitArea entity = new OwnerUnitArea();
 		BeanUtils.copyProperties(data, entity);
@@ -177,21 +175,21 @@ public class OwnerUnitAreaController extends ServerBaseController {
 			}
 		}
 
-		if (unitArea.getBuildingId() != null) {
-
-			OwnerUnitBuilding building = unitBuildingService.getById(unitArea.getBuildingId());
-
-			if (building != null && InitialInspectionStatus.FINISH.code().equalsIgnoreCase(building.getStatus())) {
-				return Result.ERROR(400, "楼栋已完成初检");
-			}
-		}
-
-		OwnerUnitReport unitReport = unitReportService.getReportByUnitIdAndType(ownerUnit.getId(),
-				UnitReportType.INITIAL);
-		if (unitReport != null
-				&& InitialInspectionStatus.FINISH.code().equalsIgnoreCase(unitReport.getDetectStatus())) {
-			return Result.ERROR(400, "业主单元已完成初检");
-		}
+//		if (unitArea.getBuildingId() != null) {
+//
+//			OwnerUnitBuilding building = unitBuildingService.getById(unitArea.getBuildingId());
+//
+//			if (building != null && InitialInspectionStatus.FINISH.code().equalsIgnoreCase(building.getStatus())) {
+//				return Result.ERROR(400, "楼栋已完成初检");
+//			}
+//		}
+//
+//		OwnerUnitReport unitReport = unitReportService.getReportByUnitIdAndType(ownerUnit.getId(),
+//				UnitReportType.INITIAL);
+//		if (unitReport != null
+//				&& InitialInspectionStatus.FINISH.code().equalsIgnoreCase(unitReport.getDetectStatus())) {
+//			return Result.ERROR(400, "业主单元已完成初检");
+//		}
 
 		// 检查是否有隐患数据
 		Integer dangers = unitDangerService.countByUnitAreaId(unitAreaId);

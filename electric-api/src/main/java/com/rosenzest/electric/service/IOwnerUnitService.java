@@ -32,4 +32,6 @@ public interface IOwnerUnitService extends IModelBaseService<OwnerUnit> {
 
 	boolean removeOwnerUnitById(Long unitId);
 
+	boolean checkOwnerUnitName(OwnerUnit unit);
+
 }
