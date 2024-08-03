@@ -4,13 +4,14 @@
 package com.rosenzest.server.base.interceptor;
 
 import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
@@ -19,7 +20,9 @@ import org.springframework.web.servlet.resource.ResourceHttpRequestHandler;
 import com.alibaba.fastjson.JSON;
 import com.rosenzest.base.LoginUser;
 import com.rosenzest.base.constant.ResultCodeConstants;
+import com.rosenzest.base.constant.ResultEnum;
 import com.rosenzest.base.constant.SystemConstants;
+import com.rosenzest.base.enums.TerminalType;
 import com.rosenzest.base.exception.BusinessException;
 import com.rosenzest.base.util.AnnotationUtils;
 import com.rosenzest.server.base.annotation.TokenRule;
@@ -29,6 +32,7 @@ import com.rosenzest.server.base.properties.TokenProperties;
 import com.rosenzest.server.base.properties.TokenProperties.TokenSM;
 import com.rosenzest.server.base.service.AuthService;
 
+import cn.hutool.core.util.StrUtil;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -72,8 +76,13 @@ public class SecurityInterceptor extends HandlerInterceptorAdapter {
 				projectRequired = tokenRole.project();
 			}
 
+			List<TerminalType> allowTerminal = Arrays.asList(TerminalType.APP);
+			if (tokenRole != null && tokenRole.terminal() != null) {
+				allowTerminal = Arrays.asList(tokenRole.terminal());
+			}
+
 			String token = authService.getTokenFromRequestHeader(request);
-			if (StringUtils.isNotBlank(token)) {
+			if (StrUtil.isNotBlank(token)) {
 
 				// token加密是否开启
 				if (TokenSM.SM_ON.equals(tokenProperties.getSm().getSts())) {
@@ -88,6 +97,11 @@ public class SecurityInterceptor extends HandlerInterceptorAdapter {
 				LoginUser loginUser = authService.getLoginUserByToken(token);
 				if (loginUser == null) {
 					throw new BusinessException(ResultCodeConstants.UNAUTHOZIED, "无效用户信息");
+				}
+
+				TerminalType terminal = loginUser.getTerminal();
+				if (!allowTerminal.contains(terminal)) {
+					throw new BusinessException(ResultEnum.FORBIDDEN);
 				}
 
 				// 必须选择项目

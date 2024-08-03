@@ -1,7 +1,6 @@
 package com.rosenzest.electric.controller;
 
 import java.util.List;
-import java.util.Objects;
 
 import javax.validation.Valid;
 
@@ -40,7 +39,6 @@ import com.rosenzest.server.base.controller.ServerBaseController;
 import com.rosenzest.server.base.properties.TokenProperties;
 import com.rosenzest.server.base.util.JwtTokenUtil;
 
-import cn.hutool.core.util.StrUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
@@ -83,7 +81,7 @@ public class SysUserController extends ServerBaseController {
 	public Result<String> changeProject(@PathVariable Long projectId) {
 
 		LoginUser loginUser = getLoginUser();
-		Long oldProjectId = loginUser.getProjectId();
+		// Long oldProjectId = loginUser.getProjectId();
 
 		Project project = projectService.getProjectByWorkerId(loginUser.getUserId(), projectId);
 		if (project == null) {
@@ -92,40 +90,47 @@ public class SysUserController extends ServerBaseController {
 
 		// 判断新项目是否有人选择
 
-		String custProjectKey = CacheKeyBuilder.getCustProjectKey(loginUser.getUserId(), projectId);
-		String projectCust = RedisUtil.get(custProjectKey);
-
-		if (StrUtil.isNotBlank(projectCust)) {
-			if (!projectCust.equalsIgnoreCase(loginUser.getUuid())) {
-				throw new BusinessException(ResultCodeConstants.FORBIDDEN, "该账号已在其他设备登录该项目");
-			}
-		}
-
-		if (Objects.nonNull(oldProjectId)) {
-			// 删除旧项目
-			RedisUtil.del(CacheKeyBuilder.getCustProjectKey(loginUser.getUserId(), oldProjectId));
-		}
+//		String custProjectKey = CacheKeyBuilder.getCustProjectKey(loginUser.getUserId(), projectId);
+//		String projectCust = RedisUtil.get(custProjectKey);
+//
+//		if (StrUtil.isNotBlank(projectCust)) {
+//			if (!projectCust.equalsIgnoreCase(loginUser.getUuid())) {
+//				throw new BusinessException(ResultCodeConstants.FORBIDDEN, "该账号已在其他设备登录该项目");
+//			}
+//		}
+//
+//		if (Objects.nonNull(oldProjectId)) {
+//			// 删除旧项目
+//			RedisUtil.del(CacheKeyBuilder.getCustProjectKey(loginUser.getUserId(), oldProjectId));
+//		}
+//		
+//		// 生成新项目token
+//		String tokenKey = CacheKeyBuilder.getCustTokenKey(loginUser.getTerminal(), loginUser.getUuid());
+//
+//		loginUser.setProjectId(projectId);
+//		String token = JwtTokenUtil.generateToken(loginUser);
+//		// 用户token及用户信息缓存
+//		RedisUtil.set(tokenKey, token, tokenProperties.getExpire());
+//
+//		RedisUtil.set(CacheKeyBuilder.getCustProjectKey(loginUser.getUserId(), projectId), loginUser.getUuid(),
+//				tokenProperties.getExpire());
 
 		// 生成新项目token
-		String tokenKey = CacheKeyBuilder.getCustTokenKey(loginUser.getTerminal(), loginUser.getUuid());
-
+		String tokenKey = CacheKeyBuilder.getCustTokenKey(loginUser.getTerminal().code(), loginUser.getUuid());
 		loginUser.setProjectId(projectId);
 		String token = JwtTokenUtil.generateToken(loginUser);
 		// 用户token及用户信息缓存
 		RedisUtil.set(tokenKey, token, tokenProperties.getExpire());
-
-		RedisUtil.set(CacheKeyBuilder.getCustProjectKey(loginUser.getUserId(), projectId), loginUser.getUuid(),
-				tokenProperties.getExpire());
-
 		return Result.SUCCESS(token);
 	}
 
+	@TokenRule(terminal = { TerminalType.APP, TerminalType.MINIAPP })
 	@ApiOperation(tags = "用户相关", value = "退出登录")
 	@GetMapping("/logout")
 	public Result<?> logout() {
 		LoginUser loginUser = getLoginUser();
 
-		String tokenKey = CacheKeyBuilder.getCustTokenKey(loginUser.getTerminal(), loginUser.getUuid());
+		String tokenKey = CacheKeyBuilder.getCustTokenKey(loginUser.getTerminal().code(), loginUser.getUuid());
 		RedisUtil.del(tokenKey);
 
 		String projectKey = CacheKeyBuilder.getCustProjectKey(loginUser.getUserId(), loginUser.getProjectId());
@@ -149,7 +154,7 @@ public class SysUserController extends ServerBaseController {
 		return Result.SUCCESS(loginVo);
 	}
 
-	@TokenRule(project = false)
+	@TokenRule(project = false, terminal = { TerminalType.APP, TerminalType.MINIAPP })
 	@ApiOperation(tags = "用户相关", value = "修改密码")
 	@PutMapping("/password")
 	public Result<LoginVo> modifyPassword(@RequestBody @Valid ModifyPasswordDto data) {

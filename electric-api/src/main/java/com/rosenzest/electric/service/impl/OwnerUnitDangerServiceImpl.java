@@ -35,6 +35,8 @@ import com.rosenzest.model.base.service.ModelBaseServiceImpl;
 import com.rosenzest.server.base.context.IRequestContext;
 import com.rosenzest.server.base.context.RequestContextHolder;
 
+import cn.hutool.core.collection.CollUtil;
+
 /**
  * <p>
  * 服务实现类
@@ -281,4 +283,16 @@ public class OwnerUnitDangerServiceImpl extends ModelBaseServiceImpl<OwnerUnitDa
 		return this.baseMapper.countByDataIdAndPileId(dataId, pileId);
 	}
 
+	@Override
+	public List<OwnerUnitDanger> getDangersByUnitIdAndBuildingIds(Long unitId, List<Long> buildingIds) {
+
+		LambdaQueryWrapper<OwnerUnitDanger> queryWrapper = new LambdaQueryWrapper<OwnerUnitDanger>();
+		queryWrapper.select(OwnerUnitDanger::getStatus, OwnerUnitDanger::getUnitId, OwnerUnitDanger::getBuildingId,
+				OwnerUnitDanger::getId, OwnerUnitDanger::getLevel);
+		queryWrapper.eq(OwnerUnitDanger::getUnitId, unitId);
+		if (CollUtil.isNotEmpty(buildingIds)) {
+			queryWrapper.in(OwnerUnitDanger::getBuildingId, buildingIds);
+		}
+		return this.baseMapper.selectList(queryWrapper);
+	}
 }

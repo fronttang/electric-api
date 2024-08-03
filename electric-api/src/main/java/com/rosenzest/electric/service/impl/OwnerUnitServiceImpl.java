@@ -1,7 +1,11 @@
 package com.rosenzest.electric.service.impl;
 
+import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -12,19 +16,30 @@ import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.rosenzest.base.LoginUser;
 import com.rosenzest.base.PageList;
+import com.rosenzest.base.constant.ResultEnum;
+import com.rosenzest.base.exception.BusinessException;
 import com.rosenzest.base.util.BeanUtils;
+import com.rosenzest.electric.constant.ElectricConstant;
 import com.rosenzest.electric.dto.OwnerUnitDto;
 import com.rosenzest.electric.dto.OwnerUnitQuery;
 import com.rosenzest.electric.dto.OwnerUnitReviewQuery;
 import com.rosenzest.electric.entity.OwnerUnit;
+import com.rosenzest.electric.entity.OwnerUnitBuilding;
+import com.rosenzest.electric.entity.OwnerUnitDanger;
 import com.rosenzest.electric.entity.OwnerUnitReport;
+import com.rosenzest.electric.entity.SysDictData;
 import com.rosenzest.electric.enums.InitialInspectionStatus;
 import com.rosenzest.electric.enums.ReviewStatus;
 import com.rosenzest.electric.enums.UnitReportType;
 import com.rosenzest.electric.mapper.OwnerUnitMapper;
+import com.rosenzest.electric.owner.vo.OwnerUnitDangerStatisticsVo;
+import com.rosenzest.electric.owner.vo.OwnerUnitListVo;
 import com.rosenzest.electric.service.IOwnerUnitAreaService;
+import com.rosenzest.electric.service.IOwnerUnitBuildingService;
+import com.rosenzest.electric.service.IOwnerUnitDangerService;
 import com.rosenzest.electric.service.IOwnerUnitReportService;
 import com.rosenzest.electric.service.IOwnerUnitService;
+import com.rosenzest.electric.service.ISysDictDataService;
 import com.rosenzest.electric.vo.InitialOwnerUnitVo;
 import com.rosenzest.electric.vo.OwnerUnitReviewVo;
 import com.rosenzest.electric.vo.OwnerUnitVo;
@@ -32,6 +47,7 @@ import com.rosenzest.model.base.service.ModelBaseServiceImpl;
 import com.rosenzest.server.base.context.IRequestContext;
 import com.rosenzest.server.base.context.RequestContextHolder;
 
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
 
 /**
@@ -51,6 +67,15 @@ public class OwnerUnitServiceImpl extends ModelBaseServiceImpl<OwnerUnitMapper, 
 
 	@Autowired
 	private IOwnerUnitAreaService ownerUnitAreaService;
+
+	@Autowired
+	private IOwnerUnitDangerService ownerUnitDangerService;
+
+	@Autowired
+	private ISysDictDataService dictDataService;
+
+	@Autowired
+	private IOwnerUnitBuildingService ownerUnitBuildingService;
 
 	@Override
 	public List<InitialOwnerUnitVo> queryInitialList(OwnerUnitQuery query, PageList pageList) {
@@ -160,6 +185,85 @@ public class OwnerUnitServiceImpl extends ModelBaseServiceImpl<OwnerUnitMapper, 
 			queryWrapper.ne(OwnerUnit::getId, unit.getId());
 		}
 		return this.count(queryWrapper) > 0;
+	}
+
+	@Override
+	public List<OwnerUnitListVo> getOwnerUnitListByOwner(Long userId, Long projectId) {
+		return this.baseMapper.getOwnerUnitListByOwner(userId, projectId);
+	}
+
+	@Override
+	public boolean checkOwnerUnitManager(Long unitId, Long userId) {
+		LambdaQueryWrapper<OwnerUnit> queryWrapper = new LambdaQueryWrapper<OwnerUnit>();
+		queryWrapper.eq(OwnerUnit::getId, unitId);
+		queryWrapper.eq(OwnerUnit::getManager, userId);
+		return this.baseMapper.selectCount(queryWrapper) > 0;
+	}
+
+	@Override
+	public OwnerUnitDangerStatisticsVo getOwnerUnitDangerStatistics(Long unitId, Long buildingId) {
+
+		//
+		final List<SysDictData> hazardLevel = dictDataService
+				.getDictDataByType(ElectricConstant.DICT_TYPE_HAZARD_LEVEL);
+
+		OwnerUnit ownerUnit = this.getById(unitId);
+		if (ownerUnit == null) {
+			throw new BusinessException(ResultEnum.FORBIDDEN);
+		}
+		OwnerUnitDangerStatisticsVo vo = new OwnerUnitDangerStatisticsVo();
+		vo.setId(ownerUnit.getId());
+		vo.setName(ownerUnit.getName());
+
+		if (buildingId != null) {
+			OwnerUnitBuilding building = ownerUnitBuildingService.getById(buildingId);
+			if (building == null) {
+				throw new BusinessException(ResultEnum.FORBIDDEN);
+			}
+
+			vo.setBuildingId(building.getId());
+			;
+			vo.setBuildingName(building.getName());
+		}
+
+		List<OwnerUnitDanger> dangerLists = ownerUnitDangerService.getDangersByUnitIdAndBuildingIds(unitId,
+				Arrays.asList(buildingId));
+
+		vo.setDanger(0L);
+		vo.setFinish(0L);
+
+		final Map<String, Long> dangerLevelMap = new HashMap<String, Long>();
+		final Map<String, Long> finishLevelMap = new HashMap<String, Long>();
+		if (CollUtil.isNotEmpty(dangerLists)) {
+			vo.setDanger(dangerLists.stream().count());
+			Long finish = dangerLists.stream().filter((d) -> ReviewStatus.FINISH.code().equalsIgnoreCase(d.getStatus()))
+					.collect(Collectors.counting());
+			vo.setFinish(finish);
+
+			dangerLevelMap.putAll(dangerLists.stream()
+					.collect(Collectors.groupingBy(OwnerUnitDanger::getLevel, Collectors.counting())));
+
+			finishLevelMap.putAll(
+					dangerLists.stream().filter((d) -> ReviewStatus.FINISH.code().equalsIgnoreCase(d.getStatus()))
+							.collect(Collectors.groupingBy(OwnerUnitDanger::getLevel, Collectors.counting())));
+		}
+
+		hazardLevel.forEach((level) -> {
+			if (dangerLevelMap.get(level.getDictValue()) == null) {
+				dangerLevelMap.put(StrUtil.format("count{}", level.getDictValue()), 0L);
+			}
+		});
+		vo.setDangers(dangerLevelMap);
+
+		hazardLevel.forEach((level) -> {
+
+			if (finishLevelMap.get(level.getDictValue()) == null) {
+				finishLevelMap.put(StrUtil.format("count{}", level.getDictValue()), 0L);
+			}
+		});
+		vo.setFinishs(finishLevelMap);
+
+		return vo;
 	}
 
 }

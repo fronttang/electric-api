@@ -8,6 +8,8 @@ import java.util.List;
  */
 public final class ElectricConstant {
 
+	public static final String DICT_TYPE_HAZARD_LEVEL = "hazard_level";
+
 	public static final List<String> BUSINESS_DICT_TYPES = new ArrayList<String>();
 
 	static {

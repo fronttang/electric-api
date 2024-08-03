@@ -43,6 +43,7 @@ public class WebMvcConfigs implements WebMvcConfigurer {
 		exclude.add("/dict/list");
 		exclude.add("/v3/3rd/**");
 		exclude.add("/profile/**");
+		exclude.add("/client/version");
 
 		registry.addInterceptor(securityInterceptor()).order(Integer.MAX_VALUE).addPathPatterns("/**")
 				.excludePathPatterns(exclude);

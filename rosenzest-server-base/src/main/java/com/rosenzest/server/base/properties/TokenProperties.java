@@ -23,7 +23,7 @@ public class TokenProperties {
 	/**
 	 * 过期时间
 	 */
-	private Long expire = 7200L;
+	private Long expire = 86400L;
 
 	/**
 	 * 秘钥

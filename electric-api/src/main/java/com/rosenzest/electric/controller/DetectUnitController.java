@@ -2,7 +2,6 @@ package com.rosenzest.electric.controller;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -71,24 +70,24 @@ public class DetectUnitController extends ServerBaseController {
 
 	@ApiOperation(tags = "检测单位", value = "生产厂家/品牌列表")
 	@GetMapping("/brand/list")
-	public Result<List<BrandDto>> listBrand() {
+	public Result<List<BrandDto>> listBrand(String keyword) {
 		LoginUser loginUser = getLoginUser();
 		Long detectId = loginUser.getDetectId();
 		if (detectId == null) {
 			return Result.SUCCESS();
 		}
 
-		List<SysDictData> brandDict = dictDataService.getBrandDict(detectId);
+		List<SysDictData> brandDict = dictDataService.getBrandDict(detectId, keyword);
 
 		List<BrandDto> result = new ArrayList<BrandDto>();
 
 		if (CollUtil.isNotEmpty(brandDict)) {
-			result = brandDict.stream().map((data) -> {
+			result = BeanUtils.copyList(brandDict, (data) -> {
 				BrandDto brand = new BrandDto();
 				brand.setId(data.getDictValue());
 				brand.setName(data.getDictLabel());
 				return brand;
-			}).collect(Collectors.toList());
+			});
 		}
 		return Result.SUCCESS(result);
 	}

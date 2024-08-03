@@ -129,4 +129,15 @@
 		order by t.id asc
 	</select>
 	
+	<select id="getOwnerUnitListByOwner" resultType="com.rosenzest.electric.owner.vo.OwnerUnitListVo" >
+		select o.id, o.name, 
+		o.district, o.street, o.community, o.hamlet, a.dict_label as district_name, b.dict_label as street_name, c.dict_label as community_name, d.dict_label as hamlet_name 
+		from owner_unit o 
+		left join sys_dict_data a on (o.district = a.dict_value and a.dict_type='district' and a.project_id = #{projectId})
+		left join sys_dict_data b on (o.street = b.dict_value and b.dict_type='street' and b.project_id = #{projectId})
+		left join sys_dict_data c on (o.community = c.dict_value and c.dict_type='community' and c.project_id = #{projectId})
+		left join sys_dict_data d on (o.hamlet = d.dict_value and d.dict_type='hamlet' and d.project_id = #{projectId})
+		where o.project_id = #{projectId} and o.manager = #{userId} order by o.id asc
+	</select>
+	
 </mapper>

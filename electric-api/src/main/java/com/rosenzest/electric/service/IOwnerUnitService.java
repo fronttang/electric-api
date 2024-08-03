@@ -7,6 +7,8 @@ import com.rosenzest.electric.dto.OwnerUnitDto;
 import com.rosenzest.electric.dto.OwnerUnitQuery;
 import com.rosenzest.electric.dto.OwnerUnitReviewQuery;
 import com.rosenzest.electric.entity.OwnerUnit;
+import com.rosenzest.electric.owner.vo.OwnerUnitDangerStatisticsVo;
+import com.rosenzest.electric.owner.vo.OwnerUnitListVo;
 import com.rosenzest.electric.vo.InitialOwnerUnitVo;
 import com.rosenzest.electric.vo.OwnerUnitReviewVo;
 import com.rosenzest.electric.vo.OwnerUnitVo;
@@ -33,5 +35,11 @@ public interface IOwnerUnitService extends IModelBaseService<OwnerUnit> {
 	boolean removeOwnerUnitById(Long unitId);
 
 	boolean checkOwnerUnitName(OwnerUnit unit);
+
+	List<OwnerUnitListVo> getOwnerUnitListByOwner(Long userId, Long projectId);
+
+	boolean checkOwnerUnitManager(Long unitId, Long userId);
+
+	OwnerUnitDangerStatisticsVo getOwnerUnitDangerStatistics(Long unitId, Long buildingId);
 
 }

@@ -9,6 +9,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import com.rosenzest.base.enums.TerminalType;
+
 /**
  * token 验证规则
  * 
@@ -49,4 +51,11 @@ public @interface TokenRule {
 	 * @return
 	 */
 	boolean project() default true;
+
+	/**
+	 * 终端类型
+	 * 
+	 * @return
+	 */
+	TerminalType[] terminal() default TerminalType.APP;
 }

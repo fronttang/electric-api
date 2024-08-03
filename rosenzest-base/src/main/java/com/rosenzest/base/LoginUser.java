@@ -3,6 +3,8 @@
  */
 package com.rosenzest.base;
 
+import com.rosenzest.base.enums.TerminalType;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -32,7 +34,7 @@ public class LoginUser extends JwtPayLoad {
 	/**
 	 * 终端类型 APP
 	 */
-	private String terminal;
+	private TerminalType terminal;
 
 	/**
 	 * 检测单位ID

@@ -13,13 +13,18 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum TerminalType implements IEnum<TerminalType> {
 
-    /**
-     * APP
-     */
-    APP("1", "APP");
+	/**
+	 * APP
+	 */
+	APP("APP", "APP"),
 
-    final String code;
+	/**
+	 * 小程序
+	 */
+	MINIAPP("MINIAPP", "MINIAPP");
 
-    final String name;
+	final String code;
+
+	final String name;
 
 }

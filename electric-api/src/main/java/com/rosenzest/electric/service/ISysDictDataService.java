@@ -28,5 +28,12 @@ public interface ISysDictDataService extends IModelBaseService<SysDictData> {
 	 * @param detectId
 	 * @return
 	 */
-	List<SysDictData> getBrandDict(Long detectId);
+	List<SysDictData> getBrandDict(Long detectId, String keyword);
+
+	/**
+	 * 根据类型查字典数据
+	 * 
+	 * @return
+	 */
+	List<SysDictData> getDictDataByType(String dictType);
 }

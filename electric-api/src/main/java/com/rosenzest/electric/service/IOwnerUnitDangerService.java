@@ -48,4 +48,5 @@ public interface IOwnerUnitDangerService extends IModelBaseService<OwnerUnitDang
 
 	Integer countByDataIdAndPileId(Long id, Long pileId);
 
+	List<OwnerUnitDanger> getDangersByUnitIdAndBuildingIds(Long unitId, List<Long> buildingIds);
 }

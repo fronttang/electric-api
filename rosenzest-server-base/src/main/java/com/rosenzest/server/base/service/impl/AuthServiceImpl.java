@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import com.rosenzest.base.LoginUser;
 import com.rosenzest.base.constant.ResultEnum;
 import com.rosenzest.base.constant.SystemConstants;
+import com.rosenzest.base.enums.TerminalType;
 import com.rosenzest.base.exception.BusinessException;
 import com.rosenzest.base.util.RedisUtil;
 import com.rosenzest.server.base.cache.CacheKeyBuilder;
@@ -78,11 +79,11 @@ public class AuthServiceImpl implements AuthService {
 	private String getTokenKey(LoginUser loginUser) {
 
 		// 做了兼容
-		String terminal = loginUser.getTerminal();
+		TerminalType terminal = loginUser.getTerminal();
 		String uuid = loginUser.getUuid();
 
-		if (StrUtil.isNotBlank(terminal)) {
-			return CacheKeyBuilder.getCustTokenKey(terminal, uuid);
+		if (terminal != null) {
+			return CacheKeyBuilder.getCustTokenKey(terminal.code(), uuid);
 		}
 		return CacheKeyBuilder.getCustTokenKey(uuid);
 	}

@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.rosenzest.base.LoginUser;
+import com.rosenzest.base.enums.EnumUtils;
 import com.rosenzest.base.enums.TerminalType;
 import com.rosenzest.base.exception.BusinessException;
 import com.rosenzest.base.util.BeanUtils;
@@ -14,13 +15,16 @@ import com.rosenzest.base.util.SnowFlakeUtil;
 import com.rosenzest.electric.constant.ElectricErrorCode;
 import com.rosenzest.electric.dto.LoginDto;
 import com.rosenzest.electric.entity.DetectUnit;
+import com.rosenzest.electric.entity.Project;
 import com.rosenzest.electric.entity.SysUser;
 import com.rosenzest.electric.enums.UserType;
 import com.rosenzest.electric.mapper.SysUserMapper;
 import com.rosenzest.electric.service.IDetectUnitService;
+import com.rosenzest.electric.service.IProjectService;
 import com.rosenzest.electric.service.ISysUserService;
 import com.rosenzest.electric.vo.DetectUnitVo;
 import com.rosenzest.electric.vo.LoginVo;
+import com.rosenzest.electric.vo.ProjectVo;
 import com.rosenzest.model.base.service.ModelBaseServiceImpl;
 import com.rosenzest.server.base.cache.CacheKeyBuilder;
 import com.rosenzest.server.base.properties.TokenProperties;
@@ -43,6 +47,9 @@ public class SysUserServiceImpl extends ModelBaseServiceImpl<SysUserMapper, SysU
 	@Autowired
 	private IDetectUnitService detectUnitService;
 
+	@Autowired
+	private IProjectService projectService;
+
 	@Override
 	public SysUser getByUserName(String userName) {
 
@@ -61,16 +68,30 @@ public class SysUserServiceImpl extends ModelBaseServiceImpl<SysUserMapper, SysU
 		SysUser user = getByUserName(userName);
 		if (user != null) {
 
-			// TODO 只能 工作人员/电力设计/售电账号 登录APP
-			if (!UserType.WORKER.code().equalsIgnoreCase(user.getUserType())) {
+			TerminalType terminalType = EnumUtils.init(TerminalType.class).fromCode(login.getTerminal());
+
+			// 只能 工作人员/电力设计/售电账号 登录APP
+
+			if (TerminalType.APP == terminalType) {
+				if (!UserType.WORKER.code().equalsIgnoreCase(user.getUserType())) {
+					throw new BusinessException(ElectricErrorCode.VERIFICATION_ERROR);
+				}
+			} else if (TerminalType.MINIAPP == terminalType) {
+				// 业主单元账号/街区账号/网络员可以登录小程序
+				if (!UserType.OWNER_UNIT.code().equalsIgnoreCase(user.getUserType())
+						&& !UserType.AREA_USER.code().equalsIgnoreCase(user.getUserType())
+						&& !UserType.GRADMAN.code().equalsIgnoreCase(user.getUserType())) {
+					throw new BusinessException(ElectricErrorCode.VERIFICATION_ERROR);
+				}
+			} else {
 				throw new BusinessException(ElectricErrorCode.VERIFICATION_ERROR);
 			}
 
 			BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 			// 匹配密码
 			if (passwordEncoder.matches(login.getPassword(), user.getPassword())) {
-				String token = generateToken(user, TerminalType.APP);
-				return getLoginVo(user, token);
+				String token = generateToken(user, terminalType);
+				return getLoginVo(user, token, terminalType);
 			} else {
 				throw new BusinessException(ElectricErrorCode.VERIFICATION_ERROR);
 			}
@@ -79,7 +100,7 @@ public class SysUserServiceImpl extends ModelBaseServiceImpl<SysUserMapper, SysU
 		}
 	}
 
-	private LoginVo getLoginVo(SysUser user, String token) {
+	private LoginVo getLoginVo(SysUser user, String token, TerminalType terminalType) {
 		LoginVo loginVo = new LoginVo();
 		loginVo.setUserId(user.getUserId());
 		loginVo.setUserName(user.getUserName());
@@ -94,6 +115,13 @@ public class SysUserServiceImpl extends ModelBaseServiceImpl<SysUserMapper, SysU
 			DetectUnitVo detectUnitVo = new DetectUnitVo();
 			BeanUtils.copyProperties(detectUnit, detectUnitVo);
 			loginVo.setDetectUnit(detectUnitVo);
+		}
+
+		if (TerminalType.MINIAPP == terminalType && user.getProjectId() != null) {
+			Project project = projectService.getById(user.getProjectId());
+			ProjectVo projectVo = new ProjectVo();
+			BeanUtils.copyProperties(project, projectVo);
+			loginVo.setProject(projectVo);
 		}
 
 		return loginVo;
@@ -118,10 +146,15 @@ public class SysUserServiceImpl extends ModelBaseServiceImpl<SysUserMapper, SysU
 		payload.setUserId(user.getUserId());
 		payload.setUserName(user.getUserName());
 		payload.setType(user.getUserType());
-		payload.setTerminal(terminalType.code());
+		payload.setTerminal(terminalType);
 		payload.setDetectId(user.getDetectId());
 		payload.setName(user.getNickName());
 		payload.setUuid(uuid);
+
+		if (TerminalType.MINIAPP == terminalType) {
+			payload.setProjectId(user.getProjectId());
+		}
+
 		String token = JwtTokenUtil.generateToken(payload);
 
 		// 用户token及用户信息缓存

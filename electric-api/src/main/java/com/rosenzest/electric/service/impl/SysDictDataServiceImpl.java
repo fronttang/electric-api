@@ -11,6 +11,8 @@ import com.rosenzest.electric.mapper.SysDictDataMapper;
 import com.rosenzest.electric.service.ISysDictDataService;
 import com.rosenzest.model.base.service.ModelBaseServiceImpl;
 
+import cn.hutool.core.util.StrUtil;
+
 /**
  * <p>
  * 字典数据表 服务实现类
@@ -31,10 +33,21 @@ public class SysDictDataServiceImpl extends ModelBaseServiceImpl<SysDictDataMapp
 	}
 
 	@Override
-	public List<SysDictData> getBrandDict(Long detectId) {
+	public List<SysDictData> getBrandDict(Long detectId, String keyword) {
 		LambdaQueryWrapper<SysDictData> queryWrapper = new LambdaQueryWrapper<SysDictData>();
 		queryWrapper.eq(SysDictData::getDictType, ElectricConstant.BRAND_DICT_TYPE);
 		queryWrapper.eq(SysDictData::getDetectId, detectId);
+		if (StrUtil.isNotBlank(keyword)) {
+			queryWrapper.like(SysDictData::getDictLabel, keyword);
+		}
+		queryWrapper.last(" LIMIT 100 ");
+		return this.baseMapper.selectList(queryWrapper);
+	}
+
+	@Override
+	public List<SysDictData> getDictDataByType(String dictType) {
+		LambdaQueryWrapper<SysDictData> queryWrapper = new LambdaQueryWrapper<SysDictData>();
+		queryWrapper.in(SysDictData::getDictType, dictType);
 		return this.baseMapper.selectList(queryWrapper);
 	}
 
