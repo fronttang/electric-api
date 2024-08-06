@@ -2,13 +2,14 @@ package com.rosenzest.electric.service;
 
 import java.util.List;
 
-import javax.validation.Valid;
-
+import com.rosenzest.base.LoginUser;
 import com.rosenzest.base.PageList;
 import com.rosenzest.electric.dto.DangerNotPassDto;
 import com.rosenzest.electric.dto.DangerPassDto;
 import com.rosenzest.electric.dto.OwnerUnitDangerQuery;
 import com.rosenzest.electric.entity.OwnerUnitDanger;
+import com.rosenzest.electric.miniapp.vo.AreaUserInfoVo;
+import com.rosenzest.electric.miniapp.vo.GridmanDangerStatisticsVo;
 import com.rosenzest.electric.vo.OwnerUnitDangerVo;
 import com.rosenzest.model.base.service.IModelBaseService;
 
@@ -36,7 +37,7 @@ public interface IOwnerUnitDangerService extends IModelBaseService<OwnerUnitDang
 
 	boolean pass(DangerPassDto data);
 
-	boolean notPass(@Valid DangerNotPassDto data);
+	boolean notPass(DangerNotPassDto data);
 
 	Integer countByBuildingId(Long buildingId);
 
@@ -49,4 +50,12 @@ public interface IOwnerUnitDangerService extends IModelBaseService<OwnerUnitDang
 	Integer countByDataIdAndPileId(Long id, Long pileId);
 
 	List<OwnerUnitDanger> getDangersByUnitIdAndBuildingIds(Long unitId, List<Long> buildingIds);
+
+	boolean rectification(DangerPassDto data);
+
+	GridmanDangerStatisticsVo statisticsByGridman(LoginUser user);
+
+	List<OwnerUnitDanger> getOwnerUnitDangerByAreaUser(AreaUserInfoVo userInfo);
+
+	List<OwnerUnitDanger> getTodayDangersByAreaUser(AreaUserInfoVo userInfo);
 }

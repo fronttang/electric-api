@@ -2,6 +2,8 @@ package com.rosenzest.electric.vo;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -43,6 +45,15 @@ public class DetectFormVo {
 	 */
 	@ApiModelProperty("隐患数")
 	private Integer dangers;
+
+	/**
+	 * 归属1公共区域2户3配电房
+	 */
+	@ApiModelProperty("归属1公共区域2户3配电房")
+	private List<String> attribution;
+
+	@JsonIgnore
+	private String attrType;
 
 	/**
 	 * 检测表内容

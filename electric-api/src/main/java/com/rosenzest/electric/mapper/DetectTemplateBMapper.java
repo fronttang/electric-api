@@ -10,7 +10,7 @@ import com.rosenzest.model.base.mapper.ModelBaseMapper;
 
 /**
  * <p>
- *  Mapper 接口
+ * Mapper 接口
  * </p>
  *
  * @author fronttang
@@ -19,5 +19,7 @@ import com.rosenzest.model.base.mapper.ModelBaseMapper;
 public interface DetectTemplateBMapper extends ModelBaseMapper<DetectTemplateB> {
 
 	List<DetectFormVo> getTableBByTemplateId(@Param("templateId") Long templateId, @Param("type") String type);
+
+	List<DetectFormVo> getViewTableBByTemplateId(Long templateId);
 
 }

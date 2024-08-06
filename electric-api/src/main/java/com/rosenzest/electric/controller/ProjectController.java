@@ -19,7 +19,6 @@ import com.rosenzest.electric.entity.ProjectWorker;
 import com.rosenzest.electric.entity.ProjectWorkerArea;
 import com.rosenzest.electric.enums.ProjectWorkerAreaRoleType;
 import com.rosenzest.electric.enums.ProjectWorkerType;
-import com.rosenzest.electric.enums.UserType;
 import com.rosenzest.electric.service.IProjectService;
 import com.rosenzest.electric.service.IProjectWorkerAreaService;
 import com.rosenzest.electric.service.IProjectWorkerService;
@@ -27,6 +26,7 @@ import com.rosenzest.electric.vo.ProjectAreaVo;
 import com.rosenzest.electric.vo.ProjectVo;
 import com.rosenzest.server.base.annotation.TokenRule;
 import com.rosenzest.server.base.controller.ServerBaseController;
+import com.rosenzest.server.base.enums.UserType;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;

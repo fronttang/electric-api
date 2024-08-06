@@ -284,4 +284,8 @@ public class OwnerUnit extends BaseEntity<OwnerUnit> {
 	 */
 	private String humidity;
 
+	/**
+	 * 业主二维码
+	 */
+	private String mngQrcode;
 }

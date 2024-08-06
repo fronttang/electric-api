@@ -19,21 +19,27 @@ import com.rosenzest.electric.dto.DangerPassDto;
 import com.rosenzest.electric.dto.OwnerUnitDangerQuery;
 import com.rosenzest.electric.entity.OwnerUnitDanger;
 import com.rosenzest.electric.entity.OwnerUnitDangerLog;
+import com.rosenzest.electric.entity.Project;
+import com.rosenzest.electric.entity.SysDictData;
 import com.rosenzest.electric.enums.DangerOperationType;
 import com.rosenzest.electric.enums.InitialInspectionStatus;
 import com.rosenzest.electric.enums.ProjectWorkerType;
 import com.rosenzest.electric.enums.ReviewStatus;
 import com.rosenzest.electric.enums.UnitReportType;
-import com.rosenzest.electric.enums.UserType;
 import com.rosenzest.electric.mapper.OwnerUnitDangerMapper;
+import com.rosenzest.electric.miniapp.vo.AreaUserInfoVo;
+import com.rosenzest.electric.miniapp.vo.GridmanDangerStatisticsVo;
 import com.rosenzest.electric.service.IOwnerUnitBuildingService;
 import com.rosenzest.electric.service.IOwnerUnitDangerLogService;
 import com.rosenzest.electric.service.IOwnerUnitDangerService;
 import com.rosenzest.electric.service.IOwnerUnitReportService;
+import com.rosenzest.electric.service.IOwnerUnitService;
+import com.rosenzest.electric.service.IProjectService;
 import com.rosenzest.electric.vo.OwnerUnitDangerVo;
 import com.rosenzest.model.base.service.ModelBaseServiceImpl;
 import com.rosenzest.server.base.context.IRequestContext;
 import com.rosenzest.server.base.context.RequestContextHolder;
+import com.rosenzest.server.base.enums.UserType;
 
 import cn.hutool.core.collection.CollUtil;
 
@@ -57,6 +63,12 @@ public class OwnerUnitDangerServiceImpl extends ModelBaseServiceImpl<OwnerUnitDa
 
 	@Autowired
 	private IOwnerUnitBuildingService unitBuildingService;
+
+	@Autowired
+	private IProjectService projectService;
+
+	@Autowired
+	private IOwnerUnitService ownerUnitService;
 
 	@Override
 	public List<OwnerUnitDanger> getByUnitAreaId(Long unitAreaId) {
@@ -170,7 +182,7 @@ public class OwnerUnitDangerServiceImpl extends ModelBaseServiceImpl<OwnerUnitDa
 			danger.setRectificationDate(new Date());
 			danger.setStatus(ReviewStatus.FINISH.code());
 		} else {
-			// 其他情况隐患状态为待整改
+			// 其他情况隐患状态为待复检
 			danger.setStatus(ReviewStatus.RE_EXAMINATION.code());
 		}
 
@@ -294,5 +306,81 @@ public class OwnerUnitDangerServiceImpl extends ModelBaseServiceImpl<OwnerUnitDa
 			queryWrapper.in(OwnerUnitDanger::getBuildingId, buildingIds);
 		}
 		return this.baseMapper.selectList(queryWrapper);
+	}
+
+	@Transactional
+	@Override
+	public boolean rectification(DangerPassDto data) {
+
+		IRequestContext current = RequestContextHolder.getCurrent();
+		LoginUser loginUser = current.getLoginUser();
+
+		OwnerUnitDanger danger = this.baseMapper.selectById(data.getDangerId());
+		if (danger == null) {
+			return false;
+		}
+
+		if (!ReviewStatus.RECTIFIED.code().equalsIgnoreCase(danger.getStatus())) {
+			return false;
+		}
+
+		danger.setRectificationPic(data.getPic());
+		danger.setRectification(loginUser.getName());
+		danger.setRectificationDate(new Date());
+		// 其他情况隐患状态为待复检
+		danger.setStatus(ReviewStatus.RE_EXAMINATION.code());
+
+		this.saveOrUpdate(danger);
+
+		// 复检报告状态
+		unitReportService.updateUnitReportStatus(danger.getUnitId(), UnitReportType.REVIEW);
+
+		// 楼栋复检状态
+		unitBuildingService.updateBuildingReviewStatus(danger.getBuildingId(), null);
+
+		// 添加整改隐患日志
+		OwnerUnitDangerLog log = new OwnerUnitDangerLog();
+		log.setDangerId(danger.getId());
+		log.setOperator(loginUser.getName());
+		log.setOperatorId(loginUser.getUserId());
+		log.setOperationType(DangerOperationType.RECTIFICATION.code());
+		log.setOperationPic(data.getPic());
+		// log.setOperatorRole();
+		dangerLogService.save(log);
+
+		return true;
+	}
+
+	@Override
+	public GridmanDangerStatisticsVo statisticsByGridman(LoginUser user) {
+
+		GridmanDangerStatisticsVo result = new GridmanDangerStatisticsVo();
+		result.setDanger(0L);
+		result.setFinish(0L);
+		result.setRectification(0L);
+		result.setReview(0L);
+
+		Project project = projectService.getById(user.getProjectId());
+		if (project != null) {
+
+			List<OwnerUnitDanger> dangers = this.baseMapper.getOwnerUnitDangerByGridman(user.getUserId());
+
+			final List<SysDictData> hazardLevel = ownerUnitService.getHazardLevel(project.getType());
+
+			ownerUnitService.buildDangerStatisticsVo(dangers, hazardLevel, result);
+
+		}
+
+		return result;
+	}
+
+	@Override
+	public List<OwnerUnitDanger> getOwnerUnitDangerByAreaUser(AreaUserInfoVo userInfo) {
+		return this.baseMapper.getOwnerUnitDangerByAreaUser(userInfo);
+	}
+
+	@Override
+	public List<OwnerUnitDanger> getTodayDangersByAreaUser(AreaUserInfoVo userInfo) {
+		return this.baseMapper.getTodayDangersByAreaUser(userInfo);
 	}
 }

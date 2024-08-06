@@ -17,8 +17,8 @@ import com.rosenzest.electric.dto.LoginDto;
 import com.rosenzest.electric.entity.DetectUnit;
 import com.rosenzest.electric.entity.Project;
 import com.rosenzest.electric.entity.SysUser;
-import com.rosenzest.electric.enums.UserType;
 import com.rosenzest.electric.mapper.SysUserMapper;
+import com.rosenzest.electric.miniapp.vo.AreaUserInfoVo;
 import com.rosenzest.electric.service.IDetectUnitService;
 import com.rosenzest.electric.service.IProjectService;
 import com.rosenzest.electric.service.ISysUserService;
@@ -27,6 +27,7 @@ import com.rosenzest.electric.vo.LoginVo;
 import com.rosenzest.electric.vo.ProjectVo;
 import com.rosenzest.model.base.service.ModelBaseServiceImpl;
 import com.rosenzest.server.base.cache.CacheKeyBuilder;
+import com.rosenzest.server.base.enums.UserType;
 import com.rosenzest.server.base.properties.TokenProperties;
 import com.rosenzest.server.base.util.JwtTokenUtil;
 
@@ -110,7 +111,7 @@ public class SysUserServiceImpl extends ModelBaseServiceImpl<SysUserMapper, SysU
 
 		// 获取用户检测单位
 		Long detectId = user.getDetectId();
-		if (detectId != null) {
+		if (detectId != null && TerminalType.APP == terminalType) {
 			DetectUnit detectUnit = detectUnitService.getById(detectId);
 			DetectUnitVo detectUnitVo = new DetectUnitVo();
 			BeanUtils.copyProperties(detectUnit, detectUnitVo);
@@ -151,9 +152,9 @@ public class SysUserServiceImpl extends ModelBaseServiceImpl<SysUserMapper, SysU
 		payload.setName(user.getNickName());
 		payload.setUuid(uuid);
 
-		if (TerminalType.MINIAPP == terminalType) {
-			payload.setProjectId(user.getProjectId());
-		}
+		// if (TerminalType.MINIAPP == terminalType) {
+		payload.setProjectId(user.getProjectId());
+		// }
 
 		String token = JwtTokenUtil.generateToken(payload);
 
@@ -163,6 +164,11 @@ public class SysUserServiceImpl extends ModelBaseServiceImpl<SysUserMapper, SysU
 		// SystemConstants.ONE_DAY_OF_SECONDS);
 
 		return token;
+	}
+
+	@Override
+	public AreaUserInfoVo getAreaUserInfo(Long userId, Long projectId) {
+		return this.baseMapper.getAreaUserInfo(userId, projectId);
 	}
 
 }

@@ -1,5 +1,10 @@
 package com.rosenzest.electric.controller;
 
+import static cn.binarywang.wx.miniapp.constant.WxMaConstants.DEFAULT_ENV_VERSION;
+
+import java.io.File;
+import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -34,18 +39,30 @@ import com.rosenzest.electric.enums.ProjectType;
 import com.rosenzest.electric.enums.ProjectWorkerAreaRoleType;
 import com.rosenzest.electric.enums.ProjectWorkerType;
 import com.rosenzest.electric.enums.UnitReportType;
+import com.rosenzest.electric.properties.SystemProperties;
 import com.rosenzest.electric.service.IOwnerUnitDangerService;
 import com.rosenzest.electric.service.IOwnerUnitReportService;
 import com.rosenzest.electric.service.IOwnerUnitService;
 import com.rosenzest.electric.service.IProjectService;
 import com.rosenzest.electric.service.IProjectWorkerService;
+import com.rosenzest.electric.util.FileUploadUtils;
 import com.rosenzest.electric.vo.InitialOwnerUnitVo;
+import com.rosenzest.electric.vo.OwnerUnitQrcodeVo;
 import com.rosenzest.electric.vo.OwnerUnitVo;
 import com.rosenzest.server.base.controller.ServerBaseController;
 
+import cn.binarywang.wx.miniapp.api.WxMaQrcodeService;
+import cn.binarywang.wx.miniapp.api.WxMaService;
+import cn.hutool.core.date.DatePattern;
+import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.img.ImgUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.core.util.URLUtil;
+import cn.hutool.crypto.SecureUtil;
+import cn.hutool.crypto.symmetric.DES;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import me.chanjar.weixin.common.error.WxErrorException;
 
 @Api(tags = "业主单元")
 @RestController
@@ -66,6 +83,12 @@ public class OwnerUnitController extends ServerBaseController {
 
 	@Autowired
 	private IOwnerUnitDangerService ownerUnitDangerService;
+
+	@Autowired
+	private SystemProperties properties;
+
+	@Autowired
+	private WxMaService wxMaService;
 
 	@ApiOperation(tags = "业主单元", value = "业主单元列表(初检)")
 	@PostMapping("/initial/list")
@@ -252,6 +275,75 @@ public class OwnerUnitController extends ServerBaseController {
 		} else {
 			return Result.ERROR();
 		}
+	}
+
+	@ApiOperation(tags = "业主单元", value = "业主单元二维码")
+	@GetMapping("/qrcode/{unitId}")
+	public Result<OwnerUnitQrcodeVo> unitQrcode(@PathVariable Long unitId) throws WxErrorException, IOException {
+
+		OwnerUnit ownerUnit = ownerUnitService.getById(unitId);
+
+		if (ownerUnit != null) {
+
+			OwnerUnitQrcodeVo vo = new OwnerUnitQrcodeVo();
+			vo.setId(ownerUnit.getId());
+			vo.setName(ownerUnit.getName());
+			vo.setAddress(ownerUnit.getAddress());
+
+			OwnerUnitReport report = ownerUnitReportService.getReportByUnitIdAndType(ownerUnit.getId(),
+					UnitReportType.INITIAL);
+			if (report != null) {
+				vo.setDetectData(report.getDetectData());
+			} else {
+				vo.setDetectData(new Date());
+			}
+			if (StrUtil.isNotBlank(ownerUnit.getMngQrcode())) {
+				vo.setQrcode(ownerUnit.getMngQrcode());
+				return Result.SUCCESS(vo);
+			}
+			// 业主端地址
+			String page = properties.getMiniapp().getOwnerUrl();
+
+			DES des = SecureUtil.des(properties.getOwnerUnitDesKey().getBytes());
+
+			// VisitorKeyDto keyData = new VisitorKeyDto(ownerUnit.getId());
+
+			String key = des.encryptHex(String.valueOf(ownerUnit.getId()));
+//			ownerUrl = UrlBuilder.of(ownerUrl).addQuery("key", key).build();
+//			// ownerUrl = URLUtil.encode(ownerUrl);
+//			String qrcode = QrCodeUtil.generateAsBase64(ownerUrl, QrConfig.create(), "png");
+
+			String scene = StrUtil.format("key={}", key);
+			scene = URLUtil.encode(scene);
+			WxMaQrcodeService qrcodeService = wxMaService.getQrcodeService();
+			byte[] qrCodeByte = qrcodeService.createWxaCodeUnlimitBytes(key, page, false, DEFAULT_ENV_VERSION, 430,
+					true, null, false);
+
+			LocalDateTime now = LocalDateTime.now();
+			String timestamp = DateUtil.format(now, DatePattern.PURE_DATETIME_MS_PATTERN);
+			String fileName = timestamp + SnowFlakeUtil.uniqueString();
+			String datePath = DateUtil.format(now, "yyyy/MM/dd");
+
+			String filePath = StrUtil.format("{}/{}.png", datePath, fileName);
+
+			String baseDir = SystemProperties.getUploadPath();
+			File saveFile = FileUploadUtils.getAbsoluteFile(baseDir, filePath);
+
+			ImgUtil.write(ImgUtil.toImage(qrCodeByte), saveFile);
+
+			// String qrcode = ImgUtil.toBase64DataUri(ImgUtil.toImage(qrCodeByte), "png");
+
+			String qrcode = FileUploadUtils.getPathFileName(baseDir, filePath);
+			vo.setQrcode(qrcode);
+
+			OwnerUnit update = new OwnerUnit();
+			update.setId(ownerUnit.getId());
+			update.setMngQrcode(qrcode);
+			ownerUnitService.saveOrUpdate(update);
+
+			return Result.SUCCESS(vo);
+		}
+		return Result.ERROR();
 	}
 
 }

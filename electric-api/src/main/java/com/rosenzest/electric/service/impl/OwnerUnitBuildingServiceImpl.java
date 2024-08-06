@@ -12,7 +12,8 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.rosenzest.base.PageList;
-import com.rosenzest.electric.constant.ElectricConstant;
+import com.rosenzest.base.constant.ResultEnum;
+import com.rosenzest.base.exception.BusinessException;
 import com.rosenzest.electric.dto.OwnerUnitBuildingQuery;
 import com.rosenzest.electric.dto.OwnerUnitBuildingReivewQuery;
 import com.rosenzest.electric.dto.ReportDetectStatusDto;
@@ -21,10 +22,11 @@ import com.rosenzest.electric.entity.OwnerUnitDanger;
 import com.rosenzest.electric.entity.SysDictData;
 import com.rosenzest.electric.enums.ReviewStatus;
 import com.rosenzest.electric.mapper.OwnerUnitBuildingMapper;
-import com.rosenzest.electric.owner.vo.OwnerUnitBuildingDangerStatisticsVo;
+import com.rosenzest.electric.miniapp.vo.OwnerUnitDangerStatisticsVo;
+import com.rosenzest.electric.miniapp.vo.OwnerUnitOverviewVo;
 import com.rosenzest.electric.service.IOwnerUnitBuildingService;
 import com.rosenzest.electric.service.IOwnerUnitDangerService;
-import com.rosenzest.electric.service.ISysDictDataService;
+import com.rosenzest.electric.service.IOwnerUnitService;
 import com.rosenzest.electric.vo.InitialOwnerUnitBuildingVo;
 import com.rosenzest.electric.vo.OwnerUnitBuildingReviewVo;
 import com.rosenzest.model.base.service.ModelBaseServiceImpl;
@@ -48,7 +50,7 @@ public class OwnerUnitBuildingServiceImpl extends ModelBaseServiceImpl<OwnerUnit
 	private IOwnerUnitDangerService ownerUnitDangerService;
 
 	@Autowired
-	private ISysDictDataService dictDataService;
+	private IOwnerUnitService ownerUnitService;
 
 	@Override
 	public List<InitialOwnerUnitBuildingVo> queryInitialList(OwnerUnitBuildingQuery query, PageList pageList) {
@@ -105,11 +107,12 @@ public class OwnerUnitBuildingServiceImpl extends ModelBaseServiceImpl<OwnerUnit
 	}
 
 	@Override
-	public List<OwnerUnitBuildingDangerStatisticsVo> getOwnerUnitBuildingDangerStatistics(Long unitId, String keyword) {
+	public List<OwnerUnitDangerStatisticsVo> getOwnerUnitBuildingDangerStatistics(Long unitId, String keyword) {
 
-		//
-		final List<SysDictData> hazardLevel = dictDataService
-				.getDictDataByType(ElectricConstant.DICT_TYPE_HAZARD_LEVEL);
+		OwnerUnitOverviewVo ownerUnit = ownerUnitService.getOwnerUnitInfoById(unitId);
+		if (ownerUnit == null) {
+			throw new BusinessException(ResultEnum.FORBIDDEN);
+		}
 
 		LambdaQueryWrapper<OwnerUnitBuilding> queryWrapper = new LambdaQueryWrapper<OwnerUnitBuilding>();
 		queryWrapper.eq(OwnerUnitBuilding::getUnitId, unitId);
@@ -130,48 +133,14 @@ public class OwnerUnitBuildingServiceImpl extends ModelBaseServiceImpl<OwnerUnit
 						.collect(Collectors.groupingBy(OwnerUnitDanger::getBuildingId, Collectors.toList())));
 			}
 
-			List<OwnerUnitBuildingDangerStatisticsVo> result = buildingLists.stream().map((building) -> {
+			final List<SysDictData> hazardLevel = ownerUnitService.getHazardLevel(ownerUnit.getType());
 
-				OwnerUnitBuildingDangerStatisticsVo vo = new OwnerUnitBuildingDangerStatisticsVo();
-				vo.setId(building.getId());
-				vo.setName(building.getName());
+			List<OwnerUnitDangerStatisticsVo> result = buildingLists.stream().map((building) -> {
 
 				List<OwnerUnitDanger> buidingDangers = buildingDangerMap.get(building.getId());
-				vo.setDanger(0L);
-				vo.setFinish(0L);
+				return ownerUnitService.buildOwnerUnitDangerStatisticsVo(ownerUnit, building, buidingDangers,
+						hazardLevel);
 
-				final Map<String, Long> dangerLevelMap = new HashMap<String, Long>();
-				final Map<String, Long> finishLevelMap = new HashMap<String, Long>();
-				if (CollUtil.isNotEmpty(buidingDangers)) {
-					vo.setDanger(buidingDangers.stream().count());
-					Long finish = buidingDangers.stream()
-							.filter((d) -> ReviewStatus.FINISH.code().equalsIgnoreCase(d.getStatus()))
-							.collect(Collectors.counting());
-					vo.setFinish(finish);
-
-					dangerLevelMap.putAll(dangerLists.stream()
-							.collect(Collectors.groupingBy(OwnerUnitDanger::getLevel, Collectors.counting())));
-
-					finishLevelMap.putAll(dangerLists.stream()
-							.filter((d) -> ReviewStatus.FINISH.code().equalsIgnoreCase(d.getStatus()))
-							.collect(Collectors.groupingBy(OwnerUnitDanger::getLevel, Collectors.counting())));
-				}
-
-				hazardLevel.forEach((level) -> {
-					if (dangerLevelMap.get(level.getDictValue()) == null) {
-						dangerLevelMap.put(StrUtil.format("count{}", level.getDictValue()), 0L);
-					}
-				});
-				vo.setDangers(dangerLevelMap);
-
-				hazardLevel.forEach((level) -> {
-					if (finishLevelMap.get(level.getDictValue()) == null) {
-						finishLevelMap.put(StrUtil.format("count{}", level.getDictValue()), 0L);
-					}
-				});
-				vo.setFinishs(finishLevelMap);
-
-				return vo;
 			}).collect(Collectors.toList());
 			return result;
 		}

@@ -17,10 +17,10 @@
 		CASE WHEN r.detect_status is null THEN 0 ELSE r.detect_status END as status 
 		
 		from owner_unit o left join owner_unit_report r on (r.unit_id = o.id and r.type = '1' )
-		left join sys_dict_data a on (o.district = a.dict_value and a.dict_type='district' and a.project_id = #{projectId})
-		left join sys_dict_data b on (o.street = b.dict_value and b.dict_type='street' and b.project_id = #{projectId})
-		left join sys_dict_data c on (o.community = c.dict_value and c.dict_type='community' and c.project_id = #{projectId})
-		left join sys_dict_data d on (o.hamlet = d.dict_value and d.dict_type='hamlet' and d.project_id = #{projectId})
+		left join sys_dict_data a on (o.district = a.dict_value and a.dict_type='district' and a.project_id = o.project_id)
+		left join sys_dict_data b on (o.street = b.dict_value and b.dict_type='street' and b.project_id = o.project_id)
+		left join sys_dict_data c on (o.community = c.dict_value and c.dict_type='community' and c.project_id = o.project_id)
+		left join sys_dict_data d on (o.hamlet = d.dict_value and d.dict_type='hamlet' and d.project_id = o.project_id)
 		
 		where o.project_id = #{projectId} and o.type=#{type}
 		
@@ -85,10 +85,10 @@
 		o.project_id
 		from owner_unit o 
 		left join owner_unit_report ur on (ur.unit_id = o.id and ur.type = '2')
-		left join sys_dict_data a on (o.district = a.dict_value and a.dict_type='district' and a.project_id =  #{projectId})
-		left join sys_dict_data b on (o.street = b.dict_value and b.dict_type='street' and b.project_id =  #{projectId})
-		left join sys_dict_data c on (o.community = c.dict_value and c.dict_type='community' and c.project_id =  #{projectId})
-		left join sys_dict_data d on (o.hamlet = d.dict_value and d.dict_type='hamlet' and d.project_id =  #{projectId})
+		left join sys_dict_data a on (o.district = a.dict_value and a.dict_type='district' and a.project_id =  o.project_id)
+		left join sys_dict_data b on (o.street = b.dict_value and b.dict_type='street' and b.project_id = o.project_id)
+		left join sys_dict_data c on (o.community = c.dict_value and c.dict_type='community' and c.project_id =  o.project_id)
+		left join sys_dict_data d on (o.hamlet = d.dict_value and d.dict_type='hamlet' and d.project_id =  o.project_id)
 		where o.project_id = #{projectId} and o.type=#{type}
 		
 		<choose>
@@ -129,15 +129,114 @@
 		order by t.id asc
 	</select>
 	
-	<select id="getOwnerUnitListByOwner" resultType="com.rosenzest.electric.owner.vo.OwnerUnitListVo" >
-		select o.id, o.name, 
+	<select id="getOwnerUnitListByOwner" resultType="com.rosenzest.electric.miniapp.vo.OwnerUnitOverviewVo" >
+		select o.id, o.name, o.type, o.project_id,
 		o.district, o.street, o.community, o.hamlet, a.dict_label as district_name, b.dict_label as street_name, c.dict_label as community_name, d.dict_label as hamlet_name 
 		from owner_unit o 
-		left join sys_dict_data a on (o.district = a.dict_value and a.dict_type='district' and a.project_id = #{projectId})
-		left join sys_dict_data b on (o.street = b.dict_value and b.dict_type='street' and b.project_id = #{projectId})
-		left join sys_dict_data c on (o.community = c.dict_value and c.dict_type='community' and c.project_id = #{projectId})
-		left join sys_dict_data d on (o.hamlet = d.dict_value and d.dict_type='hamlet' and d.project_id = #{projectId})
+		left join sys_dict_data a on (o.district = a.dict_value and a.dict_type='district' and a.project_id = o.project_id)
+		left join sys_dict_data b on (o.street = b.dict_value and b.dict_type='street' and b.project_id = o.project_id)
+		left join sys_dict_data c on (o.community = c.dict_value and c.dict_type='community' and c.project_id = o.project_id)
+		left join sys_dict_data d on (o.hamlet = d.dict_value and d.dict_type='hamlet' and d.project_id = o.project_id)
 		where o.project_id = #{projectId} and o.manager = #{userId} order by o.id asc
+	</select>
+	
+	<select id="getOwnerUnitInfoById" resultType="com.rosenzest.electric.miniapp.vo.OwnerUnitOverviewVo" >
+		select o.id, o.name, o.type, o.project_id,
+		o.district, o.street, o.community, o.hamlet, a.dict_label as district_name, b.dict_label as street_name, c.dict_label as community_name, d.dict_label as hamlet_name 
+		from owner_unit o 
+		left join sys_dict_data a on (o.district = a.dict_value and a.dict_type='district' and a.project_id = o.project_id)
+		left join sys_dict_data b on (o.street = b.dict_value and b.dict_type='street' and b.project_id = o.project_id)
+		left join sys_dict_data c on (o.community = c.dict_value and c.dict_type='community' and c.project_id = o.project_id)
+		left join sys_dict_data d on (o.hamlet = d.dict_value and d.dict_type='hamlet' and d.project_id = o.project_id)
+		where o.id = #{unitId}
+	</select>
+	
+	<select id="getOwnerUnitListByGridman" resultType="com.rosenzest.electric.miniapp.vo.OwnerUnitOverviewVo" >
+		select o.id, o.name, o.type, o.project_id,
+		o.district, o.street, o.community, o.hamlet, a.dict_label as district_name, b.dict_label as street_name, c.dict_label as community_name, d.dict_label as hamlet_name 
+		from owner_unit o 
+		left join sys_dict_data a on (o.district = a.dict_value and a.dict_type='district' and a.project_id = o.project_id)
+		left join sys_dict_data b on (o.street = b.dict_value and b.dict_type='street' and b.project_id = o.project_id)
+		left join sys_dict_data c on (o.community = c.dict_value and c.dict_type='community' and c.project_id = o.project_id)
+		left join sys_dict_data d on (o.hamlet = d.dict_value and d.dict_type='hamlet' and d.project_id = o.project_id)
+		where o.project_id = #{projectId} and o.gridman = #{userId} order by o.id asc
+	</select>
+	
+	<select id="queryOwnerUnitListByGridman" resultType="com.rosenzest.electric.miniapp.vo.OwnerUnitOverviewVo" parameterType="com.rosenzest.electric.miniapp.dto.MiniAppOwnerUnitQuery" >
+		select t.* from (select o.id, o.name, o.type, o.project_id, o.address, o.high_risk_type,
+		o.district, o.street, o.community, o.hamlet, a.dict_label as district_name, b.dict_label as street_name, c.dict_label as community_name, d.dict_label as hamlet_name,
+		CASE WHEN r.detect_status is null THEN 0 ELSE r.detect_status END as status,  
+		CASE WHEN r.detect_data is null THEN now() ELSE r.detect_data END as detect_data  
+		from owner_unit o 
+		left join owner_unit_report r on (r.unit_id = o.id and r.type = '1' )
+		left join sys_dict_data a on (o.district = a.dict_value and a.dict_type='district' and a.project_id = o.project_id)
+		left join sys_dict_data b on (o.street = b.dict_value and b.dict_type='street' and b.project_id = o.project_id)
+		left join sys_dict_data c on (o.community = c.dict_value and c.dict_type='community' and c.project_id = o.project_id)
+		left join sys_dict_data d on (o.hamlet = d.dict_value and d.dict_type='hamlet' and d.project_id = o.project_id)
+		where o.project_id = #{projectId} and o.gridman = #{userId} order by o.id asc
+		) t where 1=1
+		<if test="district != null and district != ''"> and t.district = #{district} </if>
+		<if test="street != null and street != ''"> and t.street = #{street} </if>
+		<if test="community != null and community != ''"> and t.community = #{community} </if>
+		<if test="hamlet != null and hamlet != ''"> and t.hamlet = #{hamlet} </if>
+		<if test="status != null and status != ''"> and t.status = #{status} </if>
+		<if test="highRiskType != null and highRiskType != ''"> and t.high_risk_type = #{highRiskType} </if>
+		<if test="startDate != null and startDate != ''"> and date(t.detect_data) &gt;= #{startDate} </if>
+		<if test="endDate != null and endDate != ''"> and date(t.detect_data) &lt;= #{endDate} </if>
+		<if test="keyword != null and keyword != ''">
+			and (t.name like concat('%', #{keyword}, '%') or t.address like concat('%', #{keyword}, '%'))
+		</if>
+		order by t.id asc
+	</select>
+	
+	<select id="queryOwnerUnitListByAreaUser" resultType="com.rosenzest.electric.miniapp.vo.OwnerUnitOverviewVo" parameterType="com.rosenzest.electric.miniapp.dto.MiniAppOwnerUnitQuery" >
+		select t.* from (select o.id, o.name, o.type, o.project_id, o.address, o.high_risk_type,
+		o.district, o.street, o.community, o.hamlet, a.dict_label as district_name, b.dict_label as street_name, c.dict_label as community_name, d.dict_label as hamlet_name,
+		CASE WHEN r.detect_status is null THEN 0 ELSE r.detect_status END as status,  
+		CASE WHEN r.detect_data is null THEN now() ELSE r.detect_data END as detect_data  
+		from owner_unit o 
+		left join owner_unit_report r on (r.unit_id = o.id and r.type = '1' )
+		left join sys_dict_data a on (o.district = a.dict_value and a.dict_type='district' and a.project_id = o.project_id)
+		left join sys_dict_data b on (o.street = b.dict_value and b.dict_type='street' and b.project_id = o.project_id)
+		left join sys_dict_data c on (o.community = c.dict_value and c.dict_type='community' and c.project_id = o.project_id)
+		left join sys_dict_data d on (o.hamlet = d.dict_value and d.dict_type='hamlet' and d.project_id = o.project_id)
+		where o.project_id = #{projectId} order by o.id asc
+		) t where 1=1
+		<if test="district != null and district != ''"> and t.district = #{district} </if>
+		<if test="street != null and street != ''"> and t.street = #{street} </if>
+		<if test="community != null and community != ''"> and t.community = #{community} </if>
+		<if test="hamlet != null and hamlet != ''"> and t.hamlet = #{hamlet} </if>
+		<if test="status != null and status != ''"> and t.status = #{status} </if>
+		<if test="highRiskType != null and highRiskType != ''"> and t.high_risk_type = #{highRiskType} </if>
+		<if test="startDate != null and startDate != ''"> and date(t.detect_data) &gt;= #{startDate} </if>
+		<if test="endDate != null and endDate != ''"> and date(t.detect_data) &lt;= #{endDate} </if>
+		<if test="keyword != null and keyword != ''">
+			and (t.name like concat('%', #{keyword}, '%') or t.address like concat('%', #{keyword}, '%'))
+		</if>
+		order by t.id asc
+	</select>
+	
+	<select id="unitStatistics" resultType="com.rosenzest.electric.miniapp.dto.UnitStatisticsDto" parameterType="com.rosenzest.electric.miniapp.vo.AreaUserInfoVo" >
+		select u.id, u.name ,r.id as report_id, 
+		CASE WHEN r.detect_status is null THEN 0 ELSE r.detect_status END as status 
+		from owner_unit u
+		left join owner_unit_report r on (r.unit_id = u.id and r.type = '1' )
+		where u.project_id = #{projectId} 
+		<if test="district != null and district != ''"> and u.district = #{district} </if>
+		<if test="street != null and street != ''"> and u.street = #{street} </if>
+		<if test="community != null and community != ''"> and u.community = #{community} </if>
+		<if test="hamlet != null and hamlet != ''"> and u.hamlet = #{hamlet} </if>
+	</select>
+	
+	<select id="countTodayDetectUnit" resultType="Long" parameterType="com.rosenzest.electric.miniapp.vo.AreaUserInfoVo" >
+		select count(1)
+		from owner_unit u
+		left join owner_unit_report r on (r.unit_id = u.id and r.type = '1' ) 
+		where u.project_id = 1 and date(r.detect_data) = date(now())
+		<if test="district != null and district != ''"> and u.district = #{district} </if>
+		<if test="street != null and street != ''"> and u.street = #{street} </if>
+		<if test="community != null and community != ''"> and u.community = #{community} </if>
+		<if test="hamlet != null and hamlet != ''"> and u.hamlet = #{hamlet} </if>
 	</select>
 	
 </mapper>

@@ -1,4 +1,4 @@
-package com.rosenzest.electric.owner;
+package com.rosenzest.electric.miniapp.owner.controller;
 
 import java.util.List;
 
@@ -15,15 +15,18 @@ import com.rosenzest.base.constant.ResultEnum;
 import com.rosenzest.base.enums.TerminalType;
 import com.rosenzest.base.exception.BusinessException;
 import com.rosenzest.electric.entity.OwnerUnit;
-import com.rosenzest.electric.owner.executor.OwnerUnitPermissionExecutor;
-import com.rosenzest.electric.owner.vo.OwnerUnitBuildingDangerStatisticsVo;
-import com.rosenzest.electric.owner.vo.OwnerUnitDangerStatisticsVo;
-import com.rosenzest.electric.owner.vo.OwnerUnitListVo;
+import com.rosenzest.electric.miniapp.owner.executor.OwnerUnitBelongPermissionExecutor;
+import com.rosenzest.electric.miniapp.owner.executor.OwnerUnitPermissionExecutor;
+import com.rosenzest.electric.miniapp.vo.OwnerUnitDangerStatisticsVo;
+import com.rosenzest.electric.miniapp.vo.OwnerUnitOverviewVo;
 import com.rosenzest.electric.service.IOwnerUnitBuildingService;
 import com.rosenzest.electric.service.IOwnerUnitService;
 import com.rosenzest.server.base.annotation.Permission;
+import com.rosenzest.server.base.annotation.PermissionParam;
 import com.rosenzest.server.base.annotation.TokenRule;
 import com.rosenzest.server.base.controller.ServerBaseController;
+import com.rosenzest.server.base.enums.RequestParamType;
+import com.rosenzest.server.base.enums.UserType;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -34,9 +37,10 @@ import io.swagger.annotations.ApiOperation;
 
 @Api(tags = "业主单元端")
 @RestController
-@RequestMapping("/manager/owner/unit")
-@TokenRule(terminal = TerminalType.MINIAPP)
-@Permission(OwnerUnitPermissionExecutor.class)
+@RequestMapping("/miniapp/manager/owner/unit")
+@TokenRule(terminal = TerminalType.MINIAPP, userType = { UserType.OWNER_UNIT, UserType.VISITOR })
+@Permission(type = OwnerUnitBelongPermissionExecutor.class, param = {
+		@PermissionParam(name = "unitId", type = RequestParamType.PATH_VARIABLE) })
 public class OwnerUnitManagerController extends ServerBaseController {
 
 	@Autowired
@@ -45,61 +49,61 @@ public class OwnerUnitManagerController extends ServerBaseController {
 	@Autowired
 	private IOwnerUnitBuildingService ownerUnitBuildingService;
 
+	@Permission(OwnerUnitPermissionExecutor.class)
 	@ApiOperation(tags = "业主单元端", value = "业主单元列表")
 	@GetMapping("/list")
-	public Result<List<OwnerUnitListVo>> ownerUnitList() {
+	public Result<List<OwnerUnitOverviewVo>> ownerUnitList() {
 
 		LoginUser loginUser = getLoginUser();
 		Long projectId = loginUser.getProjectId();
 
-		List<OwnerUnitListVo> list = ownerUnitService.getOwnerUnitListByOwner(loginUser.getUserId(), projectId);
+		List<OwnerUnitOverviewVo> list = ownerUnitService.getOwnerUnitListByOwner(loginUser.getUserId(), projectId);
 
 		return Result.SUCCESS(list);
 	}
 
 	@ApiOperation(tags = "业主单元端", value = "业主单元楼栋列表")
 	@GetMapping("/building/list/{unitId}")
-	public Result<List<OwnerUnitBuildingDangerStatisticsVo>> ownerUnitBuildingList(@PathVariable Long unitId,
+	public Result<List<OwnerUnitDangerStatisticsVo>> ownerUnitBuildingList(@PathVariable Long unitId,
 			@RequestParam(required = false) String keyword) {
 
-		LoginUser loginUser = getLoginUser();
+		// LoginUser loginUser = getLoginUser();
 
-		if (!ownerUnitService.checkOwnerUnitManager(unitId, loginUser.getUserId())) {
-			throw new BusinessException(ResultEnum.FORBIDDEN);
-		}
+		// if (!ownerUnitService.checkOwnerUnitManager(unitId, loginUser.getUserId())) {
+		// throw new BusinessException(ResultEnum.FORBIDDEN);
+		// }
 
 		OwnerUnit ownerUnit = ownerUnitService.getById(unitId);
 		if (ownerUnit == null) {
 			throw new BusinessException(ResultEnum.FORBIDDEN);
 		}
 
-		List<OwnerUnitBuildingDangerStatisticsVo> result = ownerUnitBuildingService
-				.getOwnerUnitBuildingDangerStatistics(unitId, keyword);
+		List<OwnerUnitDangerStatisticsVo> result = ownerUnitBuildingService.getOwnerUnitBuildingDangerStatistics(unitId,
+				keyword);
 
 		return Result.SUCCESS(result);
 	}
 
-	@ApiOperation(tags = "业主单元端", value = "业主单元隐患详情")
+	@ApiOperation(tags = "业主单元端", value = "业主单元隐患汇总")
 	@GetMapping("/danger/{unitId}")
-	public Result<OwnerUnitDangerStatisticsVo> ownerUnitDangerStatistics(@PathVariable Long unitId,
-			@RequestParam(required = false) Long buildingId) {
+	public Result<OwnerUnitDangerStatisticsVo> ownerUnitDangerStatistics(@PathVariable Long unitId) {
 
 		return ownerUnitBuildingDangerStatistics(unitId, null);
 	}
 
-	@ApiOperation(tags = "业主单元端", value = "业主单元楼栋隐患详情")
+	@ApiOperation(tags = "业主单元端", value = "业主单元楼栋隐患汇总")
 	@GetMapping("/danger/{unitId}/{buildingId}")
 	public Result<OwnerUnitDangerStatisticsVo> ownerUnitBuildingDangerStatistics(@PathVariable Long unitId,
 			@PathVariable Long buildingId) {
 
 		LoginUser loginUser = getLoginUser();
 
-		if (!ownerUnitService.checkOwnerUnitManager(unitId, loginUser.getUserId())) {
-			throw new BusinessException(ResultEnum.FORBIDDEN);
-		}
+//		if (!ownerUnitService.checkOwnerUnitManager(unitId, loginUser.getUserId())) {
+//			throw new BusinessException(ResultEnum.FORBIDDEN);
+//		}
 
 		OwnerUnitDangerStatisticsVo result = ownerUnitService.getOwnerUnitDangerStatistics(unitId, buildingId);
-
+		result.setUserName(loginUser.getName());
 		return Result.SUCCESS(result);
 	}
 }

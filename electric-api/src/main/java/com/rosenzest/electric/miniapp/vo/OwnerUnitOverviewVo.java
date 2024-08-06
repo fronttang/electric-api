@@ -1,10 +1,16 @@
-package com.rosenzest.electric.owner.vo;
+package com.rosenzest.electric.miniapp.vo;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 @Data
-public class OwnerUnitListVo {
+public class OwnerUnitOverviewVo {
+
+	/**
+	 * 用户名
+	 */
+	@ApiModelProperty("用户名")
+	private String userName;
 
 	/**
 	 * 业主单元ID
@@ -15,8 +21,20 @@ public class OwnerUnitListVo {
 	/**
 	 * 名称
 	 */
-	@ApiModelProperty("名称")
+	@ApiModelProperty("业主单元名称")
 	private String name;
+
+	/**
+	 * 业主单元类型 1城中村2工业园3高风险4充电站
+	 */
+	@ApiModelProperty("业主单元类型 1城中村2工业园3高风险4充电站")
+	private String type;
+
+	/**
+	 * 项目ID
+	 */
+	@ApiModelProperty("项目ID")
+	private Long projectId;
 
 	/**
 	 * 区县

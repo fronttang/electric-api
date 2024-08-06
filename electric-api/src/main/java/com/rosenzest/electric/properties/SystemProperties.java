@@ -22,6 +22,25 @@ public class SystemProperties {
 	 */
 	private String domain;
 
+	/**
+	 * 小程序业主端地址
+	 */
+	private Miniapp miniapp = new Miniapp();
+
+	/**
+	 * 
+	 */
+	private String ownerUnitDesKey = "0185786A0362F7F2B0C316B31D1BAD62";
+
+	@Data
+	public static class Miniapp {
+
+		/**
+		 * 业主端地址
+		 */
+		private String ownerUrl = "pages/home/user/index";
+	}
+
 	public static String getProfile() {
 		return profile;
 	}

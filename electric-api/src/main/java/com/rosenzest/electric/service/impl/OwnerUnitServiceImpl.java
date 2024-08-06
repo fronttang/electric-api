@@ -1,10 +1,12 @@
 package com.rosenzest.electric.service.impl;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,18 +29,28 @@ import com.rosenzest.electric.entity.OwnerUnit;
 import com.rosenzest.electric.entity.OwnerUnitBuilding;
 import com.rosenzest.electric.entity.OwnerUnitDanger;
 import com.rosenzest.electric.entity.OwnerUnitReport;
+import com.rosenzest.electric.entity.Project;
 import com.rosenzest.electric.entity.SysDictData;
 import com.rosenzest.electric.enums.InitialInspectionStatus;
 import com.rosenzest.electric.enums.ReviewStatus;
 import com.rosenzest.electric.enums.UnitReportType;
 import com.rosenzest.electric.mapper.OwnerUnitMapper;
-import com.rosenzest.electric.owner.vo.OwnerUnitDangerStatisticsVo;
-import com.rosenzest.electric.owner.vo.OwnerUnitListVo;
+import com.rosenzest.electric.miniapp.dto.MiniAppOwnerUnitQuery;
+import com.rosenzest.electric.miniapp.dto.UnitStatisticsDto;
+import com.rosenzest.electric.miniapp.vo.AreaUserIndexVo;
+import com.rosenzest.electric.miniapp.vo.AreaUserIndexVo.DangerStatistics;
+import com.rosenzest.electric.miniapp.vo.AreaUserIndexVo.TodayStatistics;
+import com.rosenzest.electric.miniapp.vo.AreaUserIndexVo.UnitStatistics;
+import com.rosenzest.electric.miniapp.vo.AreaUserInfoVo;
+import com.rosenzest.electric.miniapp.vo.IDangerStatisticsVo;
+import com.rosenzest.electric.miniapp.vo.OwnerUnitDangerStatisticsVo;
+import com.rosenzest.electric.miniapp.vo.OwnerUnitOverviewVo;
 import com.rosenzest.electric.service.IOwnerUnitAreaService;
 import com.rosenzest.electric.service.IOwnerUnitBuildingService;
 import com.rosenzest.electric.service.IOwnerUnitDangerService;
 import com.rosenzest.electric.service.IOwnerUnitReportService;
 import com.rosenzest.electric.service.IOwnerUnitService;
+import com.rosenzest.electric.service.IProjectService;
 import com.rosenzest.electric.service.ISysDictDataService;
 import com.rosenzest.electric.vo.InitialOwnerUnitVo;
 import com.rosenzest.electric.vo.OwnerUnitReviewVo;
@@ -76,6 +88,9 @@ public class OwnerUnitServiceImpl extends ModelBaseServiceImpl<OwnerUnitMapper, 
 
 	@Autowired
 	private IOwnerUnitBuildingService ownerUnitBuildingService;
+
+	@Autowired
+	private IProjectService projectService;
 
 	@Override
 	public List<InitialOwnerUnitVo> queryInitialList(OwnerUnitQuery query, PageList pageList) {
@@ -188,8 +203,13 @@ public class OwnerUnitServiceImpl extends ModelBaseServiceImpl<OwnerUnitMapper, 
 	}
 
 	@Override
-	public List<OwnerUnitListVo> getOwnerUnitListByOwner(Long userId, Long projectId) {
+	public List<OwnerUnitOverviewVo> getOwnerUnitListByOwner(Long userId, Long projectId) {
 		return this.baseMapper.getOwnerUnitListByOwner(userId, projectId);
+	}
+
+	@Override
+	public List<OwnerUnitOverviewVo> getOwnerUnitListByGridman(Long userId, Long projectId) {
+		return this.baseMapper.getOwnerUnitListByGridman(userId, projectId);
 	}
 
 	@Override
@@ -201,69 +221,277 @@ public class OwnerUnitServiceImpl extends ModelBaseServiceImpl<OwnerUnitMapper, 
 	}
 
 	@Override
+	public boolean checkOwnerUnitGridman(Long unitId, Long userId) {
+		LambdaQueryWrapper<OwnerUnit> queryWrapper = new LambdaQueryWrapper<OwnerUnit>();
+		queryWrapper.eq(OwnerUnit::getId, unitId);
+		queryWrapper.eq(OwnerUnit::getGridman, userId);
+		return this.baseMapper.selectCount(queryWrapper) > 0;
+	}
+
+	@Override
 	public OwnerUnitDangerStatisticsVo getOwnerUnitDangerStatistics(Long unitId, Long buildingId) {
 
-		//
-		final List<SysDictData> hazardLevel = dictDataService
-				.getDictDataByType(ElectricConstant.DICT_TYPE_HAZARD_LEVEL);
-
-		OwnerUnit ownerUnit = this.getById(unitId);
+		OwnerUnitOverviewVo ownerUnit = this.baseMapper.getOwnerUnitInfoById(unitId);
 		if (ownerUnit == null) {
 			throw new BusinessException(ResultEnum.FORBIDDEN);
 		}
-		OwnerUnitDangerStatisticsVo vo = new OwnerUnitDangerStatisticsVo();
-		vo.setId(ownerUnit.getId());
-		vo.setName(ownerUnit.getName());
 
+		OwnerUnitBuilding building = null;
 		if (buildingId != null) {
-			OwnerUnitBuilding building = ownerUnitBuildingService.getById(buildingId);
+			building = ownerUnitBuildingService.getById(buildingId);
 			if (building == null) {
 				throw new BusinessException(ResultEnum.FORBIDDEN);
 			}
-
-			vo.setBuildingId(building.getId());
-			;
-			vo.setBuildingName(building.getName());
 		}
 
-		List<OwnerUnitDanger> dangerLists = ownerUnitDangerService.getDangersByUnitIdAndBuildingIds(unitId,
-				Arrays.asList(buildingId));
+		final List<SysDictData> hazardLevel = this.getHazardLevel(ownerUnit.getType());
 
+		List<Long> buildingIds = null;
+
+		if (buildingId != null) {
+			buildingIds = Arrays.asList(buildingId);
+		}
+		List<OwnerUnitDanger> dangerLists = ownerUnitDangerService.getDangersByUnitIdAndBuildingIds(unitId,
+				buildingIds);
+
+		return buildOwnerUnitDangerStatisticsVo(ownerUnit, building, dangerLists, hazardLevel);
+
+	}
+
+	@Override
+	public OwnerUnitOverviewVo getOwnerUnitInfoById(Long unitId) {
+		return this.baseMapper.getOwnerUnitInfoById(unitId);
+	}
+
+	@Override
+	public OwnerUnitDangerStatisticsVo buildOwnerUnitDangerStatisticsVo(OwnerUnitOverviewVo ownerUnit,
+			OwnerUnitBuilding building, List<OwnerUnitDanger> dangerLists, List<SysDictData> hazardLevel) {
+		OwnerUnitDangerStatisticsVo vo = new OwnerUnitDangerStatisticsVo();
+		BeanUtils.copyProperties(ownerUnit, vo);
+
+		if (building != null) {
+			vo.setBuildingId(building.getId());
+			vo.setBuildingName(building.getName());
+			vo.setBuildingType(building.getType());
+		}
+		buildDangerStatisticsVo(dangerLists, hazardLevel, vo);
+		return vo;
+	}
+
+	@Override
+	public void buildDangerStatisticsVo(List<OwnerUnitDanger> dangerLists, List<SysDictData> hazardLevel,
+			IDangerStatisticsVo vo) {
 		vo.setDanger(0L);
 		vo.setFinish(0L);
+		vo.setRectification(0L);
+		vo.setReview(0L);
 
 		final Map<String, Long> dangerLevelMap = new HashMap<String, Long>();
 		final Map<String, Long> finishLevelMap = new HashMap<String, Long>();
+		final Map<String, Long> rectificationLevelMap = new HashMap<String, Long>();
+		final Map<String, Long> reviewLevelMap = new HashMap<String, Long>();
 		if (CollUtil.isNotEmpty(dangerLists)) {
 			vo.setDanger(dangerLists.stream().count());
+
+			// 完成数
 			Long finish = dangerLists.stream().filter((d) -> ReviewStatus.FINISH.code().equalsIgnoreCase(d.getStatus()))
 					.collect(Collectors.counting());
 			vo.setFinish(finish);
 
-			dangerLevelMap.putAll(dangerLists.stream()
-					.collect(Collectors.groupingBy(OwnerUnitDanger::getLevel, Collectors.counting())));
+			// 待整改数
+			Long rectification = dangerLists.stream()
+					.filter((d) -> ReviewStatus.RECTIFIED.code().equalsIgnoreCase(d.getStatus()))
+					.collect(Collectors.counting());
+			vo.setRectification(rectification);
 
-			finishLevelMap.putAll(
-					dangerLists.stream().filter((d) -> ReviewStatus.FINISH.code().equalsIgnoreCase(d.getStatus()))
-							.collect(Collectors.groupingBy(OwnerUnitDanger::getLevel, Collectors.counting())));
+			// 待复检数
+			Long review = dangerLists.stream()
+					.filter((d) -> ReviewStatus.RE_EXAMINATION.code().equalsIgnoreCase(d.getStatus()))
+					.collect(Collectors.counting());
+			vo.setReview(review);
+
+			dangerLevelMap.putAll(dangerLists.stream().filter((d) -> Objects.nonNull(d.getLevel()))
+					.collect(Collectors.groupingBy(OwnerUnitDanger::getLevel, Collectors.counting())).entrySet()
+					.stream()
+					.collect(Collectors.toMap((d) -> StrUtil.format("count{}", d.getKey()), (d) -> d.getValue())));
+
+			finishLevelMap.putAll(dangerLists.stream().filter((d) -> Objects.nonNull(d.getLevel()))
+					.filter((d) -> ReviewStatus.FINISH.code().equalsIgnoreCase(d.getStatus()))
+					.collect(Collectors.groupingBy(OwnerUnitDanger::getLevel, Collectors.counting())).entrySet()
+					.stream()
+					.collect(Collectors.toMap((d) -> StrUtil.format("count{}", d.getKey()), (d) -> d.getValue())));
+
+			rectificationLevelMap.putAll(dangerLists.stream().filter((d) -> Objects.nonNull(d.getLevel()))
+					.filter((d) -> ReviewStatus.RECTIFIED.code().equalsIgnoreCase(d.getStatus()))
+					.collect(Collectors.groupingBy(OwnerUnitDanger::getLevel, Collectors.counting())).entrySet()
+					.stream()
+					.collect(Collectors.toMap((d) -> StrUtil.format("count{}", d.getKey()), (d) -> d.getValue())));
+
+			reviewLevelMap.putAll(dangerLists.stream().filter((d) -> Objects.nonNull(d.getLevel()))
+					.filter((d) -> ReviewStatus.RE_EXAMINATION.code().equalsIgnoreCase(d.getStatus()))
+					.collect(Collectors.groupingBy(OwnerUnitDanger::getLevel, Collectors.counting())).entrySet()
+					.stream()
+					.collect(Collectors.toMap((d) -> StrUtil.format("count{}", d.getKey()), (d) -> d.getValue())));
 		}
 
 		hazardLevel.forEach((level) -> {
-			if (dangerLevelMap.get(level.getDictValue()) == null) {
-				dangerLevelMap.put(StrUtil.format("count{}", level.getDictValue()), 0L);
-			}
+
+			String key = StrUtil.format("count{}", level.getDictValue());
+
+			dangerLevelMap.put(key, dangerLevelMap.get(key) == null ? 0L : dangerLevelMap.get(key));
+
+			finishLevelMap.put(key, finishLevelMap.get(key) == null ? 0L : finishLevelMap.get(key));
+
+			rectificationLevelMap.put(key,
+					rectificationLevelMap.get(key) == null ? 0L : rectificationLevelMap.get(key));
+
+			reviewLevelMap.put(key, reviewLevelMap.get(key) == null ? 0L : reviewLevelMap.get(key));
+
 		});
 		vo.setDangers(dangerLevelMap);
-
-		hazardLevel.forEach((level) -> {
-
-			if (finishLevelMap.get(level.getDictValue()) == null) {
-				finishLevelMap.put(StrUtil.format("count{}", level.getDictValue()), 0L);
-			}
-		});
 		vo.setFinishs(finishLevelMap);
+		vo.setRectifications(rectificationLevelMap);
+		vo.setReviews(reviewLevelMap);
+	}
 
-		return vo;
+	@Override
+	public List<SysDictData> getHazardLevel(String type) {
+		List<SysDictData> hazardLevel = new ArrayList<SysDictData>();
+		if ("1".equalsIgnoreCase(type) || "2".equalsIgnoreCase(type)) {
+			// 城中村/工业园
+			hazardLevel.addAll(dictDataService.getDictDataByType(ElectricConstant.DICT_TYPE_HAZARD_LEVEL));
+		} else if ("3".equalsIgnoreCase(type)) {
+			// 高风险
+			hazardLevel.addAll(dictDataService.getDictDataByType(ElectricConstant.DICT_TYPE_HAZARD_LEVEL_HIGH));
+		} else if ("4".equalsIgnoreCase(type)) {
+			// 高风险
+			hazardLevel.addAll(
+					dictDataService.getDictDataByType(ElectricConstant.DICT_TYPE_HAZARD_LEVEL_CHARGING_STATION));
+		}
+		return hazardLevel;
+	}
+
+	private List<OwnerUnitOverviewVo> getOwnerUnitListByGridman(MiniAppOwnerUnitQuery query) {
+		return this.baseMapper.queryOwnerUnitListByGridman(query);
+	}
+
+	private List<OwnerUnitOverviewVo> getOwnerUnitListByAreaUser(MiniAppOwnerUnitQuery query) {
+		return this.baseMapper.queryOwnerUnitListByAreaUser(query);
+	}
+
+	@Override
+	public List<OwnerUnitDangerStatisticsVo> getOwnerUnitDangerStatisticsByGridman(MiniAppOwnerUnitQuery query,
+			PageList pageList) {
+
+		List<OwnerUnitDangerStatisticsVo> result = new ArrayList<OwnerUnitDangerStatisticsVo>();
+		Project project = projectService.getById(query.getProjectId());
+		if (project != null) {
+
+			Page<OwnerUnitOverviewVo> startPage = PageHelper.startPage(pageList.getPageNum(), pageList.getPageSize());
+			startPage.setReasonable(false);
+			List<OwnerUnitOverviewVo> ownerUnitList = getOwnerUnitListByGridman(query);
+
+			if (CollUtil.isNotEmpty(ownerUnitList)) {
+
+				final List<SysDictData> hazardLevel = this.getHazardLevel(project.getType());
+				result = ownerUnitList.stream().map((unit) -> {
+					List<OwnerUnitDanger> dangers = ownerUnitDangerService
+							.getDangersByUnitIdAndBuildingIds(unit.getId(), null);
+					return this.buildOwnerUnitDangerStatisticsVo(unit, null, dangers, hazardLevel);
+
+				}).collect(Collectors.toList());
+			}
+			pageList.setTotalNum(startPage.getTotal());
+		}
+		return result;
+	}
+
+	@Override
+	public List<OwnerUnitDangerStatisticsVo> getOwnerUnitDangerStatisticsByAreaUser(MiniAppOwnerUnitQuery query,
+			PageList pageList) {
+
+		List<OwnerUnitDangerStatisticsVo> result = new ArrayList<OwnerUnitDangerStatisticsVo>();
+		Project project = projectService.getById(query.getProjectId());
+		if (project != null) {
+
+			Page<OwnerUnitOverviewVo> startPage = PageHelper.startPage(pageList.getPageNum(), pageList.getPageSize());
+			startPage.setReasonable(false);
+			List<OwnerUnitOverviewVo> ownerUnitList = getOwnerUnitListByAreaUser(query);
+
+			if (CollUtil.isNotEmpty(ownerUnitList)) {
+
+				final List<SysDictData> hazardLevel = this.getHazardLevel(project.getType());
+				result = ownerUnitList.stream().map((unit) -> {
+					List<OwnerUnitDanger> dangers = ownerUnitDangerService
+							.getDangersByUnitIdAndBuildingIds(unit.getId(), null);
+					return this.buildOwnerUnitDangerStatisticsVo(unit, null, dangers, hazardLevel);
+
+				}).collect(Collectors.toList());
+			}
+			pageList.setTotalNum(startPage.getTotal());
+		}
+		return result;
+	}
+
+	private UnitStatistics getUnitStatistics(AreaUserInfoVo userInfo) {
+
+		List<UnitStatisticsDto> unitStatisticsResult = this.baseMapper.unitStatistics(userInfo);
+		UnitStatistics result = new UnitStatistics();
+
+		if (CollUtil.isNotEmpty(unitStatisticsResult)) {
+
+			result.setTotal(unitStatisticsResult.stream().count());
+
+			long detected = unitStatisticsResult.stream().filter((e) -> Objects.nonNull(e.getReportId())).count();
+			result.setDetected(detected);
+
+			long detecting = unitStatisticsResult.stream().filter((e) -> Objects.isNull(e.getReportId())).count();
+			result.setDetecting(detecting);
+		}
+
+		return result;
+	}
+
+	private TodayStatistics getTodayStatistics(AreaUserInfoVo userInfo) {
+
+		TodayStatistics today = new TodayStatistics();
+
+		Long unit = this.baseMapper.countTodayDetectUnit(userInfo);
+		today.setUnit(unit);
+
+		List<OwnerUnitDanger> todayDangers = ownerUnitDangerService.getTodayDangersByAreaUser(userInfo);
+		if (CollUtil.isNotEmpty(todayDangers)) {
+			today.setDanger(todayDangers.stream().count());
+			today.setFinish(todayDangers.stream()
+					.filter((d) -> ReviewStatus.FINISH.code().equalsIgnoreCase(d.getStatus())).count());
+		}
+
+		return today;
+	}
+
+	@Override
+	public AreaUserIndexVo getAreaUserIndex(AreaUserInfoVo userInfo) {
+
+		AreaUserIndexVo result = new AreaUserIndexVo();
+		result.setUserName(userInfo.getNickName());
+		result.setAreaName(userInfo.getAreaName());
+		result.setUnit(getUnitStatistics(userInfo));
+
+		Project project = projectService.getById(userInfo.getProjectId());
+		if (project != null) {
+
+			List<OwnerUnitDanger> dangerLists = ownerUnitDangerService.getOwnerUnitDangerByAreaUser(userInfo);
+			DangerStatistics danger = new DangerStatistics();
+			final List<SysDictData> hazardLevel = this.getHazardLevel(project.getType());
+
+			buildDangerStatisticsVo(dangerLists, hazardLevel, danger);
+
+			result.setDanger(danger);
+		}
+
+		TodayStatistics today = this.getTodayStatistics(userInfo);
+		result.setToday(today);
+		return result;
 	}
 
 }

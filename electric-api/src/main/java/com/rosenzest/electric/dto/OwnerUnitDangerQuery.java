@@ -93,4 +93,17 @@ public class OwnerUnitDangerQuery extends PageQuery {
 	 */
 	@ApiModelProperty("充电桩ID")
 	private Long chargingPileId;
+
+	/**
+	 * 初检开始时间
+	 */
+	@ApiModelProperty("初检开始时间：格式yyyy-MM-dd")
+	private String startDate;
+
+	/**
+	 * 初检结束时间
+	 */
+	@ApiModelProperty("初检结束时间：格式yyyy-MM-dd")
+	private String endDate;
+
 }

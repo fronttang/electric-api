@@ -24,35 +24,36 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class WebLogAspect {
 
-    @Pointcut("execution(public * com.xmzy..controller..*.*(..))") // 切入点描述 这个是controller包的切入点
-    public void controllerLog() {}
+	@Pointcut("execution(public * com.rosenzest..controller..*.*(..))") // 切入点描述 这个是controller包的切入点
+	public void controllerLog() {
+	}
 
-    /**
-     * 接口请求参数记录日志
-     */
-    @Before("controllerLog()")
-    public void doBefore(JoinPoint joinPoint) {
+	/**
+	 * 接口请求参数记录日志
+	 */
+	@Before("controllerLog()")
+	public void doBefore(JoinPoint joinPoint) {
 
-        IRequestContext current = RequestContextHolder.getCurrent();
+		IRequestContext current = RequestContextHolder.getCurrent();
 
-        log.info("请求方法:{}", joinPoint.toLongString());
-        log.info("请求参数:{}", JSON.toJSONString(current.getParam()));
-    }
+		log.info("请求方法:{}", joinPoint.toLongString());
+		log.info("请求参数:{}", JSON.toJSONString(current.getParam()));
+	}
 
-    /**
-     * 接口返回结果记录日志
-     */
-    @AfterReturning(pointcut = "controllerLog()", returning = "result")
-    public void doAfterReturning(JoinPoint joinPoint, Object result) {
-        // log.info("返回数据:{}", JSON.toJSONString(result));
-    }
+	/**
+	 * 接口返回结果记录日志
+	 */
+	@AfterReturning(pointcut = "controllerLog()", returning = "result")
+	public void doAfterReturning(JoinPoint joinPoint, Object result) {
+		// log.info("返回数据:{}", JSON.toJSONString(result));
+	}
 
-    @Around("controllerLog()")
-    public Object doAround(ProceedingJoinPoint joinPoint) throws Throwable {
-        try {
-            return joinPoint.proceed();
-        } catch (Throwable e) {
-            throw e;
-        }
-    }
+	@Around("controllerLog()")
+	public Object doAround(ProceedingJoinPoint joinPoint) throws Throwable {
+		try {
+			return joinPoint.proceed();
+		} catch (Throwable e) {
+			throw e;
+		}
+	}
 }

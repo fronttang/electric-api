@@ -8,4 +8,10 @@
 		from detect_template_b tb left join sys_dict_data d on ( d.dict_value = tb.bid and d.dict_type = 'detect_table_b' )
 		where tb.template_id = #{templateId} and tb.type = #{type} 
 	</select>
+	
+	<select id="getViewTableBByTemplateId" resultType="com.rosenzest.electric.vo.DetectFormVo">
+		select d.dict_label as name, 'B' as type, tb.bid as code, tb.type as attr_type 
+		from detect_template_b tb left join sys_dict_data d on ( d.dict_value = tb.bid and d.dict_type = 'detect_table_b' )
+		where tb.template_id = #{templateId} and tb.type in ('11','12','13')
+	</select>
 </mapper>

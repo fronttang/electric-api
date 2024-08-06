@@ -173,4 +173,9 @@ public class OwnerUnitDanger extends BaseEntity<OwnerUnitDanger> {
 	 */
 	private String detectPic;
 
+	/**
+	 * 备注
+	 */
+	private String remark;
+
 }

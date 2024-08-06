@@ -114,4 +114,10 @@ public class OwnerUnitDangerDto {
 	 */
 	@ApiModelProperty("B类表数据")
 	private JSONObject formb;
+
+	/**
+	 * 备注
+	 */
+	@ApiModelProperty("备注")
+	private String remark;
 }

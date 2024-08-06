@@ -7,7 +7,7 @@ import com.rosenzest.electric.dto.OwnerUnitBuildingQuery;
 import com.rosenzest.electric.dto.OwnerUnitBuildingReivewQuery;
 import com.rosenzest.electric.entity.OwnerUnitBuilding;
 import com.rosenzest.electric.enums.ReviewStatus;
-import com.rosenzest.electric.owner.vo.OwnerUnitBuildingDangerStatisticsVo;
+import com.rosenzest.electric.miniapp.vo.OwnerUnitDangerStatisticsVo;
 import com.rosenzest.electric.vo.InitialOwnerUnitBuildingVo;
 import com.rosenzest.electric.vo.OwnerUnitBuildingReviewVo;
 import com.rosenzest.model.base.service.IModelBaseService;
@@ -32,6 +32,6 @@ public interface IOwnerUnitBuildingService extends IModelBaseService<OwnerUnitBu
 
 	ReviewStatus getBuildingReviewStatus(Long buildingId);
 
-	List<OwnerUnitBuildingDangerStatisticsVo> getOwnerUnitBuildingDangerStatistics(Long unitId, String keyword);
+	List<OwnerUnitDangerStatisticsVo> getOwnerUnitBuildingDangerStatistics(Long unitId, String keyword);
 
 }

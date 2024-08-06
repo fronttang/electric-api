@@ -44,6 +44,7 @@ public class WebMvcConfigs implements WebMvcConfigurer {
 		exclude.add("/v3/3rd/**");
 		exclude.add("/profile/**");
 		exclude.add("/client/version");
+		exclude.add("/miniapp/login/**");
 
 		registry.addInterceptor(securityInterceptor()).order(Integer.MAX_VALUE).addPathPatterns("/**")
 				.excludePathPatterns(exclude);

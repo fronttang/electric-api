@@ -36,6 +36,7 @@ import com.rosenzest.electric.vo.LoginVo;
 import com.rosenzest.server.base.annotation.TokenRule;
 import com.rosenzest.server.base.cache.CacheKeyBuilder;
 import com.rosenzest.server.base.controller.ServerBaseController;
+import com.rosenzest.server.base.enums.UserType;
 import com.rosenzest.server.base.properties.TokenProperties;
 import com.rosenzest.server.base.util.JwtTokenUtil;
 
@@ -124,7 +125,8 @@ public class SysUserController extends ServerBaseController {
 		return Result.SUCCESS(token);
 	}
 
-	@TokenRule(terminal = { TerminalType.APP, TerminalType.MINIAPP })
+	@TokenRule(terminal = { TerminalType.APP, TerminalType.MINIAPP }, userType = { UserType.WORKER, UserType.GRADMAN,
+			UserType.OWNER_UNIT, UserType.AREA_USER, UserType.VISITOR })
 	@ApiOperation(tags = "用户相关", value = "退出登录")
 	@GetMapping("/logout")
 	public Result<?> logout() {
@@ -154,7 +156,8 @@ public class SysUserController extends ServerBaseController {
 		return Result.SUCCESS(loginVo);
 	}
 
-	@TokenRule(project = false, terminal = { TerminalType.APP, TerminalType.MINIAPP })
+	@TokenRule(project = false, terminal = { TerminalType.APP, TerminalType.MINIAPP }, userType = { UserType.WORKER,
+			UserType.GRADMAN, UserType.OWNER_UNIT, UserType.AREA_USER })
 	@ApiOperation(tags = "用户相关", value = "修改密码")
 	@PutMapping("/password")
 	public Result<LoginVo> modifyPassword(@RequestBody @Valid ModifyPasswordDto data) {

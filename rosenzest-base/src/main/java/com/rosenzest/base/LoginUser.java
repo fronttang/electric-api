@@ -46,4 +46,9 @@ public class LoginUser extends JwtPayLoad {
 	 */
 	private Long projectId;
 
+	/**
+	 * 业主单元ID
+	 */
+	private Long unitId;
+
 }

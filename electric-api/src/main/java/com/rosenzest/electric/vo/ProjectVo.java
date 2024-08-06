@@ -12,40 +12,40 @@ import lombok.ToString;
 @AllArgsConstructor
 public class ProjectVo {
 
-    /**
-     * ID
-     */
+	/**
+	 * ID
+	 */
 	@ApiModelProperty("项目ID")
-    private Long id;
+	private Long id;
 
-    /**
-     * 项目名称
-     */
+	/**
+	 * 项目名称
+	 */
 	@ApiModelProperty("项目名称")
-    private String name;
+	private String name;
 
-    /**
-     * 项目类型
-     */
-	@ApiModelProperty("项目类型,见字典:project_type")
-    private String type;
+	/**
+	 * 项目类型
+	 */
+	@ApiModelProperty("项目类型,1城中村2工业园3高风险4充电站")
+	private String type;
 
-    /**
-     * 检测单位
-     */
+	/**
+	 * 检测单位
+	 */
 	@ApiModelProperty("检测单位")
-    private Long detectId;
+	private Long detectId;
 
-    /**
-     * 入户率要求
-     */
+	/**
+	 * 入户率要求
+	 */
 	@ApiModelProperty("入户率要求")
-    private Integer householdRate;
+	private Integer householdRate;
 
-    /**
-     * 模板ID
-     */
+	/**
+	 * 模板ID
+	 */
 	@ApiModelProperty("模板ID")
-    private Long templateId;
+	private Long templateId;
 
 }

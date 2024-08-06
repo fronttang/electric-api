@@ -4,6 +4,7 @@
 package com.rosenzest.server.base.interceptor;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -22,16 +23,19 @@ import com.rosenzest.base.LoginUser;
 import com.rosenzest.base.constant.ResultCodeConstants;
 import com.rosenzest.base.constant.ResultEnum;
 import com.rosenzest.base.constant.SystemConstants;
+import com.rosenzest.base.enums.EnumUtils;
 import com.rosenzest.base.enums.TerminalType;
 import com.rosenzest.base.exception.BusinessException;
 import com.rosenzest.base.util.AnnotationUtils;
 import com.rosenzest.server.base.annotation.TokenRule;
 import com.rosenzest.server.base.context.IRequestContext;
 import com.rosenzest.server.base.context.RequestContextHolder;
+import com.rosenzest.server.base.enums.UserType;
 import com.rosenzest.server.base.properties.TokenProperties;
 import com.rosenzest.server.base.properties.TokenProperties.TokenSM;
 import com.rosenzest.server.base.service.AuthService;
 
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
 import lombok.extern.slf4j.Slf4j;
 
@@ -81,6 +85,11 @@ public class SecurityInterceptor extends HandlerInterceptorAdapter {
 				allowTerminal = Arrays.asList(tokenRole.terminal());
 			}
 
+			List<UserType> allowUserType = new ArrayList<UserType>();
+			if (tokenRole != null && tokenRole.userType() != null && tokenRole.userType().length > 0) {
+				allowUserType = Arrays.asList(tokenRole.userType());
+			}
+
 			String token = authService.getTokenFromRequestHeader(request);
 			if (StrUtil.isNotBlank(token)) {
 
@@ -101,6 +110,13 @@ public class SecurityInterceptor extends HandlerInterceptorAdapter {
 
 				TerminalType terminal = loginUser.getTerminal();
 				if (!allowTerminal.contains(terminal)) {
+					throw new BusinessException(ResultEnum.FORBIDDEN);
+				}
+
+				String userTypeCode = loginUser.getType();
+				UserType userType = EnumUtils.init(UserType.class).fromCode(userTypeCode);
+
+				if (CollUtil.isNotEmpty(allowUserType) && !allowUserType.contains(userType)) {
 					throw new BusinessException(ResultEnum.FORBIDDEN);
 				}
 

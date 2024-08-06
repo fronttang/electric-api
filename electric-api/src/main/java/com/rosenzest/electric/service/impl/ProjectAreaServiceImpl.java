@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import com.rosenzest.electric.dto.ProjectAreaDto;
 import com.rosenzest.electric.entity.ProjectArea;
 import com.rosenzest.electric.mapper.ProjectAreaMapper;
+import com.rosenzest.electric.miniapp.vo.AreaUserInfoVo;
 import com.rosenzest.electric.service.IProjectAreaService;
 import com.rosenzest.model.base.service.ModelBaseServiceImpl;
 
@@ -19,11 +20,17 @@ import com.rosenzest.model.base.service.ModelBaseServiceImpl;
  * @since 2024-06-28
  */
 @Service
-public class ProjectAreaServiceImpl extends ModelBaseServiceImpl<ProjectAreaMapper, ProjectArea> implements IProjectAreaService {
+public class ProjectAreaServiceImpl extends ModelBaseServiceImpl<ProjectAreaMapper, ProjectArea>
+		implements IProjectAreaService {
 
 	@Override
 	public List<ProjectAreaDto> getProjectAreas(String projectId) {
 		return this.baseMapper.getProjectAreas(projectId);
+	}
+
+	@Override
+	public List<ProjectAreaDto> getProjectAreasByAreaUser(AreaUserInfoVo userInfo) {
+		return this.baseMapper.getProjectAreasByAreaUser(userInfo);
 	}
 
 }

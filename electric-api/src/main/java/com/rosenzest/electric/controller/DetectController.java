@@ -3,7 +3,9 @@ package com.rosenzest.electric.controller;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -38,6 +40,7 @@ import com.rosenzest.electric.vo.DetectFormVo;
 import com.rosenzest.server.base.controller.ServerBaseController;
 
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.util.StrUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
@@ -278,9 +281,30 @@ public class DetectController extends ServerBaseController {
 		if (!isHighRisk) {
 			// 仪器检测 B类表
 
-			List<DetectFormVo> formBList = templateBService.getTableBByTemplateId(templateId, "1");
+			List<DetectFormVo> viewFormb = templateBService.getViewTableBByTemplateId(templateId);
 
-			results.addAll(formBList);
+			Map<String, DetectFormVo> formbMap = new HashMap<String, DetectFormVo>();
+
+			viewFormb.stream().forEach((form) -> {
+
+				DetectFormVo detectFormVo = formbMap.get(form.getCode());
+				if (detectFormVo == null) {
+					detectFormVo = form;
+					formbMap.put(form.getCode(), detectFormVo);
+				}
+
+				List<String> attribution = detectFormVo.getAttribution();
+				if (attribution == null) {
+					attribution = new ArrayList<String>();
+				}
+				attribution.add(StrUtil.subSuf(form.getAttrType(), 1));
+				detectFormVo.setAttribution(attribution);
+			});
+
+			List<DetectFormVo> formbVo = new ArrayList<DetectFormVo>(formbMap.values());
+			Collections.sort(formbVo, Comparator.comparing(DetectFormVo::getCode));
+
+			results.addAll(formbVo);
 		}
 
 		Collections.sort(results, Comparator.comparing(DetectFormVo::getType));

@@ -3,6 +3,8 @@
  */
 package com.rosenzest.electric.vo;
 
+import com.rosenzest.electric.miniapp.vo.OwnerUnitOverviewVo;
+
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -45,9 +47,9 @@ public class LoginVo {
 	private String token;
 
 	/**
-	 * 类型
+	 * 用户类型 00平台用户 01检测单位管理员 02工作人员账号 03街区账号 04网格员 05业主单元账号 99游客
 	 */
-	@ApiModelProperty("类型")
+	@ApiModelProperty("用户类型 00平台用户 01检测单位管理员 02工作人员账号 03街区账号 04网格员 05业主单元账号 99游客")
 	private String type;
 
 	/**
@@ -61,5 +63,11 @@ public class LoginVo {
 	 */
 	@ApiModelProperty("项目信息")
 	private ProjectVo project;
+
+	/**
+	 * 业主单元信息
+	 */
+	@ApiModelProperty("业主单元信息")
+	private OwnerUnitOverviewVo unit;
 
 }

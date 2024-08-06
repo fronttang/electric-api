@@ -8,7 +8,7 @@ import com.rosenzest.model.base.service.IModelBaseService;
 
 /**
  * <p>
- *  服务类
+ * 服务类
  * </p>
  *
  * @author fronttang
@@ -17,5 +17,7 @@ import com.rosenzest.model.base.service.IModelBaseService;
 public interface IDetectTemplateBService extends IModelBaseService<DetectTemplateB> {
 
 	List<DetectFormVo> getTableBByTemplateId(Long templateId, String type);
+
+	List<DetectFormVo> getViewTableBByTemplateId(Long templateId);
 
 }

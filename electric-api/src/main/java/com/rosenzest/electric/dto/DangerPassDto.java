@@ -20,7 +20,7 @@ public class DangerPassDto {
 	/**
 	 * 整改照片
 	 */
-	@ApiModelProperty("整改照片,检测员整改时传")
+	@ApiModelProperty("整改照片")
 	private String pic;
 
 }

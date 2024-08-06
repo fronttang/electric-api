@@ -1,13 +1,13 @@
-package com.rosenzest.electric.owner.executor;
+package com.rosenzest.electric.miniapp.owner.executor;
 
 import org.aspectj.lang.JoinPoint;
 import org.springframework.stereotype.Component;
 
 import com.rosenzest.base.LoginUser;
-import com.rosenzest.electric.enums.UserType;
 import com.rosenzest.server.base.annotation.Permission;
 import com.rosenzest.server.base.context.IRequestContext;
 import com.rosenzest.server.base.context.RequestContextHolder;
+import com.rosenzest.server.base.enums.UserType;
 import com.rosenzest.server.base.permission.IPermissionExecutor;
 
 @Component

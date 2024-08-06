@@ -7,12 +7,18 @@
     	<result column="formb" property="formb" typeHandler="com.rosenzest.model.base.type.JsonObjectTypeHandler" />
     	<result column="charging_pile_id" property="chargingPileId" typeHandler="com.rosenzest.model.base.type.LongListTypeHandler" />
   	</resultMap>
+  	
+	<resultMap id="OwnerUnitDangerMap" type="com.rosenzest.electric.entity.OwnerUnitDanger" >
+    	<!--将json类型的rules字段修改为如下形式-->
+    	<result column="formb" property="formb" typeHandler="com.rosenzest.model.base.type.JsonObjectTypeHandler" />
+    	<result column="charging_pile_id" property="chargingPileId" typeHandler="com.rosenzest.model.base.type.LongListTypeHandler" />
+  	</resultMap>
 
 	<select id="queryOwnerUnitDanger" resultMap="OwnerUnitDangerVoResultMap" parameterType="com.rosenzest.electric.dto.OwnerUnitDangerQuery">
 		select d.id, d.unit_id, u.`name` as unit_name, du.name as detect_name, d.building_id, ub.name as building_name, d.unit_area_id,ua.`name` as unit_area_name, 
 		ua.type as unit_area_type, d.danger_id, d.form_type, d.form_id, d.form_code, d.level, d.description, d.suggestions, d.location,
 		d.danger_pic, d.rectification_pic, d.detect_pic, d.reason, d.status, d.inspector, d.initial_time, 
-		d.rectification, d.rectification_date, d.reviewer, d.reviewer_date, d.formb, d.charging_pile_id 
+		d.rectification, d.rectification_date, d.reviewer, d.reviewer_date, d.formb, d.charging_pile_id, d.remark  
 		from owner_unit_danger d 
 		left join owner_unit u on u.id = d.unit_id 
 		left join detect_unit du on du.id = u.detect_id
@@ -25,6 +31,8 @@
 		<if test="status != null and status != ''"> and d.status = #{status} </if>
 		<if test="initialDate != null and initialDate != ''"> and date(d.initial_time) = #{initialDate} </if>
 		<if test="reviewDate != null and reviewDate != ''"> and date(d.rectification_date) = #{reviewDate} </if>
+		<if test="startDate != null and startDate != ''"> and date(d.initial_time) &gt;= #{startDate} </if>
+		<if test="endDate != null and endDate != ''"> and date(d.initial_time) &lt;= #{endDate} </if>
 		<if test="formId != null and formId != ''"> and d.form_id = #{formId} </if>
 		<if test="formCode != null and formCode != ''"> and d.form_code = #{formCode} </if>
 		<if test="formType != null and formType != ''"> and d.form_type = #{formType} </if>
@@ -75,6 +83,36 @@
 		<if test="pileId != null">
 			and #{pileId} member of(d.charging_pile_id)
 		</if>
+	</select>
+	
+	<select id="getOwnerUnitDangerByGridman" resultMap="OwnerUnitDangerMap" parameterType="Long">
+		select d.id,d.level,d.status from owner_unit_danger d 
+		where exists (
+		select u.id from owner_unit u where u.id = d.unit_id 
+		and exists (select project_id from sys_user s where s.user_id = u.gridman and s.project_id = u.project_id and s.user_id = #{userId} )
+		)
+	</select>
+	
+	<select id="getOwnerUnitDangerByAreaUser" resultMap="OwnerUnitDangerMap" parameterType="com.rosenzest.electric.miniapp.vo.AreaUserInfoVo">
+		select d.id,d.level,d.status
+		from owner_unit_danger d 
+		left join owner_unit u on u.id = d.unit_id
+		where u.project_id = #{projectId} 
+		<if test="district != null and district != ''"> and u.district = #{district} </if>
+		<if test="street != null and street != ''"> and u.street = #{street} </if>
+		<if test="community != null and community != ''"> and u.community = #{community} </if>
+		<if test="hamlet != null and hamlet != ''"> and u.hamlet = #{hamlet} </if>
+	</select>
+	
+	<select id="getTodayDangersByAreaUser" resultMap="OwnerUnitDangerMap" parameterType="com.rosenzest.electric.miniapp.vo.AreaUserInfoVo">
+		select d.id,d.level,d.status
+		from owner_unit_danger d 
+		left join owner_unit u on u.id = d.unit_id
+		where u.project_id = #{projectId} and date(d.create_time) = date(now())
+		<if test="district != null and district != ''"> and u.district = #{district} </if>
+		<if test="street != null and street != ''"> and u.street = #{street} </if>
+		<if test="community != null and community != ''"> and u.community = #{community} </if>
+		<if test="hamlet != null and hamlet != ''"> and u.hamlet = #{hamlet} </if>
 	</select>
 	
 </mapper>

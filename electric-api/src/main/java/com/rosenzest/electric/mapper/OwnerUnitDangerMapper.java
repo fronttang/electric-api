@@ -6,6 +6,9 @@ import org.apache.ibatis.annotations.Param;
 
 import com.rosenzest.electric.dto.OwnerUnitDangerQuery;
 import com.rosenzest.electric.entity.OwnerUnitDanger;
+import com.rosenzest.electric.miniapp.dto.MiniAppOwnerUnitDangerQuery;
+import com.rosenzest.electric.miniapp.vo.AreaUserInfoVo;
+import com.rosenzest.electric.miniapp.vo.MiniAppOwnerUnitDangerVo;
 import com.rosenzest.electric.vo.OwnerUnitDangerVo;
 import com.rosenzest.model.base.mapper.ModelBaseMapper;
 
@@ -30,5 +33,13 @@ public interface OwnerUnitDangerMapper extends ModelBaseMapper<OwnerUnitDanger> 
 			@Param("unitAreaId") Long unitAreaId, @Param("buildingId") Long buildingId);
 
 	Integer countByDataIdAndPileId(@Param("dataId") Long dataId, @Param("pileId") Long pileId);
+
+	List<MiniAppOwnerUnitDangerVo> queryOwnerUnitDangerList(MiniAppOwnerUnitDangerQuery query);
+
+	List<OwnerUnitDanger> getOwnerUnitDangerByGridman(Long userId);
+
+	List<OwnerUnitDanger> getOwnerUnitDangerByAreaUser(AreaUserInfoVo userInfo);
+
+	List<OwnerUnitDanger> getTodayDangersByAreaUser(AreaUserInfoVo userInfo);
 
 }

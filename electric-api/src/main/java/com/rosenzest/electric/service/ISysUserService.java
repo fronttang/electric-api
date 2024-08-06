@@ -2,6 +2,7 @@ package com.rosenzest.electric.service;
 
 import com.rosenzest.electric.dto.LoginDto;
 import com.rosenzest.electric.entity.SysUser;
+import com.rosenzest.electric.miniapp.vo.AreaUserInfoVo;
 import com.rosenzest.electric.vo.LoginVo;
 import com.rosenzest.model.base.service.IModelBaseService;
 
@@ -24,5 +25,7 @@ public interface ISysUserService extends IModelBaseService<SysUser> {
 	LoginVo login(LoginDto login);
 
 	SysUser getByUserName(String userName);
+
+	AreaUserInfoVo getAreaUserInfo(Long userId, Long projectId);
 
 }

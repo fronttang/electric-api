@@ -10,6 +10,10 @@ public final class ElectricConstant {
 
 	public static final String DICT_TYPE_HAZARD_LEVEL = "hazard_level";
 
+	public static final String DICT_TYPE_HAZARD_LEVEL_HIGH = "hazard_level_high";
+
+	public static final String DICT_TYPE_HAZARD_LEVEL_CHARGING_STATION = "hazard_level_charging_station";
+
 	public static final List<String> BUSINESS_DICT_TYPES = new ArrayList<String>();
 
 	static {

@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.rosenzest.electric.dto.ProjectAreaDto;
 import com.rosenzest.electric.entity.ProjectArea;
+import com.rosenzest.electric.miniapp.vo.AreaUserInfoVo;
 import com.rosenzest.model.base.mapper.ModelBaseMapper;
 
 /**
@@ -17,5 +18,7 @@ import com.rosenzest.model.base.mapper.ModelBaseMapper;
 public interface ProjectAreaMapper extends ModelBaseMapper<ProjectArea> {
 
 	List<ProjectAreaDto> getProjectAreas(String projectId);
+
+	List<ProjectAreaDto> getProjectAreasByAreaUser(AreaUserInfoVo userInfo);
 
 }

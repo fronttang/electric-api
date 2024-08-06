@@ -206,4 +206,10 @@ public class OwnerUnitDangerVo {
 	@ApiModelProperty("复检时间")
 	private Date reviewerDate;
 
+	/**
+	 * 备注
+	 */
+	@ApiModelProperty("备注")
+	private String remark;
+
 }

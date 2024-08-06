@@ -6,11 +6,14 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.rosenzest.base.Result;
+import com.rosenzest.base.enums.TerminalType;
 import com.rosenzest.electric.exception.FileSizeLimitExceededException;
 import com.rosenzest.electric.exception.InvalidExtensionException;
 import com.rosenzest.electric.properties.SystemProperties;
 import com.rosenzest.electric.util.FileUploadUtils;
 import com.rosenzest.electric.util.MimeTypeUtils;
+import com.rosenzest.server.base.annotation.TokenRule;
+import com.rosenzest.server.base.enums.UserType;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -28,6 +31,8 @@ public class CommonController {
 	/**
 	 * 通用上传请求（单个）
 	 */
+	@TokenRule(project = false, terminal = { TerminalType.APP, TerminalType.MINIAPP }, userType = { UserType.WORKER,
+			UserType.GRADMAN, UserType.OWNER_UNIT, UserType.AREA_USER })
 	@ApiOperation(tags = "系统管理", value = "文件上传")
 	@PostMapping("/upload")
 	public Result<?> uploadFile(MultipartFile file) throws Exception {

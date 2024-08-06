@@ -7,8 +7,15 @@ import com.rosenzest.electric.dto.OwnerUnitDto;
 import com.rosenzest.electric.dto.OwnerUnitQuery;
 import com.rosenzest.electric.dto.OwnerUnitReviewQuery;
 import com.rosenzest.electric.entity.OwnerUnit;
-import com.rosenzest.electric.owner.vo.OwnerUnitDangerStatisticsVo;
-import com.rosenzest.electric.owner.vo.OwnerUnitListVo;
+import com.rosenzest.electric.entity.OwnerUnitBuilding;
+import com.rosenzest.electric.entity.OwnerUnitDanger;
+import com.rosenzest.electric.entity.SysDictData;
+import com.rosenzest.electric.miniapp.dto.MiniAppOwnerUnitQuery;
+import com.rosenzest.electric.miniapp.vo.AreaUserIndexVo;
+import com.rosenzest.electric.miniapp.vo.AreaUserInfoVo;
+import com.rosenzest.electric.miniapp.vo.IDangerStatisticsVo;
+import com.rosenzest.electric.miniapp.vo.OwnerUnitDangerStatisticsVo;
+import com.rosenzest.electric.miniapp.vo.OwnerUnitOverviewVo;
 import com.rosenzest.electric.vo.InitialOwnerUnitVo;
 import com.rosenzest.electric.vo.OwnerUnitReviewVo;
 import com.rosenzest.electric.vo.OwnerUnitVo;
@@ -36,10 +43,34 @@ public interface IOwnerUnitService extends IModelBaseService<OwnerUnit> {
 
 	boolean checkOwnerUnitName(OwnerUnit unit);
 
-	List<OwnerUnitListVo> getOwnerUnitListByOwner(Long userId, Long projectId);
+	List<OwnerUnitOverviewVo> getOwnerUnitListByOwner(Long userId, Long projectId);
+
+	OwnerUnitOverviewVo getOwnerUnitInfoById(Long unitId);
 
 	boolean checkOwnerUnitManager(Long unitId, Long userId);
 
+	boolean checkOwnerUnitGridman(Long unitId, Long userId);
+
 	OwnerUnitDangerStatisticsVo getOwnerUnitDangerStatistics(Long unitId, Long buildingId);
+
+	OwnerUnitDangerStatisticsVo buildOwnerUnitDangerStatisticsVo(OwnerUnitOverviewVo ownerUnit,
+			OwnerUnitBuilding building, List<OwnerUnitDanger> dangerLists, List<SysDictData> hazardLevel);
+
+	void buildDangerStatisticsVo(List<OwnerUnitDanger> dangerLists, List<SysDictData> hazardLevel,
+			IDangerStatisticsVo vo);
+
+	List<SysDictData> getHazardLevel(String type);
+
+	List<OwnerUnitOverviewVo> getOwnerUnitListByGridman(Long userId, Long projectId);
+
+	List<OwnerUnitDangerStatisticsVo> getOwnerUnitDangerStatisticsByGridman(MiniAppOwnerUnitQuery query,
+			PageList pageList);
+
+	// UnitStatistics getUnitStatistics(AreaUserInfoVo userInfo);
+
+	AreaUserIndexVo getAreaUserIndex(AreaUserInfoVo userInfo);
+
+	List<OwnerUnitDangerStatisticsVo> getOwnerUnitDangerStatisticsByAreaUser(MiniAppOwnerUnitQuery query,
+			PageList pageList);
 
 }

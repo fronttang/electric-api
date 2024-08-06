@@ -3,11 +3,26 @@
 <mapper namespace="com.rosenzest.electric.mapper.ProjectAreaMapper">
 
 	<select id="getProjectAreas" parameterType="String" resultType="com.rosenzest.electric.dto.ProjectAreaDto">
-		select pa.id, pa.project_id, pa.district,a.dict_label as district_name, pa.street, b.dict_label as street_name, pa.community, c.dict_label as community_name, pa.hamlet, d.dict_label as hamlet_name from project_area pa
+		select pa.id, pa.project_id, pa.district,a.dict_label as district_name, pa.street, b.dict_label as street_name, pa.community, c.dict_label as community_name, pa.hamlet, d.dict_label as hamlet_name 
+		from project_area pa
 		left join sys_dict_data a on pa.district = a.dict_value and a.dict_type='district'
 		left join sys_dict_data b on pa.street = b.dict_value and b.dict_type='street'
 		left join sys_dict_data c on pa.community = c.dict_value and c.dict_type='community'
 		left join sys_dict_data d on pa.hamlet = d.dict_value and d.dict_type='hamlet'
 		where pa.project_id = #{projectId}
+	</select>
+	
+	<select id="getProjectAreasByAreaUser" parameterType="com.rosenzest.electric.miniapp.vo.AreaUserInfoVo" resultType="com.rosenzest.electric.dto.ProjectAreaDto">
+		select pa.id, pa.project_id, pa.district,a.dict_label as district_name, pa.street, b.dict_label as street_name, pa.community, c.dict_label as community_name, pa.hamlet, d.dict_label as hamlet_name 
+		from project_area pa
+		left join sys_dict_data a on pa.district = a.dict_value and a.dict_type='district'
+		left join sys_dict_data b on pa.street = b.dict_value and b.dict_type='street'
+		left join sys_dict_data c on pa.community = c.dict_value and c.dict_type='community'
+		left join sys_dict_data d on pa.hamlet = d.dict_value and d.dict_type='hamlet'
+		where pa.project_id = #{projectId}
+		<if test="district != null and district != ''"> and pa.district = #{district} </if>
+		<if test="street != null and street != ''"> and pa.street = #{street} </if>
+		<if test="community != null and community != ''"> and pa.community = #{community} </if>
+		<if test="hamlet != null and hamlet != ''"> and pa.hamlet = #{hamlet} </if>
 	</select>
 </mapper>

@@ -10,6 +10,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import com.rosenzest.base.enums.TerminalType;
+import com.rosenzest.server.base.enums.UserType;
 
 /**
  * token 验证规则
@@ -58,4 +59,11 @@ public @interface TokenRule {
 	 * @return
 	 */
 	TerminalType[] terminal() default TerminalType.APP;
+
+	/**
+	 * 用户类型
+	 * 
+	 * @return
+	 */
+	UserType[] userType() default UserType.WORKER;
 }
