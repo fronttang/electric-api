@@ -217,7 +217,7 @@ public class UnitRentalHouseDto extends BaseHighDto {
 	/**
 	 * 营业执照
 	 */
-	@ApiModelProperty("营业执照")
+	@ApiModelProperty("网格照片")
 	private String businessLicense;
 
 	/**

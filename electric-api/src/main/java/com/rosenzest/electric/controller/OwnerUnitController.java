@@ -24,6 +24,7 @@ import com.rosenzest.base.ListResult;
 import com.rosenzest.base.LoginUser;
 import com.rosenzest.base.PageList;
 import com.rosenzest.base.Result;
+import com.rosenzest.base.constant.ResultEnum;
 import com.rosenzest.base.exception.BusinessException;
 import com.rosenzest.base.util.BeanUtils;
 import com.rosenzest.base.util.SnowFlakeUtil;
@@ -57,13 +58,14 @@ import cn.hutool.core.date.DatePattern;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.img.ImgUtil;
 import cn.hutool.core.util.StrUtil;
-import cn.hutool.core.util.URLUtil;
 import cn.hutool.crypto.SecureUtil;
 import cn.hutool.crypto.symmetric.DES;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
 import me.chanjar.weixin.common.error.WxErrorException;
 
+@Slf4j
 @Api(tags = "业主单元")
 @RestController
 @RequestMapping("/unit")
@@ -313,8 +315,10 @@ public class OwnerUnitController extends ServerBaseController {
 //			// ownerUrl = URLUtil.encode(ownerUrl);
 //			String qrcode = QrCodeUtil.generateAsBase64(ownerUrl, QrConfig.create(), "png");
 
-			String scene = StrUtil.format("key={}", key);
-			scene = URLUtil.encode(scene);
+			log.info("key:{}", key);
+
+			// String scene = StrUtil.format("key={}", key);
+			// scene = URLUtil.encode(scene);
 			WxMaQrcodeService qrcodeService = wxMaService.getQrcodeService();
 			byte[] qrCodeByte = qrcodeService.createWxaCodeUnlimitBytes(key, page, false, DEFAULT_ENV_VERSION, 430,
 					true, null, false);
@@ -343,7 +347,6 @@ public class OwnerUnitController extends ServerBaseController {
 
 			return Result.SUCCESS(vo);
 		}
-		return Result.ERROR();
+		return Result.ERROR(ResultEnum.FORBIDDEN);
 	}
-
 }

@@ -110,6 +110,10 @@ public class OwnerUnitMissDeviceController extends ServerBaseController {
 
 		OwnerUnitMissDevice missDevice = new OwnerUnitMissDevice();
 		BeanUtils.copyProperties(data, missDevice);
+
+		if (data.getId() == null) {
+			missDevice.setCreateBy(String.valueOf(loginUser.getUserId()));
+		}
 		if (missDeviceService.saveOrUpdate(missDevice)) {
 			return Result.SUCCESS();
 		}

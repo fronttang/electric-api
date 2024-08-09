@@ -222,7 +222,7 @@ public class OwnerUnit extends BaseEntity<OwnerUnit> {
 	/**
 	 * 消防安全重点单位
 	 */
-	private String safetyKeyUnit;
+	private String fireSafetyUnit;
 
 	/**
 	 * 充电站类型

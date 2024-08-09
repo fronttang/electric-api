@@ -84,83 +84,105 @@ public class UnitSmallDto extends BaseHighDto {
 	private String community;
 
 	/**
+	 * 建筑面积
+	 */
+	@ApiModelProperty("使用面积")
+	private String acreage;
+
+	/**
 	 * 签订安全承诺书1是0否
 	 */
+	@ApiModelProperty("签订安全承诺书1是0否")
 	private String safetyCommitment;
 
 	/**
 	 * 张贴违规住人海报1是0否
 	 */
+	@ApiModelProperty("张贴违规住人海报1是0否")
 	private String illegalResidence;
 
 	/**
 	 * ABC干粉灭火器数量
 	 */
+	@ApiModelProperty("ABC干粉灭火器数量")
 	private Integer abcDpfeQuantity;
 
 	/**
 	 * ABC干粉灭火器是否完好1是0否
 	 */
+	@ApiModelProperty("ABC干粉灭火器是否完好1是0否")
 	private String abcDpfeStatus;
 
 	/**
 	 * 应急照明灯有无1有0无
 	 */
+	@ApiModelProperty("应急照明灯有无1有0无")
 	private String emergencyLightingHas;
 
 	/**
 	 * 应急照明灯是否完好1是0否
 	 */
+	@ApiModelProperty("应急照明灯是否完好1是0否")
 	private String emergencyLightingStatus;
 
 	/**
 	 * 疏散指示标志有无1有0无
 	 */
+	@ApiModelProperty("疏散指示标志有无1有0无")
 	private String evacuationSignsHas;
 
 	/**
 	 * 疏散指示标志是否完好1是0否
 	 */
+	@ApiModelProperty("疏散指示标志是否完好1是0否")
 	private String evacuationSignsStatus;
 
 	/**
 	 * 独立式感烟探测器有无1有0无
 	 */
+	@ApiModelProperty("独立式感烟探测器有无1有0无")
 	private String smokeDetectorHas;
 
 	/**
 	 * 独立式感烟探测器是否完好1是0否
 	 */
+	@ApiModelProperty("独立式感烟探测器是否完好1是0否")
 	private String smokeDetectorStatus;
 
 	/**
 	 * 消防软管卷盘有无1有0无
 	 */
+	@ApiModelProperty("消防软管卷盘有无1有0无")
 	private String fireHoseReelsHas;
 
 	/**
 	 * 消防软管卷盘是否完好1是0否
 	 */
+	@ApiModelProperty("消防软管卷盘是否完好1是0否")
 	private String fireHoseReelsStatus;
 
 	/**
 	 * 防火分隔设施有无1有0无
 	 */
+	@ApiModelProperty("防火分隔设施有无1有0无")
 	private String fireSeparationHas;
 
 	/**
 	 * 防火分隔设施是否完好1是0否
 	 */
+	@ApiModelProperty("防火分隔设施是否完好1是0否")
 	private String fireSeparationStatus;
 
 	/**
 	 * 营业执照
 	 */
+	@ApiModelProperty("营业执照")
 	private String businessLicense;
 
 	/**
 	 * 门头照
 	 */
+	@ApiModelProperty("门头照")
 	private String doorPic;
 
 }

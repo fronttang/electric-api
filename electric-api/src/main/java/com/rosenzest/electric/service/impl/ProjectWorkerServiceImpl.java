@@ -101,6 +101,10 @@ public class ProjectWorkerServiceImpl extends ModelBaseServiceImpl<ProjectWorker
 					return true;
 				}
 
+				if ("admin".equalsIgnoreCase(ownerUnit.getCreateBy())) {
+					return true;
+				}
+
 				AreaDto area = new AreaDto();
 				area.setDistrict(unit.getDistrict());
 				area.setStreet(unit.getStreet());

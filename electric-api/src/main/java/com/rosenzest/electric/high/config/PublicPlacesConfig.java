@@ -16,7 +16,7 @@ public class PublicPlacesConfig {
 	/**
 	 * 是否属于消防安全重点单位1是0否
 	 */
-	private String fireSafetyUnit;
+	// private String fireSafetyUnit;
 
 	/**
 	 * 是否建立逐级消防安全责任制，明确单位消防安全管理人员
@@ -152,5 +152,10 @@ public class PublicPlacesConfig {
 	 * 门头照
 	 */
 	private String doorPic;
+
+	/**
+	 * 营业执照
+	 */
+	private String businessLicense;
 
 }
