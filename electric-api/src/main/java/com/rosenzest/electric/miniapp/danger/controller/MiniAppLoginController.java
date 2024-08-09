@@ -28,7 +28,6 @@ import com.rosenzest.server.base.util.JwtTokenUtil;
 
 import cn.hutool.crypto.SecureUtil;
 import cn.hutool.crypto.symmetric.DES;
-import cn.hutool.json.JSONUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
@@ -57,9 +56,9 @@ public class MiniAppLoginController {
 		DES des = SecureUtil.des(properties.getOwnerUnitDesKey().getBytes());
 		String decryptStr = des.decryptStr(key);
 
-		if (!JSONUtil.isTypeJSON(decryptStr)) {
-			throw new BusinessException(ResultEnum.FORBIDDEN);
-		}
+//		if (!JSONUtil.isTypeJSON(decryptStr)) {
+//			throw new BusinessException(ResultEnum.FORBIDDEN);
+//		}
 
 		Long unitId = Long.valueOf(decryptStr);
 

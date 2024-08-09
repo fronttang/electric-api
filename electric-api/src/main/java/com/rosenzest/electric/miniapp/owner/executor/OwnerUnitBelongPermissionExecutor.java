@@ -54,7 +54,7 @@ public class OwnerUnitBelongPermissionExecutor implements IPermissionExecutor {
 			if (UserType.OWNER_UNIT.code().equalsIgnoreCase(loginUser.getType())) {
 				return ownerUnitService.checkOwnerUnitManager(unitId, loginUser.getUserId());
 			} else if (UserType.VISITOR.code().equalsIgnoreCase(loginUser.getType())) {
-				return unitId == loginUser.getUnitId();
+				return unitId.equals(loginUser.getUnitId());
 			} else if (UserType.GRADMAN.code().equalsIgnoreCase(loginUser.getType())) {
 				return ownerUnitService.checkOwnerUnitGridman(unitId, loginUser.getUserId());
 			}
