@@ -65,4 +65,10 @@ public class FormBB1 {
 	 */
 	@ApiModelProperty("现场检测图")
 	private String inspectionPic;
+
+	/**
+	 * 判定结果 合格/不合格
+	 */
+	@ApiModelProperty("判定结果 合格/不合格")
+	private String result;
 }

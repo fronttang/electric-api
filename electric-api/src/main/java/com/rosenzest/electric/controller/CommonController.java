@@ -32,7 +32,7 @@ public class CommonController {
 	 * 通用上传请求（单个）
 	 */
 	@TokenRule(project = false, terminal = { TerminalType.APP, TerminalType.MINIAPP }, userType = { UserType.WORKER,
-			UserType.GRADMAN, UserType.OWNER_UNIT, UserType.AREA_USER })
+			UserType.GRADMAN, UserType.OWNER_UNIT, UserType.AREA_USER, UserType.VISITOR })
 	@ApiOperation(tags = "系统管理", value = "文件上传")
 	@PostMapping("/upload")
 	public Result<?> uploadFile(MultipartFile file) throws Exception {

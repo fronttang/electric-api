@@ -4,7 +4,12 @@ import java.util.Date;
 import java.util.List;
 
 import com.alibaba.fastjson.JSONObject;
+import com.rosenzest.base.enums.EnumUtils;
+import com.rosenzest.electric.enums.ProjectType;
+import com.rosenzest.electric.formb.FormbDangerHandlerFactory;
+import com.rosenzest.electric.formb.handler.IFormbDangerHandler;
 
+import cn.hutool.core.util.StrUtil;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -26,6 +31,16 @@ public class OwnerUnitDangerVo {
 	 */
 	@ApiModelProperty("业主单元ID")
 	private Long unitId;
+
+	/**
+	 * 项目ID
+	 */
+	private Long projectId;
+
+	/**
+	 * 项目类型
+	 */
+	private String projectType;
 
 	/**
 	 * 业主单元名称
@@ -74,6 +89,11 @@ public class OwnerUnitDangerVo {
 	 */
 	@ApiModelProperty("充电桩ID")
 	private List<Long> chargingPileId;
+
+	/**
+	 * 充电桩名称
+	 */
+	private String chargingPileName;
 
 	/**
 	 * 隐患ID
@@ -212,4 +232,81 @@ public class OwnerUnitDangerVo {
 	@ApiModelProperty("备注")
 	private String remark;
 
+	/**
+	 * 列表及详情位置
+	 */
+	@ApiModelProperty("列表及详情位置")
+	private String infoLocation;
+
+	/**
+	 * 列表及详情位置
+	 * 
+	 * @return
+	 */
+	public String getInfoLocation() {
+
+		// ProjectType type = enumutil
+		ProjectType type = EnumUtils.init(ProjectType.class).fromCode(this.projectType);
+
+		// 城中村/工业园
+		if (ProjectType.URBAN_VILLAGE == type || ProjectType.INDUSTRIAL_AREA == type) {
+
+			if ("B".equalsIgnoreCase(this.formType)) {
+				if (StrUtil.isNotBlank(this.formCode)) {
+					IFormbDangerHandler formbDangerHander = FormbDangerHandlerFactory
+							.getFormbDangerHander(this.formCode);
+					if (formbDangerHander != null) {
+						return formbDangerHander.getInfoLocation(this);
+					}
+				}
+			}
+		} else if (ProjectType.CHARGING_STATION == type) {
+			// 充电桩
+			if (StrUtil.isNotBlank(this.chargingPileName)) {
+				return StrUtil.format("{}{}", this.chargingPileName, this.location);
+			}
+		}
+
+		return this.location;
+	}
+
+	public String getDescription() {
+		if ("B".equalsIgnoreCase(this.formType)) {
+			if (StrUtil.isNotBlank(this.formCode)) {
+				IFormbDangerHandler formbDangerHander = FormbDangerHandlerFactory.getFormbDangerHander(this.formCode);
+				if (formbDangerHander != null) {
+					return formbDangerHander.getDescription(this);
+				}
+			}
+		}
+
+		return this.description;
+	}
+
+	public String getSuggestions() {
+		if ("B".equalsIgnoreCase(this.formType)) {
+			if (StrUtil.isNotBlank(this.formCode)) {
+				IFormbDangerHandler formbDangerHander = FormbDangerHandlerFactory.getFormbDangerHander(this.formCode);
+				if (formbDangerHander != null) {
+					return formbDangerHander.getSuggestions(this);
+				}
+			}
+		}
+
+		return this.suggestions;
+	}
+
+	public String getLevel() {
+		// B表隐患位置处理
+		if ("B".equalsIgnoreCase(this.formType)) {
+			if (StrUtil.isNotBlank(this.formCode)) {
+				IFormbDangerHandler formbDangerHander = FormbDangerHandlerFactory.getFormbDangerHander(this.formCode);
+				if (formbDangerHander != null) {
+					return formbDangerHander.getLevel(this);
+				}
+			}
+		}
+
+		return this.level;
+	}
 }

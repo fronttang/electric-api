@@ -91,6 +91,12 @@ public class FormB1 {
 	private SinglePhase singlePhase;
 
 	/**
+	 * 判定结果 合格/不合格
+	 */
+	@ApiModelProperty("判定结果 合格/不合格")
+	private String result;
+
+	/**
 	 * 单相检测
 	 */
 	@Data

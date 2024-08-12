@@ -15,12 +15,14 @@
   	</resultMap>
 
 	<select id="queryOwnerUnitDanger" resultMap="OwnerUnitDangerVoResultMap" parameterType="com.rosenzest.electric.dto.OwnerUnitDangerQuery">
-		select d.id, d.unit_id, u.`name` as unit_name, du.name as detect_name, d.building_id, ub.name as building_name, d.unit_area_id,ua.`name` as unit_area_name, 
+		select d.id, d.unit_id, u.`name` as unit_name, p.id as project_id, p.type as project_type, du.name as detect_name, d.building_id, ub.name as building_name, d.unit_area_id,ua.`name` as unit_area_name, 
 		ua.type as unit_area_type, d.danger_id, d.form_type, d.form_id, d.form_code, d.level, d.description, d.suggestions, d.location,
 		d.danger_pic, d.rectification_pic, d.detect_pic, d.reason, d.status, d.inspector, d.initial_time, 
-		d.rectification, d.rectification_date, d.reviewer, d.reviewer_date, d.formb, d.charging_pile_id, d.remark  
+		d.rectification, d.rectification_date, d.reviewer, d.reviewer_date, d.formb, d.charging_pile_id, d.remark, 
+		( select GROUP_CONCAT(cp.name) from charging_pile cp where cp.id member of(d.charging_pile_id) and cp.unit_id = d.unit_id ) as charging_pile_name 
 		from owner_unit_danger d 
 		left join owner_unit u on u.id = d.unit_id 
+		left join project p on p.id = u.project_id
 		left join detect_unit du on du.id = u.detect_id
 		left join owner_unit_building ub on ub.id = d.building_id 
 		left join owner_unit_area ua on ua.id = d.unit_area_id

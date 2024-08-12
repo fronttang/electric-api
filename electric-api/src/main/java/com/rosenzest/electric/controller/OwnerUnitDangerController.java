@@ -17,7 +17,6 @@ import com.rosenzest.base.ListResult;
 import com.rosenzest.base.LoginUser;
 import com.rosenzest.base.PageList;
 import com.rosenzest.base.Result;
-import com.rosenzest.base.enums.EnumUtils;
 import com.rosenzest.base.util.BeanUtils;
 import com.rosenzest.electric.dto.OwnerUnitDangerDto;
 import com.rosenzest.electric.dto.OwnerUnitDangerQuery;
@@ -26,11 +25,12 @@ import com.rosenzest.electric.entity.OwnerUnit;
 import com.rosenzest.electric.entity.OwnerUnitArea;
 import com.rosenzest.electric.entity.OwnerUnitBuilding;
 import com.rosenzest.electric.entity.OwnerUnitDanger;
-import com.rosenzest.electric.enums.DetectFormB;
 import com.rosenzest.electric.enums.IndustrialAreaBuildingType;
 import com.rosenzest.electric.enums.ProjectType;
 import com.rosenzest.electric.enums.ProjectWorkerAreaRoleType;
 import com.rosenzest.electric.enums.ReviewStatus;
+import com.rosenzest.electric.formb.FormbDangerHandlerFactory;
+import com.rosenzest.electric.formb.handler.IFormbDangerHandler;
 import com.rosenzest.electric.service.IIntuitiveDetectDangerService;
 import com.rosenzest.electric.service.IOwnerUnitAreaService;
 import com.rosenzest.electric.service.IOwnerUnitBuildingService;
@@ -82,6 +82,9 @@ public class OwnerUnitDangerController extends ServerBaseController {
 			return Result.ERROR(400, "无操作权限");
 		}
 
+		OwnerUnitDangerVo vo = new OwnerUnitDangerVo();
+		BeanUtils.copyProperties(danger, vo);
+
 		if (danger.getId() != null) {
 			// id不为空是修改数据
 			OwnerUnitDanger dbDanger = unitDangerService.getById(danger.getId());
@@ -121,6 +124,10 @@ public class OwnerUnitDangerController extends ServerBaseController {
 				return Result.ERROR(400, "公共区域/户ID错误");
 			}
 
+			vo.setUnitAreaId(unitArea.getId());
+			vo.setUnitAreaName(unitArea.getName());
+			vo.setUnitAreatype(unitArea.getType());
+
 		} else if (ProjectType.INDUSTRIAL_AREA.code().equalsIgnoreCase(ownerUnit.getType())) {
 
 			if ((danger.getBuildingId() == null || danger.getBuildingId() == 0)) {
@@ -132,6 +139,8 @@ public class OwnerUnitDangerController extends ServerBaseController {
 			if (building == null) {
 				return Result.ERROR(400, "楼栋不存在");
 			}
+			vo.setBuildingId(building.getId());
+			vo.setBuildingName(building.getName());
 
 			// 非配电房需要公共区域/户ID
 			if (!IndustrialAreaBuildingType.POWER_ROOM.code().equalsIgnoreCase(building.getType())) {
@@ -155,8 +164,16 @@ public class OwnerUnitDangerController extends ServerBaseController {
 				return Result.ERROR(400, "B类表CODE不能为空");
 			}
 			// 查询B类表
-			String description = EnumUtils.init(DetectFormB.class).getNamefromCode(danger.getFormCode());
-			danger.setDescription(description);
+			if (StrUtil.isNotBlank(danger.getFormCode())) {
+				IFormbDangerHandler formbDangerHander = FormbDangerHandlerFactory
+						.getFormbDangerHander(danger.getFormCode());
+				if (formbDangerHander != null) {
+					danger.setDescription(formbDangerHander.getDescription(vo));
+					danger.setSuggestions(formbDangerHander.getSuggestions(vo));
+					danger.setLevel(formbDangerHander.getLevel(vo));
+					// danger.setLocation(formbDangerHander.getInfoLocation(vo));
+				}
+			}
 		} else {
 			if (StrUtil.isBlank(danger.getLocation())) {
 				return Result.ERROR(400, "隐患位置不能为空");
