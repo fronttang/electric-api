@@ -1,5 +1,7 @@
 package com.rosenzest.electric.station.service.impl;
 
+import java.util.Date;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -64,7 +66,7 @@ public class ChargingStationServiceImpl implements IChargingStationService {
 		report.setUnitId(unit.getId());
 		report.setType(UnitReportType.INITIAL.code());
 		// report.setCode(data.getInitialTestNo());
-		report.setDetectData(data.getTestStartDate());
+		report.setDetectData(new Date());
 		report.setDetectStatus(InitialInspectionStatus.CHECKING.code());
 		report.setInspector(loginUser.getName());
 		report.setInspectorId(loginUser.getUserId());

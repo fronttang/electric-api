@@ -70,11 +70,19 @@ public class ChargingStationDetectController extends ServerBaseController {
 		List<IntuitiveDetectData> detectDatas = detectDataService.getByTemplateIdAndDetectModule(templateId, module);
 		if (CollUtil.isNotEmpty(detectDatas)) {
 
-			List<DetectDataVo> formDatas = BeanUtils.copyList(detectDatas, DetectDataVo.class);
+			List<DetectDataVo> formDatas = BeanUtils.copyList(detectDatas, (d) -> {
+				DetectDataVo vo = new DetectDataVo();
+				BeanUtils.copyProperties(d, vo);
+				try {
+					vo.setDetectTitle(Long.valueOf(d.getDetectModule()));
+				} catch (Exception e) {
+				}
+				return vo;
+			});
 
 			formDatas.forEach((data) -> {
 
-				Integer danger = unitDangerService.countByDataIdAndPileId(data.getId(), pileId);
+				Integer danger = unitDangerService.countByUnitIdAndDataIdAndPileId(unitId, data.getId(), pileId);
 				data.setDanger(danger);
 
 				// 查询 data danger
@@ -113,7 +121,17 @@ public class ChargingStationDetectController extends ServerBaseController {
 		List<IntuitiveDetectData> detectDatas = detectDataService.getByTemplateIdAndDetectModule(templateId, null);
 		if (CollUtil.isNotEmpty(detectDatas)) {
 
-			List<DetectDataVo> formDatas = BeanUtils.copyList(detectDatas, DetectDataVo.class);
+			// List<DetectDataVo> formDatas = BeanUtils.copyList(detectDatas,
+			// DetectDataVo.class);
+			List<DetectDataVo> formDatas = BeanUtils.copyList(detectDatas, (d) -> {
+				DetectDataVo vo = new DetectDataVo();
+				BeanUtils.copyProperties(d, vo);
+				try {
+					vo.setDetectTitle(Long.valueOf(d.getDetectModule()));
+				} catch (Exception e) {
+				}
+				return vo;
+			});
 
 			formDatas.forEach((data) -> {
 

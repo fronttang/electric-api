@@ -49,6 +49,8 @@ public interface IOwnerUnitDangerService extends IModelBaseService<OwnerUnitDang
 
 	Integer countByDataIdAndPileId(Long id, Long pileId);
 
+	Integer countByUnitIdAndDataIdAndPileId(Long unitId, Long dataId, Long pileId);
+
 	List<OwnerUnitDanger> getDangersByUnitIdAndBuildingIds(Long unitId, List<Long> buildingIds);
 
 	boolean rectification(DangerPassDto data);
@@ -58,4 +60,6 @@ public interface IOwnerUnitDangerService extends IModelBaseService<OwnerUnitDang
 	List<OwnerUnitDanger> getOwnerUnitDangerByAreaUser(AreaUserInfoVo userInfo);
 
 	List<OwnerUnitDanger> getTodayDangersByAreaUser(AreaUserInfoVo userInfo);
+
+	OwnerUnitDangerVo getOwnerUnitDangerById(Long dangerId);
 }

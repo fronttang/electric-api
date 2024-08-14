@@ -87,6 +87,11 @@ public class OwnerUnitDangerServiceImpl extends ModelBaseServiceImpl<OwnerUnitDa
 	}
 
 	@Override
+	public OwnerUnitDangerVo getOwnerUnitDangerById(Long dangerId) {
+		return this.baseMapper.getOwnerUnitDangerById(dangerId);
+	}
+
+	@Override
 	public Integer countByUnitAreaId(Long unitAreaId) {
 		LambdaQueryWrapper<OwnerUnitDanger> queryWrapper = new LambdaQueryWrapper<OwnerUnitDanger>();
 		queryWrapper.eq(OwnerUnitDanger::getUnitAreaId, unitAreaId);
@@ -182,8 +187,7 @@ public class OwnerUnitDangerServiceImpl extends ModelBaseServiceImpl<OwnerUnitDa
 			danger.setRectificationDate(new Date());
 			danger.setStatus(ReviewStatus.FINISH.code());
 		} else {
-			// 其他情况隐患状态为待复检
-			danger.setStatus(ReviewStatus.RE_EXAMINATION.code());
+			danger.setStatus(ReviewStatus.FINISH.code());
 		}
 
 		this.saveOrUpdate(danger);
@@ -232,6 +236,7 @@ public class OwnerUnitDangerServiceImpl extends ModelBaseServiceImpl<OwnerUnitDa
 			return false;
 		}
 
+		danger.setRectificationPic(data.getRectificationPic());
 		danger.setDetectPic(data.getPic());
 		danger.setReviewer(loginUser.getName());
 		danger.setReviewerDate(new Date());
@@ -293,6 +298,11 @@ public class OwnerUnitDangerServiceImpl extends ModelBaseServiceImpl<OwnerUnitDa
 	@Override
 	public Integer countByDataIdAndPileId(Long dataId, Long pileId) {
 		return this.baseMapper.countByDataIdAndPileId(dataId, pileId);
+	}
+
+	@Override
+	public Integer countByUnitIdAndDataIdAndPileId(Long unitId, Long dataId, Long pileId) {
+		return this.baseMapper.countByUnitIdAndDataIdAndPileId(unitId, dataId, pileId);
 	}
 
 	@Override
@@ -383,4 +393,5 @@ public class OwnerUnitDangerServiceImpl extends ModelBaseServiceImpl<OwnerUnitDa
 	public List<OwnerUnitDanger> getTodayDangersByAreaUser(AreaUserInfoVo userInfo) {
 		return this.baseMapper.getTodayDangersByAreaUser(userInfo);
 	}
+
 }

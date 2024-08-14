@@ -10,6 +10,7 @@ import com.rosenzest.electric.entity.OwnerUnit;
 import com.rosenzest.electric.entity.OwnerUnitBuilding;
 import com.rosenzest.electric.entity.OwnerUnitDanger;
 import com.rosenzest.electric.entity.SysDictData;
+import com.rosenzest.electric.miniapp.dto.MiniAppAreaUserOwnerUnitQuery;
 import com.rosenzest.electric.miniapp.dto.MiniAppOwnerUnitQuery;
 import com.rosenzest.electric.miniapp.vo.AreaUserIndexVo;
 import com.rosenzest.electric.miniapp.vo.AreaUserInfoVo;
@@ -70,7 +71,7 @@ public interface IOwnerUnitService extends IModelBaseService<OwnerUnit> {
 
 	AreaUserIndexVo getAreaUserIndex(AreaUserInfoVo userInfo);
 
-	List<OwnerUnitDangerStatisticsVo> getOwnerUnitDangerStatisticsByAreaUser(MiniAppOwnerUnitQuery query,
+	List<OwnerUnitDangerStatisticsVo> getOwnerUnitDangerStatisticsByAreaUser(MiniAppAreaUserOwnerUnitQuery query,
 			PageList pageList);
 
 }

@@ -32,6 +32,12 @@ public class DangerNotPassDto {
 	/**
 	 * 照片
 	 */
-	@ApiModelProperty("照片")
+	@ApiModelProperty("佐证照片")
 	private String pic;
+
+	/**
+	 * 整改图
+	 */
+	@ApiModelProperty("整改图")
+	private String rectificationPic;
 }

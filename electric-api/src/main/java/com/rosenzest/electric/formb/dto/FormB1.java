@@ -97,6 +97,12 @@ public class FormB1 {
 	private String result;
 
 	/**
+	 * 类型 三相/单相
+	 */
+	@ApiModelProperty("类型 三相/单相")
+	private String type;
+
+	/**
 	 * 单相检测
 	 */
 	@Data

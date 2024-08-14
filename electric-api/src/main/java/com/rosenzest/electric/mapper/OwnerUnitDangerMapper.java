@@ -34,6 +34,9 @@ public interface OwnerUnitDangerMapper extends ModelBaseMapper<OwnerUnitDanger> 
 
 	Integer countByDataIdAndPileId(@Param("dataId") Long dataId, @Param("pileId") Long pileId);
 
+	Integer countByUnitIdAndDataIdAndPileId(@Param("unitId") Long unitId, @Param("dataId") Long dataId,
+			@Param("pileId") Long pileId);
+
 	List<MiniAppOwnerUnitDangerVo> queryOwnerUnitDangerList(MiniAppOwnerUnitDangerQuery query);
 
 	List<OwnerUnitDanger> getOwnerUnitDangerByGridman(Long userId);
@@ -41,5 +44,7 @@ public interface OwnerUnitDangerMapper extends ModelBaseMapper<OwnerUnitDanger> 
 	List<OwnerUnitDanger> getOwnerUnitDangerByAreaUser(AreaUserInfoVo userInfo);
 
 	List<OwnerUnitDanger> getTodayDangersByAreaUser(AreaUserInfoVo userInfo);
+
+	OwnerUnitDangerVo getOwnerUnitDangerById(@Param("dangerId") Long dangerId);
 
 }

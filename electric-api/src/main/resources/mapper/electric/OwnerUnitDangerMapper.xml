@@ -35,6 +35,8 @@
 		<if test="reviewDate != null and reviewDate != ''"> and date(d.rectification_date) = #{reviewDate} </if>
 		<if test="startDate != null and startDate != ''"> and date(d.initial_time) &gt;= #{startDate} </if>
 		<if test="endDate != null and endDate != ''"> and date(d.initial_time) &lt;= #{endDate} </if>
+		<if test="startReviewDate != null and startReviewDate != ''"> and date(d.reviewer_date) &gt;= #{startReviewDate} </if>
+		<if test="endReviewDate != null and endReviewDate != ''"> and date(d.reviewer_date) &lt;= #{endReviewDate} </if>
 		<if test="formId != null and formId != ''"> and d.form_id = #{formId} </if>
 		<if test="formCode != null and formCode != ''"> and d.form_code = #{formCode} </if>
 		<if test="formType != null and formType != ''"> and d.form_type = #{formType} </if>
@@ -52,6 +54,21 @@
 			)
 		</if>
  
+	</select>
+	
+	<select id="getOwnerUnitDangerById" resultMap="OwnerUnitDangerVoResultMap" parameterType="Long">
+		select d.id, d.unit_id, u.`name` as unit_name, p.id as project_id, p.type as project_type, du.name as detect_name, d.building_id, ub.name as building_name, d.unit_area_id,ua.`name` as unit_area_name, 
+		ua.type as unit_area_type, d.danger_id, d.form_type, d.form_id, d.form_code, d.level, d.description, d.suggestions, d.location,
+		d.danger_pic, d.rectification_pic, d.detect_pic, d.reason, d.status, d.inspector, d.initial_time, 
+		d.rectification, d.rectification_date, d.reviewer, d.reviewer_date, d.formb, d.charging_pile_id, d.remark, 
+		( select GROUP_CONCAT(cp.name) from charging_pile cp where cp.id member of(d.charging_pile_id) and cp.unit_id = d.unit_id ) as charging_pile_name 
+		from owner_unit_danger d 
+		left join owner_unit u on u.id = d.unit_id 
+		left join project p on p.id = u.project_id
+		left join detect_unit du on du.id = u.detect_id
+		left join owner_unit_building ub on ub.id = d.building_id 
+		left join owner_unit_area ua on ua.id = d.unit_area_id
+		where d.id = #{dangerId}
 	</select>
 	
 	<select id="countByChargingPileId"  parameterType="Long" resultType="Integer">
@@ -82,6 +99,18 @@
 	
 	<select id="countByDataIdAndPileId" resultType="Integer">
 		select count(1) from owner_unit_danger d where d.form_data_id = #{dataId}
+		<if test="pileId != null">
+			and #{pileId} member of(d.charging_pile_id)
+		</if>
+	</select>
+	
+	<select id="countByUnitIdAndDataIdAndPileId" resultType="Integer">
+		select count(1) from owner_unit_danger d 
+		left join owner_unit o on o.id = d.unit_id and o.rounds = d.rounds
+		where d.unit_id = #{unitId} 
+		<if test="dataId != null">
+			and d.form_data_id = #{dataId}
+		</if>
 		<if test="pileId != null">
 			and #{pileId} member of(d.charging_pile_id)
 		</if>

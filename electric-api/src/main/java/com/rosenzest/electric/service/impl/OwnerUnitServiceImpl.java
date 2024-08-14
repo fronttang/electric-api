@@ -35,6 +35,7 @@ import com.rosenzest.electric.enums.InitialInspectionStatus;
 import com.rosenzest.electric.enums.ReviewStatus;
 import com.rosenzest.electric.enums.UnitReportType;
 import com.rosenzest.electric.mapper.OwnerUnitMapper;
+import com.rosenzest.electric.miniapp.dto.MiniAppAreaUserOwnerUnitQuery;
 import com.rosenzest.electric.miniapp.dto.MiniAppOwnerUnitQuery;
 import com.rosenzest.electric.miniapp.dto.UnitStatisticsDto;
 import com.rosenzest.electric.miniapp.vo.AreaUserIndexVo;
@@ -123,7 +124,6 @@ public class OwnerUnitServiceImpl extends ModelBaseServiceImpl<OwnerUnitMapper, 
 		this.saveOrUpdate(unit);
 
 		data.setId(unit.getId());
-		;
 		// 初检报告
 		OwnerUnitReport report = ownerUnitReportService.getReportByUnitIdAndType(unit.getId(), UnitReportType.INITIAL);
 		if (report == null) {
@@ -375,7 +375,7 @@ public class OwnerUnitServiceImpl extends ModelBaseServiceImpl<OwnerUnitMapper, 
 		return this.baseMapper.queryOwnerUnitListByGridman(query);
 	}
 
-	private List<OwnerUnitOverviewVo> getOwnerUnitListByAreaUser(MiniAppOwnerUnitQuery query) {
+	private List<OwnerUnitOverviewVo> getOwnerUnitListByAreaUser(MiniAppAreaUserOwnerUnitQuery query) {
 		return this.baseMapper.queryOwnerUnitListByAreaUser(query);
 	}
 
@@ -407,7 +407,7 @@ public class OwnerUnitServiceImpl extends ModelBaseServiceImpl<OwnerUnitMapper, 
 	}
 
 	@Override
-	public List<OwnerUnitDangerStatisticsVo> getOwnerUnitDangerStatisticsByAreaUser(MiniAppOwnerUnitQuery query,
+	public List<OwnerUnitDangerStatisticsVo> getOwnerUnitDangerStatisticsByAreaUser(MiniAppAreaUserOwnerUnitQuery query,
 			PageList pageList) {
 
 		List<OwnerUnitDangerStatisticsVo> result = new ArrayList<OwnerUnitDangerStatisticsVo>();

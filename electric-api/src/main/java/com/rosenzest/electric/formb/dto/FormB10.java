@@ -13,6 +13,12 @@ public class FormB10 {
 	private String location;
 
 	/**
+	 * 电能最大符合电流
+	 */
+	@ApiModelProperty("电能最大符合电流")
+	private String maxCurrent;
+
+	/**
 	 * 检测结果
 	 */
 	@ApiModelProperty("检测结果")

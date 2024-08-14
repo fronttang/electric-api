@@ -7,6 +7,7 @@ import org.apache.ibatis.annotations.Param;
 import com.rosenzest.electric.dto.OwnerUnitQuery;
 import com.rosenzest.electric.dto.OwnerUnitReviewQuery;
 import com.rosenzest.electric.entity.OwnerUnit;
+import com.rosenzest.electric.miniapp.dto.MiniAppAreaUserOwnerUnitQuery;
 import com.rosenzest.electric.miniapp.dto.MiniAppOwnerUnitQuery;
 import com.rosenzest.electric.miniapp.dto.UnitStatisticsDto;
 import com.rosenzest.electric.miniapp.vo.AreaUserInfoVo;
@@ -45,5 +46,5 @@ public interface OwnerUnitMapper extends ModelBaseMapper<OwnerUnit> {
 
 	Long countTodayDetectUnit(AreaUserInfoVo userInfo);
 
-	List<OwnerUnitOverviewVo> queryOwnerUnitListByAreaUser(MiniAppOwnerUnitQuery query);
+	List<OwnerUnitOverviewVo> queryOwnerUnitListByAreaUser(MiniAppAreaUserOwnerUnitQuery query);
 }

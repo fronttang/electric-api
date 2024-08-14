@@ -285,4 +285,12 @@ public class OwnerUnitDangerController extends ServerBaseController {
 		return ListResult.SUCCESS(pageList.getTotalNum(), dangers);
 	}
 
+	@ApiOperation(tags = "隐患", value = "隐患详情")
+	@PostMapping("/info/{dangerId}")
+	public Result<OwnerUnitDangerVo> dangerInfo(@Autowired Long dangerId) {
+
+		OwnerUnitDangerVo danger = unitDangerService.getOwnerUnitDangerById(dangerId);
+		return Result.SUCCESS(danger);
+	}
+
 }

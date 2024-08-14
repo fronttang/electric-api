@@ -106,4 +106,16 @@ public class OwnerUnitDangerQuery extends PageQuery {
 	@ApiModelProperty("初检结束时间：格式yyyy-MM-dd")
 	private String endDate;
 
+	/**
+	 * 复检开始时间
+	 */
+	@ApiModelProperty("复检开始时间：格式yyyy-MM-dd")
+	private String startReviewDate;
+
+	/**
+	 * 复检结束时间
+	 */
+	@ApiModelProperty("复检结束时间：格式yyyy-MM-dd")
+	private String endReviewDate;
+
 }

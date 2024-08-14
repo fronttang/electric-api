@@ -167,4 +167,16 @@ public class InitialOwnerUnitVo {
 	 */
 	@ApiModelProperty("无法检测原因")
 	private String isTestReason;
+
+	/**
+	 * 温度
+	 */
+	@ApiModelProperty("温度")
+	private String temperature;
+
+	/**
+	 * 湿度
+	 */
+	@ApiModelProperty("湿度")
+	private String humidity;
 }

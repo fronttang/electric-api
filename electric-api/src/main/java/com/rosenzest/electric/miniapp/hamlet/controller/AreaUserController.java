@@ -23,9 +23,11 @@ import com.rosenzest.base.Result;
 import com.rosenzest.base.constant.ResultEnum;
 import com.rosenzest.base.enums.TerminalType;
 import com.rosenzest.base.exception.BusinessException;
+import com.rosenzest.base.util.BeanUtils;
 import com.rosenzest.electric.dto.ProjectAreaDto;
 import com.rosenzest.electric.entity.OwnerUnit;
 import com.rosenzest.electric.enums.AreaUserType;
+import com.rosenzest.electric.miniapp.dto.MiniAppAreaUserOwnerUnitQuery;
 import com.rosenzest.electric.miniapp.dto.MiniAppOwnerUnitQuery;
 import com.rosenzest.electric.miniapp.vo.AreaUserIndexVo;
 import com.rosenzest.electric.miniapp.vo.AreaUserInfoVo;
@@ -97,16 +99,16 @@ public class AreaUserController extends ServerBaseController {
 			return ListResult.SUCCESS(0L, null);
 		}
 
-		if (StrUtil.isBlank(query.getDistrict()) && StrUtil.isBlank(query.getStreet())
-				&& StrUtil.isBlank(query.getCommunity()) && StrUtil.isBlank(query.getHamlet())) {
-			query.setDistrict(userInfo.getDistrict());
-			query.setStreet(userInfo.getStreet());
-			query.setCommunity(userInfo.getCommunity());
-			query.setHamlet(userInfo.getHamlet());
-		}
+		MiniAppAreaUserOwnerUnitQuery unitQuery = new MiniAppAreaUserOwnerUnitQuery();
+		BeanUtils.copyProperties(query, unitQuery);
+
+		unitQuery.setUserDistrict(userInfo.getDistrict());
+		unitQuery.setUserStreet(userInfo.getStreet());
+		unitQuery.setUserCommunity(userInfo.getCommunity());
+		unitQuery.setUserHamlet(userInfo.getHamlet());
 
 		PageList pageList = new PageList(query.getPage(), query.getPageSize());
-		List<OwnerUnitDangerStatisticsVo> result = ownerUnitService.getOwnerUnitDangerStatisticsByAreaUser(query,
+		List<OwnerUnitDangerStatisticsVo> result = ownerUnitService.getOwnerUnitDangerStatisticsByAreaUser(unitQuery,
 				pageList);
 
 		return ListResult.SUCCESS(pageList.getTotalNum(), result);
@@ -228,5 +230,12 @@ public class AreaUserController extends ServerBaseController {
 		}
 
 		return null;
+	}
+
+	@ApiOperation(tags = "街区账号", value = "区域字典")
+	@GetMapping("/statistics")
+	public Result<List<OwnerUnitDangerStatisticsVo>> statistics() {
+
+		return Result.SUCCESS();
 	}
 }
