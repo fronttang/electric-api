@@ -16,6 +16,6 @@ import com.rosenzest.model.base.mapper.ModelBaseMapper;
  */
 public interface SysUserMapper extends ModelBaseMapper<SysUser> {
 
-	AreaUserInfoVo getAreaUserInfo(@Param("projectId") Long userId, @Param("projectId") Long projectId);
+	AreaUserInfoVo getAreaUserInfo(@Param("userId") Long userId, @Param("projectId") Long projectId);
 
 }
