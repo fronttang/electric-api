@@ -15,14 +15,17 @@ public class FormB14DangerHandler implements IFormbDangerHandler {
 	public String getLevel(OwnerUnitDangerVo vo) {
 
 		String level = null;
-		String residualCurrentResult = getResidualCurrentResult(vo);
-		if (FAILURE.equalsIgnoreCase(residualCurrentResult)) {
-			level = "A";
-		}
-
-		String alarmTimeResult = getAlarmTimeResult(vo);
-		if (FAILURE.equalsIgnoreCase(alarmTimeResult)) {
-			level = "A";
+		String type = getType(vo);
+		if (FormB14.TYPE_RESIDUALCURRENT.equals(type)) {
+			String residualCurrentResult = getResidualCurrentResult(vo);
+			if (FAILURE.equalsIgnoreCase(residualCurrentResult)) {
+				level = "A";
+			}
+		} else if (FormB14.TYPE_ALARMTIME.equals(type)) {
+			String alarmTimeResult = getAlarmTimeResult(vo);
+			if (FAILURE.equalsIgnoreCase(alarmTimeResult)) {
+				level = "A";
+			}
 		}
 
 		return level;
@@ -32,14 +35,17 @@ public class FormB14DangerHandler implements IFormbDangerHandler {
 	public String getDescription(OwnerUnitDangerVo vo) {
 
 		String description = null;
-		String residualCurrentResult = getResidualCurrentResult(vo);
-		if (FAILURE.equalsIgnoreCase(residualCurrentResult)) {
-			description = "电气火灾监控探测器剩余电流报警功能测试时，探测器未在30s内发出报警信号。";
-		}
-
-		String alarmTimeResult = getAlarmTimeResult(vo);
-		if (FAILURE.equalsIgnoreCase(alarmTimeResult)) {
-			description = "电气火灾监控探测器温度报警功能测试时，探测器未在30s内发出报警信号。";
+		String type = getType(vo);
+		if (FormB14.TYPE_RESIDUALCURRENT.equals(type)) {
+			String residualCurrentResult = getResidualCurrentResult(vo);
+			if (FAILURE.equalsIgnoreCase(residualCurrentResult)) {
+				description = "电气火灾监控探测器剩余电流报警功能测试时，探测器未在30s内发出报警信号。";
+			}
+		} else if (FormB14.TYPE_ALARMTIME.equals(type)) {
+			String alarmTimeResult = getAlarmTimeResult(vo);
+			if (FAILURE.equalsIgnoreCase(alarmTimeResult)) {
+				description = "电气火灾监控探测器温度报警功能测试时，探测器未在30s内发出报警信号。";
+			}
 		}
 
 		return description;
@@ -49,14 +55,17 @@ public class FormB14DangerHandler implements IFormbDangerHandler {
 	public String getSuggestions(OwnerUnitDangerVo vo) {
 
 		String suggestions = null;
-		String residualCurrentResult = getResidualCurrentResult(vo);
-		if (FAILURE.equalsIgnoreCase(residualCurrentResult)) {
-			suggestions = "电气火灾监控探测器剩余电流报警功能测试时，探测器未在30s内发出报警信号。";
-		}
-
-		String alarmTimeResult = getAlarmTimeResult(vo);
-		if (FAILURE.equalsIgnoreCase(alarmTimeResult)) {
-			suggestions = "电气火灾监控探测器温度报警功能测试时，探测器未在30s内发出报警信号。";
+		String type = getType(vo);
+		if (FormB14.TYPE_RESIDUALCURRENT.equals(type)) {
+			String residualCurrentResult = getResidualCurrentResult(vo);
+			if (FAILURE.equalsIgnoreCase(residualCurrentResult)) {
+				suggestions = "电气火灾监控探测器剩余电流报警功能测试时，探测器未在30s内发出报警信号。";
+			}
+		} else if (FormB14.TYPE_ALARMTIME.equals(type)) {
+			String alarmTimeResult = getAlarmTimeResult(vo);
+			if (FAILURE.equalsIgnoreCase(alarmTimeResult)) {
+				suggestions = "电气火灾监控探测器温度报警功能测试时，探测器未在30s内发出报警信号。";
+			}
 		}
 
 		return suggestions;
@@ -104,4 +113,13 @@ public class FormB14DangerHandler implements IFormbDangerHandler {
 		}
 		return null;
 	}
+
+	private String getType(OwnerUnitDangerVo vo) {
+		FormB14 formb = getFormb(vo);
+		if (formb != null) {
+			return formb.getType();
+		}
+		return null;
+	}
+
 }

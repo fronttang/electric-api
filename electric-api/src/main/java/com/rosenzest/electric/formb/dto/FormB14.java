@@ -6,6 +6,10 @@ import lombok.Data;
 @Data
 public class FormB14 {
 
+	public static final String TYPE_RESIDUALCURRENT = "residualCurrent";
+
+	public static final String TYPE_ALARMTIME = "alarmTime";
+
 	/**
 	 * 剩余电流值检测
 	 */
@@ -17,6 +21,11 @@ public class FormB14 {
 	 */
 	@ApiModelProperty("报警时间检测")
 	private AlarmTime alarmTime;
+
+	/**
+	 * 类型 residualCurrent/alarmTime
+	 */
+	private String type;
 
 	/**
 	 * 报警时间检测

@@ -139,6 +139,25 @@ public class OwnerUnitDanger extends BaseEntity<OwnerUnitDanger> {
 	private JSONObject formb;
 
 	/**
+	 * B14类型 residualCurrent 剩余电流值，alarmTime报警时间
+	 */
+	@TableField(exist = false)
+	private String b14Type;
+
+	public String getB14Type() {
+		if (this.formb != null && this.formb.getJSONObject("data") != null) {
+			return this.formb.getJSONObject("data").getString("type");
+		}
+		return null;
+	}
+
+	public void setB14Type(String type) {
+		if (this.formb != null && this.formb.getJSONObject("data") != null) {
+			this.formb.getJSONObject("data").put("type", type);
+		}
+	}
+
+	/**
 	 * 整改员
 	 */
 	private String rectification;

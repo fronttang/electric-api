@@ -14,6 +14,8 @@ import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.rosenzest.base.LoginUser;
 import com.rosenzest.base.PageList;
+import com.rosenzest.base.util.BeanUtils;
+import com.rosenzest.base.util.IdUtils;
 import com.rosenzest.electric.dto.DangerNotPassDto;
 import com.rosenzest.electric.dto.DangerPassDto;
 import com.rosenzest.electric.dto.OwnerUnitDangerQuery;
@@ -42,6 +44,7 @@ import com.rosenzest.server.base.context.RequestContextHolder;
 import com.rosenzest.server.base.enums.UserType;
 
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.util.StrUtil;
 
 /**
  * <p>
@@ -105,19 +108,103 @@ public class OwnerUnitDangerServiceImpl extends ModelBaseServiceImpl<OwnerUnitDa
 		return this.baseMapper.selectCount(queryWrapper);
 	}
 
+	private OwnerUnitDanger getB14ByFormIdAndType(Long formId, String type) {
+		LambdaQueryWrapper<OwnerUnitDanger> queryWrapper = new LambdaQueryWrapper<OwnerUnitDanger>();
+		queryWrapper.eq(OwnerUnitDanger::getFormId, formId);
+		queryWrapper.eq(OwnerUnitDanger::getFormCode, "B14");
+		queryWrapper.apply(" formb ->'$.data.type' = {0} ", type);
+		queryWrapper.last(" LIMIT 1 ");
+		return this.baseMapper.selectOne(queryWrapper);
+	}
+
+	private OwnerUnitDanger getB14Target(Long id) {
+		LambdaQueryWrapper<OwnerUnitDanger> queryWrapper = new LambdaQueryWrapper<OwnerUnitDanger>();
+		queryWrapper.eq(OwnerUnitDanger::getId, id);
+		queryWrapper.eq(OwnerUnitDanger::getFormCode, "B14");
+		queryWrapper.last(" LIMIT 1 ");
+		return this.baseMapper.selectOne(queryWrapper);
+
+	}
+
 	@Override
 	@Transactional
 	public boolean saveOrUpdateDanger(OwnerUnitDanger danger) {
 
+		IRequestContext current = RequestContextHolder.getCurrent();
+		LoginUser loginUser = current.getLoginUser();
+
 		boolean addLog = danger.getId() == null;
 
-		//
 		danger.setStatus(ReviewStatus.RECTIFIED.code());
-		boolean saveDangerFlag = this.saveOrUpdate(danger);
+		OwnerUnitDanger b14 = null;
+
+		if (danger.getId() != null) {
+			// 当前 B14 数据
+			OwnerUnitDanger target = getB14Target(danger.getId());
+			if (target != null) {
+				String targetType = target.getB14Type();
+				if (StrUtil.isBlank(targetType)) {
+					targetType = "residualCurrent";
+				}
+				danger.setB14Type(targetType);
+
+				String type = "residualCurrent".equalsIgnoreCase(targetType) ? "alarmTime" : "residualCurrent";
+				if (target.getFormId() != null) {
+					b14 = getB14ByFormIdAndType(target.getFormId(), type);
+				}
+				if (b14 == null) {
+					b14 = new OwnerUnitDanger();
+
+					BeanUtils.copyProperties(danger, b14);
+					b14.setId(null);
+					Long formId = IdUtils.getSnowflakeNextId();
+					b14.setFormId(formId);
+					b14.setCreateBy(String.valueOf(loginUser.getUserId()));
+					danger.setFormId(formId);
+				}
+
+				this.saveOrUpdate(danger);
+
+				b14.setFormb(danger.getFormb());
+				b14.setB14Type(type);
+				b14.setStatus(ReviewStatus.RECTIFIED.code());
+
+				this.saveOrUpdate(b14);
+			} else {
+				this.saveOrUpdate(danger);
+			}
+		} else {
+			if ("B14".equalsIgnoreCase(danger.getFormCode())) {
+				Long formId = IdUtils.getSnowflakeNextId();
+
+				danger.setB14Type("residualCurrent");
+				danger.setFormId(formId);
+
+				this.saveOrUpdate(danger);
+
+				b14 = new OwnerUnitDanger();
+				BeanUtils.copyProperties(danger, b14);
+
+				b14.setB14Type("alarmTime");
+				b14.setFormId(formId);
+				b14.setId(null);
+				b14.setCreateBy(String.valueOf(loginUser.getUserId()));
+
+				this.saveOrUpdate(b14);
+			} else {
+				this.saveOrUpdate(danger);
+			}
+		}
+		//
+
+		// boolean saveDangerFlag = this.saveOrUpdate(danger);
+		// if (b14 != null) {
+		// this.saveOrUpdate(b14);
+		// }
 
 		boolean saveDangerLogFlag = true;
 		// 增加隐患日志
-		if (addLog && saveDangerFlag) {
+		if (addLog) {
 			OwnerUnitDangerLog log = new OwnerUnitDangerLog();
 			log.setDangerId(danger.getId());
 			log.setOperator(danger.getInspector());
@@ -141,7 +228,7 @@ public class OwnerUnitDangerServiceImpl extends ModelBaseServiceImpl<OwnerUnitDa
 		// 楼栋复检状态
 		unitBuildingService.updateBuildingReviewStatus(danger.getBuildingId(), ReviewStatus.RECTIFIED);
 
-		return saveDangerFlag && saveDangerLogFlag && initalReportFlag && reviewReportFlag;
+		return saveDangerLogFlag && initalReportFlag && reviewReportFlag;
 	}
 
 	@Override

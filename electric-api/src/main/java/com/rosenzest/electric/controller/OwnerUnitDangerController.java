@@ -112,6 +112,11 @@ public class OwnerUnitDangerController extends ServerBaseController {
 					return Result.ERROR(400, "无操作权限");
 				}
 			}
+
+			if ("B14".equalsIgnoreCase(danger.getFormCode())) {
+				danger.setFormId(dbDanger.getFormId());
+			}
+
 		}
 
 		if (ProjectType.URBAN_VILLAGE.code().equalsIgnoreCase(ownerUnit.getType())) {
