@@ -20,3 +20,7 @@ spring:
 
 #token配置
 token: 
+
+logging:
+  file: 
+    path: ./logs

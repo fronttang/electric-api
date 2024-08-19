@@ -232,7 +232,7 @@ public class AreaUserController extends ServerBaseController {
 		return null;
 	}
 
-	@ApiOperation(tags = "街区账号", value = "区域字典")
+	@ApiOperation(tags = "街区账号", value = "数据统计")
 	@GetMapping("/statistics")
 	public Result<List<OwnerUnitDangerStatisticsVo>> statistics() {
 

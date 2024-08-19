@@ -70,8 +70,6 @@ mybatis:
 
 mybatis-plus:
   mapper-locations: classpath*:/mapper/**/*Mapper.xml
-  configuration:
-    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 
 #pagehelper
 pagehelper:
@@ -83,3 +81,7 @@ pagehelper:
 
 #token配置
 token:
+
+logging:
+  file: 
+    path: ./logs

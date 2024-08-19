@@ -1,0 +1,33 @@
+system: 
+  profile: /dat/upload
+  domain: https://admin.kingpey.cn
+  
+server:
+  port: 8083
+  
+spring:
+  application:
+    name: electric-Api
+  
+  datasource:
+    url: jdbc:mysql://10.206.16.12:3306/dat?serverTimezone=Asia/Shanghai&useSSL=false&useUnicode=true&characterEncoding=UTF-8
+    username: root
+    password: DAT@ProdMysql147
+
+  redis:
+    host: 10.206.16.12
+    port: 6379
+    password: DAT@ProdRedis147
+
+#token配置
+token: 
+  secret: cc2bcf28d9ffc17fcbf169f3325607bb
+
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.nologging.NoLoggingImpl
+
+logging:
+  file: 
+    path: /dat/logs
+    
