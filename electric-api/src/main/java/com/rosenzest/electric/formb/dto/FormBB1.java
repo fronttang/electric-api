@@ -13,6 +13,30 @@ public class FormBB1 {
 	private String radiation;
 
 	/**
+	 * 天气
+	 */
+	@ApiModelProperty("天气")
+	private String weather;
+
+	/**
+	 * 测试距离（m)
+	 */
+	@ApiModelProperty("测试距离（m)")
+	private String distance;
+
+	/**
+	 * 风速（m/s）
+	 */
+	@ApiModelProperty("风速（m/s）")
+	private String windSpeed;
+
+	/**
+	 * 检测时间 yyyy-MM-dd
+	 */
+	@ApiModelProperty("检测时间 yyyy-MM-dd")
+	private String detectionTime;
+
+	/**
 	 * 检测位置
 	 */
 	@ApiModelProperty("检测位置")

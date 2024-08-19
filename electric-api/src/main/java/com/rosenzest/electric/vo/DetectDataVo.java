@@ -111,6 +111,11 @@ public class DetectDataVo {
 	private Long viewParentId;
 
 	/**
+	 * 归属1非车载充电桩2交流充电桩
+	 */
+	private List<String> attribution;
+
+	/**
 	 * 二级模块（高风险）
 	 */
 	private List<DetectDataVo> subDatas;
