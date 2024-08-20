@@ -16,13 +16,10 @@ import org.springframework.web.bind.annotation.RestController;
 import com.rosenzest.base.LoginUser;
 import com.rosenzest.base.Result;
 import com.rosenzest.base.util.BeanUtils;
+import com.rosenzest.electric.controller.ElectricBaseController;
 import com.rosenzest.electric.entity.OwnerUnit;
-import com.rosenzest.electric.entity.OwnerUnitReport;
 import com.rosenzest.electric.entity.Project;
-import com.rosenzest.electric.enums.InitialInspectionStatus;
 import com.rosenzest.electric.enums.ProjectType;
-import com.rosenzest.electric.enums.ProjectWorkerAreaRoleType;
-import com.rosenzest.electric.enums.UnitReportType;
 import com.rosenzest.electric.high.dto.MissDeviceDataDto.RentalHouseType1;
 import com.rosenzest.electric.high.dto.MissDeviceDataDto.RentalHouseType2;
 import com.rosenzest.electric.high.dto.MissDeviceDataDto.Small;
@@ -30,11 +27,8 @@ import com.rosenzest.electric.high.dto.OwnerUnitMissDeviceDto;
 import com.rosenzest.electric.high.entity.OwnerUnitMissDevice;
 import com.rosenzest.electric.high.service.IOwnerUnitMissDeviceService;
 import com.rosenzest.electric.high.vo.OwnerUnitMissDeviceVo;
-import com.rosenzest.electric.service.IOwnerUnitReportService;
 import com.rosenzest.electric.service.IOwnerUnitService;
 import com.rosenzest.electric.service.IProjectService;
-import com.rosenzest.electric.service.IProjectWorkerService;
-import com.rosenzest.server.base.controller.ServerBaseController;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -50,7 +44,7 @@ import io.swagger.annotations.ApiOperation;
 @Api(tags = "高风险-缺失设备")
 @RestController
 @RequestMapping("/unit/high/miss/device")
-public class OwnerUnitMissDeviceController extends ServerBaseController {
+public class OwnerUnitMissDeviceController extends ElectricBaseController {
 
 	@Autowired
 	private IOwnerUnitMissDeviceService missDeviceService;
@@ -61,11 +55,11 @@ public class OwnerUnitMissDeviceController extends ServerBaseController {
 	@Autowired
 	private IProjectService projectService;
 
-	@Autowired
-	private IProjectWorkerService projectWorkerService;
+	// @Autowired
+	// private IProjectWorkerService projectWorkerService;
 
-	@Autowired
-	private IOwnerUnitReportService unitReportService;
+	// @Autowired
+	// private IOwnerUnitReportService unitReportService;
 
 	@ApiOperation(tags = "高风险-缺失设备", value = "查询缺失设备列表")
 	@GetMapping("/list/{unitId}")
@@ -98,14 +92,16 @@ public class OwnerUnitMissDeviceController extends ServerBaseController {
 				return Result.ERROR(400, "无操作权限");
 			}
 
-			if (!String.valueOf(loginUser.getUserId()).equalsIgnoreCase(missDevice.getCreateBy())) {
+			checkPermission(missDevice, unit);
 
-				// 工作人员权限检查
-				if (!projectWorkerService.checkWorkerAreaRole(unit, loginUser.getUserId(),
-						ProjectWorkerAreaRoleType.EDIT)) {
-					return Result.ERROR(400, "无操作权限");
-				}
-			}
+//			if (!String.valueOf(loginUser.getUserId()).equalsIgnoreCase(missDevice.getCreateBy())) {
+//
+//				// 工作人员权限检查
+//				if (!projectWorkerService.checkWorkerAreaRole(unit, loginUser.getUserId(),
+//						ProjectWorkerAreaRoleType.EDIT)) {
+//					return Result.ERROR(400, "无操作权限");
+//				}
+//			}
 		}
 
 		OwnerUnitMissDevice missDevice = new OwnerUnitMissDevice();
@@ -124,7 +120,7 @@ public class OwnerUnitMissDeviceController extends ServerBaseController {
 	@DeleteMapping("/{id}")
 	public Result<List<OwnerUnitMissDeviceVo>> delete(@PathVariable Long id) {
 
-		LoginUser loginUser = getLoginUser();
+		// LoginUser loginUser = getLoginUser();
 
 		OwnerUnitMissDevice missDevice = missDeviceService.getById(id);
 		if (missDevice == null) {
@@ -136,18 +132,20 @@ public class OwnerUnitMissDeviceController extends ServerBaseController {
 			return Result.ERROR(400, "无操作权限");
 		}
 
+		checkPermission(ownerUnit, ownerUnit);
+
 		// 检测业主单元报告状态
-		OwnerUnitReport report = unitReportService.getReportByUnitIdAndType(ownerUnit.getId(), UnitReportType.INITIAL);
-		if (report != null && InitialInspectionStatus.FINISH.code().equalsIgnoreCase(report.getDetectStatus())) {
-			return Result.ERROR(400, "已完成初检");
-		}
+//		OwnerUnitReport report = unitReportService.getReportByUnitIdAndType(ownerUnit.getId(), UnitReportType.INITIAL);
+//		if (report != null && InitialInspectionStatus.FINISH.code().equalsIgnoreCase(report.getDetectStatus())) {
+//			return Result.ERROR(400, "已完成初检");
+//		}
 
-		if (!String.valueOf(loginUser.getUserId()).equalsIgnoreCase(missDevice.getCreateBy())) {
-
-			if (!projectWorkerService.checkWorkerAreaRole(ownerUnit, getUserId(), ProjectWorkerAreaRoleType.EDIT)) {
-				return Result.ERROR(400, "无操作权限");
-			}
-		}
+//		if (!String.valueOf(loginUser.getUserId()).equalsIgnoreCase(missDevice.getCreateBy())) {
+//
+//			if (!projectWorkerService.checkWorkerAreaRole(ownerUnit, getUserId(), ProjectWorkerAreaRoleType.EDIT)) {
+//				return Result.ERROR(400, "无操作权限");
+//			}
+//		}
 
 		if (missDeviceService.removeById(id)) {
 			return Result.SUCCESS();

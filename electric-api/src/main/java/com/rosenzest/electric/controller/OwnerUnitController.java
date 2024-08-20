@@ -37,7 +37,6 @@ import com.rosenzest.electric.entity.Project;
 import com.rosenzest.electric.entity.ProjectWorker;
 import com.rosenzest.electric.enums.InitialInspectionStatus;
 import com.rosenzest.electric.enums.ProjectType;
-import com.rosenzest.electric.enums.ProjectWorkerAreaRoleType;
 import com.rosenzest.electric.enums.ProjectWorkerType;
 import com.rosenzest.electric.enums.UnitReportType;
 import com.rosenzest.electric.properties.SystemProperties;
@@ -50,7 +49,6 @@ import com.rosenzest.electric.util.FileUploadUtils;
 import com.rosenzest.electric.vo.InitialOwnerUnitVo;
 import com.rosenzest.electric.vo.OwnerUnitQrcodeVo;
 import com.rosenzest.electric.vo.OwnerUnitVo;
-import com.rosenzest.server.base.controller.ServerBaseController;
 
 import cn.binarywang.wx.miniapp.api.WxMaQrcodeService;
 import cn.binarywang.wx.miniapp.api.WxMaService;
@@ -69,7 +67,7 @@ import me.chanjar.weixin.common.error.WxErrorException;
 @Api(tags = "业主单元")
 @RestController
 @RequestMapping("/unit")
-public class OwnerUnitController extends ServerBaseController {
+public class OwnerUnitController extends ElectricBaseController {
 
 	@Autowired
 	private IProjectService projectService;
@@ -130,13 +128,19 @@ public class OwnerUnitController extends ServerBaseController {
 			throw new BusinessException(400, "业主单元不存在");
 		}
 
-		if (!String.valueOf(loginUser.getUserId()).equalsIgnoreCase(ownerUnit.getCreateBy())) {
-			// 工作人员权限检查
-			if (!projectWorkerService.checkWorkerAreaRole(ownerUnit, loginUser.getUserId(),
-					ProjectWorkerAreaRoleType.EDIT)) {
-				return Result.ERROR(400, "无操作权限");
-			}
+		// 导入数据不做检查
+		if (!"admin".equalsIgnoreCase(ownerUnit.getCreateBy())) {
+			// 非admin数据检查编辑权限 工作人员权限检查
+			checkPermission(ownerUnit, ownerUnit);
 		}
+
+//		if (!String.valueOf(loginUser.getUserId()).equalsIgnoreCase(ownerUnit.getCreateBy())) {
+//			// 工作人员权限检查
+//			if (!projectWorkerService.checkWorkerAreaRole(ownerUnit, loginUser.getUserId(),
+//					ProjectWorkerAreaRoleType.EDIT)) {
+//				return Result.ERROR(400, "无操作权限");
+//			}
+//		}
 
 		OwnerUnitReport report = ownerUnitReportService.getReportByUnitIdAndType(data.getId(), UnitReportType.INITIAL);
 
@@ -171,6 +175,13 @@ public class OwnerUnitController extends ServerBaseController {
 			report.setCode(SnowFlakeUtil.uniqueString());
 		}
 
+		if ("admin".equalsIgnoreCase(ownerUnit.getCreateBy())) {
+			OwnerUnit update = new OwnerUnit();
+			update.setId(data.getId());
+			update.setCreateBy(String.valueOf(loginUser.getUserId()));
+			ownerUnitService.updateById(update);
+		}
+
 		if (ownerUnitReportService.saveOrUpdate(report)) {
 			return Result.SUCCESS();
 		} else {
@@ -201,9 +212,6 @@ public class OwnerUnitController extends ServerBaseController {
 
 		data.setProjectId(loginUser.getProjectId());
 
-		OwnerUnit unit = new OwnerUnit();
-		BeanUtils.copyProperties(data, unit);
-
 		Project project = projectService.getById(data.getProjectId());
 		if (project == null) {
 			return Result.ERROR(400, "无操作权限");
@@ -214,23 +222,41 @@ public class OwnerUnitController extends ServerBaseController {
 			return Result.ERROR(400, "非城中村/工业园项目");
 		}
 
-		if (StrUtil.isBlank(unit.getDistrict())) {
+		if (StrUtil.isBlank(data.getDistrict())) {
 			return Result.ERROR(400, "区ID不能为空");
-		} else if (StrUtil.isBlank(unit.getStreet())) {
+		} else if (StrUtil.isBlank(data.getStreet())) {
 			return Result.ERROR(400, "街道ID不能为空");
 		}
 		if (ProjectType.URBAN_VILLAGE.code().equalsIgnoreCase(project.getType())) {
-			if (StrUtil.isBlank(unit.getCommunity())) {
+			if (StrUtil.isBlank(data.getCommunity())) {
 				return Result.ERROR(400, "社区ID不能为空");
-			} else if (StrUtil.isBlank(unit.getHamlet())) {
+			} else if (StrUtil.isBlank(data.getHamlet())) {
 				return Result.ERROR(400, "村ID不能为空");
 			}
 		}
 
-		// 工作人员权限检查
-		if (!projectWorkerService.checkWorkerAreaRole(unit, loginUser.getUserId(), ProjectWorkerAreaRoleType.EDIT)) {
-			return Result.ERROR(400, "无操作权限");
+		OwnerUnit unit = new OwnerUnit();
+		BeanUtils.copyProperties(data, unit);
+
+		if (data.getId() != null) {
+			OwnerUnit dbUnit = ownerUnitService.getById(data.getId());
+
+			if (dbUnit == null) {
+				return Result.ERROR(400, "无操作权限");
+			}
+
+			data.setCreateBy(dbUnit.getCreateBy());
+
+			// 导入数据不做检查
+			if (!"admin".equalsIgnoreCase(dbUnit.getCreateBy())) {
+				// 非admin数据检查编辑权限 工作人员权限检查
+				checkPermission(unit, unit);
+			}
 		}
+//		// 工作人员权限检查
+//		if (!projectWorkerService.checkWorkerAreaRole(unit, loginUser.getUserId(), ProjectWorkerAreaRoleType.EDIT)) {
+//			return Result.ERROR(400, "无操作权限");
+//		}
 
 		if (ownerUnitService.checkOwnerUnitName(unit)) {
 			return Result.ERROR(400, StrUtil.format("该项目区域下已存在名为[{}]的业主单元", unit.getName()));
@@ -251,17 +277,23 @@ public class OwnerUnitController extends ServerBaseController {
 	@DeleteMapping("/{unitId}")
 	public Result<?> deleteUnit(@PathVariable Long unitId) {
 
-		LoginUser loginUser = getLoginUser();
+		// LoginUser loginUser = getLoginUser();
 		OwnerUnit ownerUnit = ownerUnitService.getById(unitId);
 		if (ownerUnit == null) {
 			return Result.ERROR(400, "无操作权限");
 		}
 
-		// 工作人员权限检查
-		if (!projectWorkerService.checkWorkerAreaRole(ownerUnit, loginUser.getUserId(),
-				ProjectWorkerAreaRoleType.EDIT)) {
-			return Result.ERROR(400, "无操作权限");
+		// 导入数据不做检查
+		if (!"admin".equalsIgnoreCase(ownerUnit.getCreateBy())) {
+			// 非admin数据检查编辑权限 工作人员权限检查
+			checkPermission(ownerUnit, ownerUnit);
 		}
+
+//		// 工作人员权限检查
+//		if (!projectWorkerService.checkWorkerAreaRole(ownerUnit, loginUser.getUserId(),
+//				ProjectWorkerAreaRoleType.EDIT)) {
+//			return Result.ERROR(400, "无操作权限");
+//		}
 
 		// 检查是否有隐患
 		if (ownerUnitDangerService.countByUnitId(unitId) > 0) {

@@ -28,7 +28,6 @@ import com.rosenzest.electric.entity.Project;
 import com.rosenzest.electric.entity.ProjectWorker;
 import com.rosenzest.electric.enums.InitialInspectionStatus;
 import com.rosenzest.electric.enums.ProjectType;
-import com.rosenzest.electric.enums.ProjectWorkerAreaRoleType;
 import com.rosenzest.electric.enums.ProjectWorkerType;
 import com.rosenzest.electric.service.IOwnerUnitBuildingService;
 import com.rosenzest.electric.service.IOwnerUnitDangerService;
@@ -37,7 +36,6 @@ import com.rosenzest.electric.service.IProjectService;
 import com.rosenzest.electric.service.IProjectWorkerService;
 import com.rosenzest.electric.vo.InitialOwnerUnitBuildingVo;
 import com.rosenzest.electric.vo.OwnerUnitBuildingReviewVo;
-import com.rosenzest.server.base.controller.ServerBaseController;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -53,7 +51,7 @@ import io.swagger.annotations.ApiOperation;
 @Api(tags = "楼栋(工业园)")
 @RestController
 @RequestMapping("/unit/building")
-public class OwnerUnitBuildingController extends ServerBaseController {
+public class OwnerUnitBuildingController extends ElectricBaseController {
 
 	@Autowired
 	private IOwnerUnitBuildingService unitBuildingService;
@@ -150,12 +148,14 @@ public class OwnerUnitBuildingController extends ServerBaseController {
 			// return Result.ERROR(400, "楼栋已完成初检");
 			// }
 
-			if (!String.valueOf(loginUser.getUserId()).equalsIgnoreCase(unitBuilding.getCreateBy())) {
+			checkPermission(unitBuilding, ownerUnit);
 
-				if (!projectWorkerService.checkWorkerAreaRole(ownerUnit, getUserId(), ProjectWorkerAreaRoleType.EDIT)) {
-					return Result.ERROR(400, "无操作权限");
-				}
-			}
+//			if (!String.valueOf(loginUser.getUserId()).equalsIgnoreCase(unitBuilding.getCreateBy())) {
+//
+//				if (!projectWorkerService.checkWorkerAreaRole(ownerUnit, getUserId(), ProjectWorkerAreaRoleType.EDIT)) {
+//					return Result.ERROR(400, "无操作权限");
+//				}
+//			}
 		}
 
 		OwnerUnitBuilding building = new OwnerUnitBuilding();
@@ -177,7 +177,7 @@ public class OwnerUnitBuildingController extends ServerBaseController {
 	@PostMapping("/setting")
 	public Result<?> buildingSetting(@RequestBody @Valid InitialOwnerUnitBuildingSettingDto data) {
 
-		LoginUser loginUser = getLoginUser();
+		// LoginUser loginUser = getLoginUser();
 
 		OwnerUnitBuilding unitBuilding = unitBuildingService.getById(data.getBuildingId());
 
@@ -196,13 +196,15 @@ public class OwnerUnitBuildingController extends ServerBaseController {
 			return Result.ERROR(400, "无操作权限");
 		}
 
-		// 检查工作人员权限
-		if (!String.valueOf(loginUser.getUserId()).equalsIgnoreCase(unitBuilding.getCreateBy())) {
+		checkPermission(unitBuilding, ownerUnit);
 
-			if (!projectWorkerService.checkWorkerAreaRole(ownerUnit, getUserId(), ProjectWorkerAreaRoleType.EDIT)) {
-				return Result.ERROR(400, "无操作权限");
-			}
-		}
+		// 检查工作人员权限
+//		if (!String.valueOf(loginUser.getUserId()).equalsIgnoreCase(unitBuilding.getCreateBy())) {
+//
+//			if (!projectWorkerService.checkWorkerAreaRole(ownerUnit, getUserId(), ProjectWorkerAreaRoleType.EDIT)) {
+//				return Result.ERROR(400, "无操作权限");
+//			}
+//		}
 
 		unitBuilding.setIsComplete(data.getIsComplete());
 		unitBuilding.setIsTest(data.getIsTest());
@@ -227,7 +229,7 @@ public class OwnerUnitBuildingController extends ServerBaseController {
 	@DeleteMapping("/{buildingId}")
 	public Result<?> deleteBuilding(@PathVariable Long buildingId) {
 
-		LoginUser loginUser = getLoginUser();
+		// LoginUser loginUser = getLoginUser();
 
 		OwnerUnitBuilding unitBuilding = unitBuildingService.getById(buildingId);
 
@@ -251,12 +253,14 @@ public class OwnerUnitBuildingController extends ServerBaseController {
 //			return Result.ERROR(400, "已完成初检");
 //		}
 
-		if (!String.valueOf(loginUser.getUserId()).equalsIgnoreCase(unitBuilding.getCreateBy())) {
+		checkPermission(unitBuilding, ownerUnit);
 
-			if (!projectWorkerService.checkWorkerAreaRole(ownerUnit, getUserId(), ProjectWorkerAreaRoleType.EDIT)) {
-				return Result.ERROR(400, "无操作权限");
-			}
-		}
+//		if (!String.valueOf(loginUser.getUserId()).equalsIgnoreCase(unitBuilding.getCreateBy())) {
+//
+//			if (!projectWorkerService.checkWorkerAreaRole(ownerUnit, getUserId(), ProjectWorkerAreaRoleType.EDIT)) {
+//				return Result.ERROR(400, "无操作权限");
+//			}
+//		}
 
 		// 检查是否有隐患数据
 		Integer dangers = unitDangerService.countByBuildingId(unitBuilding.getId());

@@ -91,30 +91,30 @@ public class ProjectWorkerServiceImpl extends ModelBaseServiceImpl<ProjectWorker
 	public boolean checkWorkerAreaRole(OwnerUnit unit, Long userId, ProjectWorkerAreaRoleType type) {
 		if (unit != null) {
 
-			if (unit.getId() != null) {
-				OwnerUnit ownerUnit = ownerUnitService.getById(unit.getId());
-				if (ownerUnit == null) {
-					return false;
-				}
+			// if (unit.getId() != null) {
+//				OwnerUnit ownerUnit = ownerUnitService.getById(unit.getId());
+//				if (ownerUnit == null) {
+//					return false;
+//				}
+//
+//				if (String.valueOf(userId).equalsIgnoreCase(ownerUnit.getCreateBy())) {
+//					return true;
+//				}
+//
+//				if ("admin".equalsIgnoreCase(ownerUnit.getCreateBy())) {
+//					return true;
+//				}
 
-				if (String.valueOf(userId).equalsIgnoreCase(ownerUnit.getCreateBy())) {
-					return true;
-				}
+			AreaDto area = new AreaDto();
+			area.setDistrict(unit.getDistrict());
+			area.setStreet(unit.getStreet());
+			area.setCommunity(unit.getCommunity());
+			area.setHamlet(unit.getHamlet());
 
-				if ("admin".equalsIgnoreCase(ownerUnit.getCreateBy())) {
-					return true;
-				}
-
-				AreaDto area = new AreaDto();
-				area.setDistrict(unit.getDistrict());
-				area.setStreet(unit.getStreet());
-				area.setCommunity(unit.getCommunity());
-				area.setHamlet(unit.getHamlet());
-
-				return this.checkWorkerAreaRole(unit.getProjectId(), userId, type, area);
-			} else {
-				return true;
-			}
+			return this.checkWorkerAreaRole(unit.getProjectId(), userId, type, area);
+//			} else {
+//				return true;
+//			}
 		}
 		return false;
 	}

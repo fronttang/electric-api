@@ -160,4 +160,6 @@ public class ChargingStationDto {
 	@ApiModelProperty("点位图")
 	private String stationPic;
 
+	private String createBy;
+
 }

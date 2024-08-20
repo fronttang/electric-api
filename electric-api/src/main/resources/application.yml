@@ -1,6 +1,6 @@
 system: 
   profile: /dat/upload
-  domain: http://129.211.210.175:8083
+  domain: https://admin.dat.kingpey.cn
     
 wx:
   mp:

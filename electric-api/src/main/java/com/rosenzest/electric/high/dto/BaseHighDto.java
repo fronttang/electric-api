@@ -17,4 +17,9 @@ public class BaseHighDto {
 	@NotNull(message = "项目ID不能为空")
 	@ApiModelProperty(value = "项目ID", required = true)
 	private Long projectId;
+
+	/**
+	 * 创建者
+	 */
+	private String createBy;
 }

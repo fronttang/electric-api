@@ -19,18 +19,16 @@ import com.rosenzest.base.LoginUser;
 import com.rosenzest.base.PageList;
 import com.rosenzest.base.Result;
 import com.rosenzest.base.util.BeanUtils;
+import com.rosenzest.electric.controller.ElectricBaseController;
 import com.rosenzest.electric.entity.OwnerUnit;
 import com.rosenzest.electric.enums.ProjectType;
-import com.rosenzest.electric.enums.ProjectWorkerAreaRoleType;
 import com.rosenzest.electric.service.IOwnerUnitDangerService;
 import com.rosenzest.electric.service.IOwnerUnitService;
-import com.rosenzest.electric.service.IProjectWorkerService;
 import com.rosenzest.electric.station.dto.ChargingPileDto;
 import com.rosenzest.electric.station.dto.ChargingPileQuery;
 import com.rosenzest.electric.station.entity.ChargingPile;
 import com.rosenzest.electric.station.service.IChargingPileService;
 import com.rosenzest.electric.station.vo.ChargingPileVo;
-import com.rosenzest.server.base.controller.ServerBaseController;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -46,7 +44,7 @@ import io.swagger.annotations.ApiOperation;
 @Api(tags = "充电桩")
 @RestController
 @RequestMapping("/unit/charging/pile")
-public class ChargingPileController extends ServerBaseController {
+public class ChargingPileController extends ElectricBaseController {
 
 	@Autowired
 	private IChargingPileService chargingPileService;
@@ -54,8 +52,8 @@ public class ChargingPileController extends ServerBaseController {
 	@Autowired
 	private IOwnerUnitService ownerUnitService;
 
-	@Autowired
-	private IProjectWorkerService projectWorkerService;
+	// @Autowired
+	// private IProjectWorkerService projectWorkerService;
 
 	@Autowired
 	private IOwnerUnitDangerService unitDangerService;
@@ -89,12 +87,14 @@ public class ChargingPileController extends ServerBaseController {
 				return Result.ERROR(400, "非当前轮次数据不能修改");
 			}
 
-			if (!String.valueOf(loginUser.getUserId()).equalsIgnoreCase(chargingPile.getCreateBy())) {
+			checkPermission(chargingPile, ownerUnit);
 
-				if (!projectWorkerService.checkWorkerAreaRole(ownerUnit, getUserId(), ProjectWorkerAreaRoleType.EDIT)) {
-					return Result.ERROR(400, "无操作权限");
-				}
-			}
+//			if (!String.valueOf(loginUser.getUserId()).equalsIgnoreCase(chargingPile.getCreateBy())) {
+//
+//				if (!projectWorkerService.checkWorkerAreaRole(ownerUnit, getUserId(), ProjectWorkerAreaRoleType.EDIT)) {
+//					return Result.ERROR(400, "无操作权限");
+//				}
+//			}
 		}
 
 		ChargingPile chargingPile = new ChargingPile();
@@ -120,7 +120,7 @@ public class ChargingPileController extends ServerBaseController {
 	@DeleteMapping("/{pileId}")
 	public Result<?> deleteChargingPile(@PathVariable Long pileId) {
 
-		LoginUser loginUser = getLoginUser();
+		// LoginUser loginUser = getLoginUser();
 
 		ChargingPile chargingPile = chargingPileService.getById(pileId);
 
@@ -139,12 +139,14 @@ public class ChargingPileController extends ServerBaseController {
 			return Result.ERROR(400, "非当前轮次数据不能删除");
 		}
 
-		if (!String.valueOf(loginUser.getUserId()).equalsIgnoreCase(chargingPile.getCreateBy())) {
+		checkPermission(chargingPile, ownerUnit);
 
-			if (!projectWorkerService.checkWorkerAreaRole(ownerUnit, getUserId(), ProjectWorkerAreaRoleType.EDIT)) {
-				return Result.ERROR(400, "无操作权限");
-			}
-		}
+//		if (!String.valueOf(loginUser.getUserId()).equalsIgnoreCase(chargingPile.getCreateBy())) {
+//
+//			if (!projectWorkerService.checkWorkerAreaRole(ownerUnit, getUserId(), ProjectWorkerAreaRoleType.EDIT)) {
+//				return Result.ERROR(400, "无操作权限");
+//			}
+//		}
 
 		// 检查是否有隐患数据
 		Integer dangers = unitDangerService.countByChargingPileId(pileId);

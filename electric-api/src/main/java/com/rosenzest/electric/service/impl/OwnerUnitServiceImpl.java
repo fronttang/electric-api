@@ -120,7 +120,12 @@ public class OwnerUnitServiceImpl extends ModelBaseServiceImpl<OwnerUnitMapper, 
 
 		if (data.getId() == null) {
 			unit.setCreateBy(String.valueOf(loginUser.getUserId()));
+		} else {
+			if ("admin".equalsIgnoreCase(data.getCreateBy())) {
+				unit.setCreateBy(String.valueOf(loginUser.getUserId()));
+			}
 		}
+
 		this.saveOrUpdate(unit);
 
 		data.setId(unit.getId());

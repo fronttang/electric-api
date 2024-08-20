@@ -216,4 +216,5 @@ public class OwnerUnitDto {
 	@ApiModelProperty("湿度")
 	private String humidity;
 
+	private String createBy;
 }

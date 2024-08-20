@@ -75,6 +75,10 @@ public abstract class BaseHighConfigServiceImpl<C, DTO extends BaseHighDto, VO> 
 
 		if (unit.getId() == null) {
 			unit.setCreateBy(String.valueOf(loginUser.getUserId()));
+		} else {
+			if ("admin".equalsIgnoreCase(data.getCreateBy())) {
+				unit.setCreateBy(String.valueOf(loginUser.getUserId()));
+			}
 		}
 
 		ownerUnitService.saveOrUpdate(unit);

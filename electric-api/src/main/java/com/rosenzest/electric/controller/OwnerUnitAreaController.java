@@ -24,14 +24,11 @@ import com.rosenzest.electric.entity.OwnerUnitArea;
 import com.rosenzest.electric.entity.OwnerUnitBuilding;
 import com.rosenzest.electric.enums.IndustrialAreaBuildingType;
 import com.rosenzest.electric.enums.ProjectType;
-import com.rosenzest.electric.enums.ProjectWorkerAreaRoleType;
 import com.rosenzest.electric.service.IOwnerUnitAreaService;
 import com.rosenzest.electric.service.IOwnerUnitBuildingService;
 import com.rosenzest.electric.service.IOwnerUnitDangerService;
 import com.rosenzest.electric.service.IOwnerUnitService;
-import com.rosenzest.electric.service.IProjectWorkerService;
 import com.rosenzest.electric.vo.OwnerUnitAreaVo;
-import com.rosenzest.server.base.controller.ServerBaseController;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -39,7 +36,7 @@ import io.swagger.annotations.ApiOperation;
 @Api(tags = "公共区域/户(城中村/工业园)")
 @RestController
 @RequestMapping("/unit/area")
-public class OwnerUnitAreaController extends ServerBaseController {
+public class OwnerUnitAreaController extends ElectricBaseController {
 
 	@Autowired
 	private IOwnerUnitService ownerUnitService;
@@ -50,8 +47,8 @@ public class OwnerUnitAreaController extends ServerBaseController {
 	@Autowired
 	private IOwnerUnitDangerService unitDangerService;
 
-	@Autowired
-	private IProjectWorkerService projectWorkerService;
+	// @Autowired
+	// private IProjectWorkerService projectWorkerService;
 
 	@Autowired
 	private IOwnerUnitBuildingService unitBuildingService;
@@ -81,6 +78,7 @@ public class OwnerUnitAreaController extends ServerBaseController {
 			return Result.ERROR(400, "无操作权限");
 		}
 
+		// 修改
 		if (data.getId() != null) {
 
 			OwnerUnitArea unitArea = ownerUnitAreaService.getById(data.getId());
@@ -88,13 +86,15 @@ public class OwnerUnitAreaController extends ServerBaseController {
 				return Result.ERROR(400, "无操作权限");
 			}
 
-			if (!String.valueOf(loginUser.getUserId()).equalsIgnoreCase(unitArea.getCreateBy())) {
+			checkPermission(unitArea, ownerUnit);
 
-				if (!projectWorkerService.checkWorkerAreaRole(ownerUnit, loginUser.getUserId(),
-						ProjectWorkerAreaRoleType.EDIT)) {
-					return Result.ERROR(400, "无操作权限");
-				}
-			}
+//			if (!String.valueOf(loginUser.getUserId()).equalsIgnoreCase(unitArea.getCreateBy())) {
+//
+//				if (!projectWorkerService.checkWorkerAreaRole(ownerUnit, loginUser.getUserId(),
+//						ProjectWorkerAreaRoleType.EDIT)) {
+//					return Result.ERROR(400, "无操作权限");
+//				}
+//			}
 		}
 
 		// 工业园
@@ -108,13 +108,15 @@ public class OwnerUnitAreaController extends ServerBaseController {
 				return Result.ERROR(400, "无操作权限");
 			}
 
-			if (!String.valueOf(loginUser.getUserId()).equalsIgnoreCase(building.getCreateBy())) {
+			checkPermission(building, ownerUnit);
 
-				if (!projectWorkerService.checkWorkerAreaRole(ownerUnit, loginUser.getUserId(),
-						ProjectWorkerAreaRoleType.EDIT)) {
-					return Result.ERROR(400, "无操作权限");
-				}
-			}
+//			if (!String.valueOf(loginUser.getUserId()).equalsIgnoreCase(building.getCreateBy())) {
+//
+//				if (!projectWorkerService.checkWorkerAreaRole(ownerUnit, loginUser.getUserId(),
+//						ProjectWorkerAreaRoleType.EDIT)) {
+//					return Result.ERROR(400, "无操作权限");
+//				}
+//			}
 
 			// if
 			// (InitialInspectionStatus.FINISH.code().equalsIgnoreCase(building.getStatus()))
@@ -156,7 +158,7 @@ public class OwnerUnitAreaController extends ServerBaseController {
 	@DeleteMapping("/{unitAreaId}")
 	public Result<?> deleteArea(@PathVariable Long unitAreaId) {
 
-		LoginUser loginUser = getLoginUser();
+		// LoginUser loginUser = getLoginUser();
 
 		OwnerUnitArea unitArea = ownerUnitAreaService.getById(unitAreaId);
 		if (unitArea == null) {
@@ -169,11 +171,13 @@ public class OwnerUnitAreaController extends ServerBaseController {
 			return Result.ERROR(400, "无操作权限");
 		}
 
-		if (!String.valueOf(loginUser.getUserId()).equalsIgnoreCase(unitArea.getCreateBy())) {
-			if (!projectWorkerService.checkWorkerAreaRole(ownerUnit, getUserId(), ProjectWorkerAreaRoleType.EDIT)) {
-				return Result.ERROR(400, "无操作权限");
-			}
-		}
+		checkPermission(unitArea, ownerUnit);
+
+//		if (!String.valueOf(loginUser.getUserId()).equalsIgnoreCase(unitArea.getCreateBy())) {
+//			if (!projectWorkerService.checkWorkerAreaRole(ownerUnit, getUserId(), ProjectWorkerAreaRoleType.EDIT)) {
+//				return Result.ERROR(400, "无操作权限");
+//			}
+//		}
 
 //		if (unitArea.getBuildingId() != null) {
 //

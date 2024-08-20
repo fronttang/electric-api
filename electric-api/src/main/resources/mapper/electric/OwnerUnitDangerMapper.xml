@@ -41,7 +41,14 @@
 		<if test="formCode != null and formCode != ''"> and d.form_code = #{formCode} </if>
 		<if test="formType != null and formType != ''"> and d.form_type = #{formType} </if>
 		<if test="formDataId != null and formDataId != ''"> and d.form_data_id = #{formDataId} </if>
-		<if test="rounds != null and rounds != ''"> and d.rounds = #{rounds} </if>
+		<choose>
+			<when test="rounds != null and rounds != ''">
+				and d.rounds = #{rounds} 
+			</when>
+			<otherwise>
+				and d.rounds = u.rounds
+			</otherwise>
+		</choose>
 		<if test="chargingPileId != null and chargingPileId != '' ">
 		 and #{chargingPileId} member of(d.charging_pile_id) 
 		 </if>

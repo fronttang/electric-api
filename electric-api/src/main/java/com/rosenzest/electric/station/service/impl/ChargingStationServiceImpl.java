@@ -52,6 +52,10 @@ public class ChargingStationServiceImpl implements IChargingStationService {
 			// 默认第一轮
 			unit.setRounds(1);
 			unit.setCreateBy(String.valueOf(loginUser.getUserId()));
+		} else {
+			if ("admin".equalsIgnoreCase(data.getCreateBy())) {
+				unit.setCreateBy(String.valueOf(loginUser.getUserId()));
+			}
 		}
 
 		ownerUnitService.saveOrUpdate(unit);

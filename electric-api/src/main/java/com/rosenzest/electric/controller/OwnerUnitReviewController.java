@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.rosenzest.base.ListResult;
-import com.rosenzest.base.LoginUser;
 import com.rosenzest.base.PageList;
 import com.rosenzest.base.Result;
 import com.rosenzest.base.util.BeanUtils;
@@ -26,7 +25,6 @@ import com.rosenzest.electric.entity.OwnerUnitDanger;
 import com.rosenzest.electric.entity.OwnerUnitDangerLog;
 import com.rosenzest.electric.entity.Project;
 import com.rosenzest.electric.entity.ProjectWorker;
-import com.rosenzest.electric.enums.ProjectWorkerAreaRoleType;
 import com.rosenzest.electric.enums.ProjectWorkerType;
 import com.rosenzest.electric.service.IOwnerUnitDangerLogService;
 import com.rosenzest.electric.service.IOwnerUnitDangerService;
@@ -35,7 +33,6 @@ import com.rosenzest.electric.service.IProjectService;
 import com.rosenzest.electric.service.IProjectWorkerService;
 import com.rosenzest.electric.vo.OwnerUnitDangerLogVo;
 import com.rosenzest.electric.vo.OwnerUnitReviewVo;
-import com.rosenzest.server.base.controller.ServerBaseController;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -43,7 +40,7 @@ import io.swagger.annotations.ApiOperation;
 @Api(tags = "业主单元复检(城中村/工业园)")
 @RestController
 @RequestMapping("/unit/review")
-public class OwnerUnitReviewController extends ServerBaseController {
+public class OwnerUnitReviewController extends ElectricBaseController {
 
 	@Autowired
 	private IProjectService projectService;
@@ -89,7 +86,7 @@ public class OwnerUnitReviewController extends ServerBaseController {
 	@PostMapping("/danger/pass")
 	public Result<?> pass(@RequestBody @Valid DangerPassDto data) {
 
-		LoginUser loginUser = getLoginUser();
+		// LoginUser loginUser = getLoginUser();
 
 		OwnerUnitDanger danger = ownerUnitDangerService.getById(data.getDangerId());
 		if (danger == null) {
@@ -105,11 +102,13 @@ public class OwnerUnitReviewController extends ServerBaseController {
 			return Result.ERROR();
 		}
 
+		checkPermission(danger, ownerUnit);
+
 		// 工作人员权限检查
-		if (!projectWorkerService.checkWorkerAreaRole(ownerUnit, loginUser.getUserId(),
-				ProjectWorkerAreaRoleType.EDIT)) {
-			return Result.ERROR(400, "无操作权限");
-		}
+//		if (!projectWorkerService.checkWorkerAreaRole(ownerUnit, loginUser.getUserId(),
+//				ProjectWorkerAreaRoleType.EDIT)) {
+//			return Result.ERROR(400, "无操作权限");
+//		}
 
 		if (ownerUnitDangerService.pass(data)) {
 			return Result.SUCCESS();
@@ -122,7 +121,7 @@ public class OwnerUnitReviewController extends ServerBaseController {
 	@PostMapping("/danger/notPass")
 	public Result<?> notPass(@RequestBody @Valid DangerNotPassDto data) {
 
-		LoginUser loginUser = getLoginUser();
+		// LoginUser loginUser = getLoginUser();
 
 		OwnerUnitDanger danger = ownerUnitDangerService.getById(data.getDangerId());
 		if (danger == null) {
@@ -138,11 +137,13 @@ public class OwnerUnitReviewController extends ServerBaseController {
 			return Result.ERROR();
 		}
 
+		checkPermission(danger, ownerUnit);
+
 		// 工作人员权限检查
-		if (!projectWorkerService.checkWorkerAreaRole(ownerUnit, loginUser.getUserId(),
-				ProjectWorkerAreaRoleType.EDIT)) {
-			return Result.ERROR(400, "无操作权限");
-		}
+//		if (!projectWorkerService.checkWorkerAreaRole(ownerUnit, loginUser.getUserId(),
+//				ProjectWorkerAreaRoleType.EDIT)) {
+//			return Result.ERROR(400, "无操作权限");
+//		}
 
 		if (ownerUnitDangerService.notPass(data)) {
 			return Result.SUCCESS();

@@ -27,7 +27,6 @@ import com.rosenzest.electric.entity.OwnerUnitBuilding;
 import com.rosenzest.electric.entity.OwnerUnitDanger;
 import com.rosenzest.electric.enums.IndustrialAreaBuildingType;
 import com.rosenzest.electric.enums.ProjectType;
-import com.rosenzest.electric.enums.ProjectWorkerAreaRoleType;
 import com.rosenzest.electric.enums.ReviewStatus;
 import com.rosenzest.electric.formb.FormbDangerHandlerFactory;
 import com.rosenzest.electric.formb.handler.IFormbDangerHandler;
@@ -36,9 +35,7 @@ import com.rosenzest.electric.service.IOwnerUnitAreaService;
 import com.rosenzest.electric.service.IOwnerUnitBuildingService;
 import com.rosenzest.electric.service.IOwnerUnitDangerService;
 import com.rosenzest.electric.service.IOwnerUnitService;
-import com.rosenzest.electric.service.IProjectWorkerService;
 import com.rosenzest.electric.vo.OwnerUnitDangerVo;
-import com.rosenzest.server.base.controller.ServerBaseController;
 
 import cn.hutool.core.util.StrUtil;
 import io.swagger.annotations.Api;
@@ -47,7 +44,7 @@ import io.swagger.annotations.ApiOperation;
 @Api(tags = "隐患")
 @RestController
 @RequestMapping("/unit/danger")
-public class OwnerUnitDangerController extends ServerBaseController {
+public class OwnerUnitDangerController extends ElectricBaseController {
 
 	@Autowired
 	private IOwnerUnitService ownerUnitService;
@@ -55,8 +52,8 @@ public class OwnerUnitDangerController extends ServerBaseController {
 	@Autowired
 	private IOwnerUnitAreaService unitAreaService;
 
-	@Autowired
-	private IProjectWorkerService projectWorkerService;
+	// @Autowired
+	// private IProjectWorkerService projectWorkerService;
 
 	// @Autowired
 	// private IOwnerUnitReportService unitReportService;
@@ -105,13 +102,15 @@ public class OwnerUnitDangerController extends ServerBaseController {
 //				return Result.ERROR(400, "隐患已整改完成");
 //			}
 
-			// 非自己数据才需要判断编辑权限
-			if (!String.valueOf(loginUser.getUserId()).equalsIgnoreCase(dbDanger.getCreateBy())) {
+			checkPermission(dbDanger, ownerUnit);
 
-				if (!projectWorkerService.checkWorkerAreaRole(ownerUnit, getUserId(), ProjectWorkerAreaRoleType.EDIT)) {
-					return Result.ERROR(400, "无操作权限");
-				}
-			}
+			// 非自己数据才需要判断编辑权限
+//			if (!String.valueOf(loginUser.getUserId()).equalsIgnoreCase(dbDanger.getCreateBy())) {
+//
+//				if (!projectWorkerService.checkWorkerAreaRole(ownerUnit, getUserId(), ProjectWorkerAreaRoleType.EDIT)) {
+//					return Result.ERROR(400, "无操作权限");
+//				}
+//			}
 
 			if ("B14".equalsIgnoreCase(danger.getFormCode())) {
 				danger.setFormId(dbDanger.getFormId());
@@ -226,7 +225,7 @@ public class OwnerUnitDangerController extends ServerBaseController {
 	@DeleteMapping("/{dangerId}")
 	public Result<?> deleteAreaDanger(@PathVariable Long dangerId) {
 
-		LoginUser loginUser = getLoginUser();
+		// LoginUser loginUser = getLoginUser();
 
 		OwnerUnitDanger danger = unitDangerService.getById(dangerId);
 		if (danger == null) {
@@ -251,13 +250,15 @@ public class OwnerUnitDangerController extends ServerBaseController {
 			}
 		}
 
-		// 不是自己的数据才判断编辑权限
-		if (!String.valueOf(loginUser.getUserId()).equalsIgnoreCase(danger.getCreateBy())) {
+		checkPermission(danger, ownerUnit);
 
-			if (!projectWorkerService.checkWorkerAreaRole(ownerUnit, getUserId(), ProjectWorkerAreaRoleType.EDIT)) {
-				return Result.ERROR(400, "无操作权限");
-			}
-		}
+		// 不是自己的数据才判断编辑权限
+//		if (!String.valueOf(loginUser.getUserId()).equalsIgnoreCase(danger.getCreateBy())) {
+//
+//			if (!projectWorkerService.checkWorkerAreaRole(ownerUnit, getUserId(), ProjectWorkerAreaRoleType.EDIT)) {
+//				return Result.ERROR(400, "无操作权限");
+//			}
+//		}
 
 		// 检测业主单元报告状态
 //		OwnerUnitReport report = unitReportService.getReportByUnitIdAndType(danger.getUnitId(), UnitReportType.INITIAL);
