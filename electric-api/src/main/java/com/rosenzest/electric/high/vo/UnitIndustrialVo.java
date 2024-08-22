@@ -306,4 +306,10 @@ public class UnitIndustrialVo {
 	@ApiModelProperty("门头照")
 	private String doorPic;
 
+	/**
+	 * 营业执照
+	 */
+	@ApiModelProperty("营业执照")
+	private String businessLicense;
+
 }

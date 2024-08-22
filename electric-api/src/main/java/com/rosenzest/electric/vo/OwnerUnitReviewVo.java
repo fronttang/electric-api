@@ -19,6 +19,12 @@ public class OwnerUnitReviewVo {
 	private String name;
 
 	/**
+	 * 检测地址
+	 */
+	@ApiModelProperty("检测地址")
+	private String address;
+
+	/**
 	 * 总隐患数
 	 */
 	@ApiModelProperty("总隐患数")

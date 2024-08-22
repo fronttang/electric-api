@@ -19,6 +19,12 @@ public class InitialOwnerUnitVo {
 	private String name;
 
 	/**
+	 * 检测地址
+	 */
+	@ApiModelProperty("检测地址")
+	private String address;
+
+	/**
 	 * 层数
 	 */
 	@ApiModelProperty("层数")

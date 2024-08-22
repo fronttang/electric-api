@@ -72,7 +72,7 @@ public class ChargingStationController extends ElectricBaseController {
 			// 导入数据不做检查
 			if (!"admin".equalsIgnoreCase(dbUnit.getCreateBy())) {
 				// 非admin数据检查编辑权限 工作人员权限检查
-				checkPermission(unit, unit);
+				checkPermission(dbUnit, dbUnit);
 			}
 		}
 
