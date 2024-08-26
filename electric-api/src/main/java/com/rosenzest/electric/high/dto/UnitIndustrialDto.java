@@ -25,6 +25,18 @@ public class UnitIndustrialDto extends BaseHighDto {
 	private String address;
 
 	/**
+	 * 档案编号
+	 */
+	@ApiModelProperty("档案编号")
+	private String code;
+
+	/**
+	 * 所属网格
+	 */
+	@ApiModelProperty("所属网格")
+	private String grid;
+
+	/**
 	 * 业主单元类型,同项目类型
 	 */
 	// private String type;

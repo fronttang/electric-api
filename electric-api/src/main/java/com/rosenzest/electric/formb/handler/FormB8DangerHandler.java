@@ -44,7 +44,9 @@ public class FormB8DangerHandler implements IFormbDangerHandler {
 		String result = getResult(vo);
 		String testResults = getTestResults(vo);
 
-		if (FAILURE.equalsIgnoreCase(result)) {
+		if (QUALIFIED.equalsIgnoreCase(result)) {
+			description = "楼层已安装总漏电保护开关，且可靠动作，符合规范要求";
+		} else if (FAILURE.equalsIgnoreCase(result)) {
 			// 不合格
 			if (TEST_RESULT_2.equalsIgnoreCase(testResults)) {
 				description = "楼层未安装总漏电保护开关，不符合规范要求";

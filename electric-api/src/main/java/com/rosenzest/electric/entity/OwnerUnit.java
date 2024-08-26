@@ -65,6 +65,11 @@ public class OwnerUnit extends BaseEntity<OwnerUnit> {
 	private String projectName;
 
 	/**
+	 * 所属网格
+	 */
+	private String grid;
+
+	/**
 	 * 区域
 	 */
 	private Long area;

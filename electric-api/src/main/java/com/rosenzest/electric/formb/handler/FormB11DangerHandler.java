@@ -44,15 +44,14 @@ public class FormB11DangerHandler implements IFormbDangerHandler {
 		if (FAILURE.equalsIgnoreCase(result)) {
 			if (TEST_RESULT_2.equalsIgnoreCase(testResults)) {
 				description = "插座无接地线，不符合规范要求";
-				if (OTHER_1.equalsIgnoreCase(other)) {
-					description = "固定插座火零错位";
-				} else if (OTHER_2.equalsIgnoreCase(other)) {
-					description = "固定插座回路缺零线";
-				} else if (OTHER_3.equalsIgnoreCase(other)) {
-					description = "固定插座相地线错并缺地";
-				} else if (OTHER_4.equalsIgnoreCase(other)) {
-					description = "固定插座无可靠保护接地线";
-				}
+			} else if (OTHER_1.equalsIgnoreCase(other)) {
+				description = "固定插座火零错位";
+			} else if (OTHER_2.equalsIgnoreCase(other)) {
+				description = "固定插座回路缺零线";
+			} else if (OTHER_3.equalsIgnoreCase(other)) {
+				description = "固定插座相地线错并缺地";
+			} else if (OTHER_4.equalsIgnoreCase(other)) {
+				description = "固定插座无可靠保护接地线";
 			}
 		}
 		return description;
@@ -68,15 +67,14 @@ public class FormB11DangerHandler implements IFormbDangerHandler {
 		if (FAILURE.equalsIgnoreCase(result)) {
 			if (TEST_RESULT_2.equalsIgnoreCase(testResults)) {
 				suggestions = "插座回路新增保护接地线";
-				if (OTHER_1.equalsIgnoreCase(other)) {
-					suggestions = "插座按正确接法重新接线，面向插座面板左孔接零线，右孔接火线";
-				} else if (OTHER_2.equalsIgnoreCase(other)) {
-					suggestions = "检修线路，插座回路新增零线";
-				} else if (OTHER_3.equalsIgnoreCase(other)) {
-					suggestions = "插座回路新增保护接地线，插座按正确接法重新接线，面对插座左孔接零线，右孔接火线，上孔接地线";
-				} else if (OTHER_4.equalsIgnoreCase(other)) {
-					suggestions = "插座新增可靠保护接地线";
-				}
+			} else if (OTHER_1.equalsIgnoreCase(other)) {
+				suggestions = "插座按正确接法重新接线，面向插座面板左孔接零线，右孔接火线";
+			} else if (OTHER_2.equalsIgnoreCase(other)) {
+				suggestions = "检修线路，插座回路新增零线";
+			} else if (OTHER_3.equalsIgnoreCase(other)) {
+				suggestions = "插座回路新增保护接地线，插座按正确接法重新接线，面对插座左孔接零线，右孔接火线，上孔接地线";
+			} else if (OTHER_4.equalsIgnoreCase(other)) {
+				suggestions = "插座新增可靠保护接地线";
 			}
 		}
 		return suggestions;

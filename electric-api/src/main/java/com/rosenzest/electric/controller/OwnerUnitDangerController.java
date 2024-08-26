@@ -179,9 +179,9 @@ public class OwnerUnitDangerController extends ElectricBaseController {
 				}
 			}
 		} else {
-			if (StrUtil.isBlank(danger.getLocation())) {
-				return Result.ERROR(400, "隐患位置不能为空");
-			}
+//			if (StrUtil.isBlank(danger.getLocation())) {
+//				return Result.ERROR(400, "隐患位置不能为空");
+//			}
 			if (danger.getFormId() == null) {
 				return Result.ERROR(400, "A/C类表ID不能为空");
 			}

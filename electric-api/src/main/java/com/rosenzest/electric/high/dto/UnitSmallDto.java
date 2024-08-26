@@ -25,6 +25,18 @@ public class UnitSmallDto extends BaseHighDto {
 	private String address;
 
 	/**
+	 * 档案编号
+	 */
+	@ApiModelProperty("档案编号")
+	private String code;
+
+	/**
+	 * 所属网格
+	 */
+	@ApiModelProperty("所属网格")
+	private String grid;
+
+	/**
 	 * 联系人/负责人/业主/楼栋长
 	 */
 	@ApiModelProperty("业主")

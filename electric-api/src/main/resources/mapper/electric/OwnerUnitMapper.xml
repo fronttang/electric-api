@@ -66,7 +66,7 @@
 		select u.id,u.code,u.name,u.type,u.detect_id,u.detect_name,u.project_id,u.project_name,u.high_risk_type,
 		u.entrust,u.address,u.contact,u.phone,u.acreage,u.layers,u.door_number,u.nature,u.test_start_date,u.test_end_date,
 		u.test_content,r.code as initial_test_no,r1.code as again_test_no,r1.detect_data as again_test_data,u.panorama_pic,
-		u.district,u.street,u.community,u.hamlet,
+		u.district,u.street,u.community,u.hamlet,u.house_no_pic,u.inspection_pic,
 		u.temperature,u.humidity 
 		from owner_unit u 
 		left join owner_unit_report r on (u.id = r.unit_id and r.type = 1) 

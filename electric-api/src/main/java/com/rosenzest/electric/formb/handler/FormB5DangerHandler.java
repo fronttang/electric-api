@@ -45,7 +45,7 @@ public class FormB5DangerHandler implements IFormbDangerHandler {
 		if (QUALIFIED.equalsIgnoreCase(result)) {
 			suggestions = "/";
 		} else if (FAILURE.equalsIgnoreCase(result)) {
-			suggestions = "在潮湿场所插座应采用密封型并带保护接地线触头的保护型插座，安装高度不低于1.5m";
+			suggestions = "等潮湿场所插座应采用密封型并带保护接地线触头的保护型插座，安装高度不低于1.5m";
 		}
 		return suggestions;
 	}
