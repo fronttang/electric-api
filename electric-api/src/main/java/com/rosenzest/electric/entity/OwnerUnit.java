@@ -293,4 +293,29 @@ public class OwnerUnit extends BaseEntity<OwnerUnit> {
 	 * 业主二维码
 	 */
 	private String mngQrcode;
+
+	/**
+	 * 建设明细
+	 */
+	private String details;
+
+	/**
+	 * 投入运营时间
+	 */
+	private String operatingDate;
+
+	/**
+	 * 场站服务车辆
+	 */
+	private String vehicles;
+
+	/**
+	 * 有无休息室1有0无
+	 */
+	private String lounge;
+
+	/**
+	 * 备注
+	 */
+	private String remark;
 }

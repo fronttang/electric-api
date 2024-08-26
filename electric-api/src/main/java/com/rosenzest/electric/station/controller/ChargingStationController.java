@@ -20,8 +20,10 @@ import com.rosenzest.electric.enums.ProjectType;
 import com.rosenzest.electric.service.IOwnerUnitService;
 import com.rosenzest.electric.service.IProjectService;
 import com.rosenzest.electric.station.dto.ChargingStationDto;
+import com.rosenzest.electric.station.dto.ConstructionDetailsDto;
 import com.rosenzest.electric.station.service.IChargingStationService;
 import com.rosenzest.electric.station.vo.ChargingStationVo;
+import com.rosenzest.electric.station.vo.ConstructionDetailsVo;
 
 import cn.hutool.core.util.StrUtil;
 import io.swagger.annotations.Api;
@@ -111,6 +113,54 @@ public class ChargingStationController extends ElectricBaseController {
 			}
 		}
 		return Result.ERROR();
+	}
+
+	@ApiOperation(tags = "业主单元(充电站)", value = "查询充电站建设明细")
+	@GetMapping("/details/{unitId}")
+	public Result<ConstructionDetailsVo> getConstructionDetailsDto(@PathVariable Long unitId) {
+
+		OwnerUnit ownerUnit = ownerUnitService.getById(unitId);
+		if (ownerUnit != null) {
+
+			if (ProjectType.CHARGING_STATION.code().equalsIgnoreCase(ownerUnit.getType())) {
+				ConstructionDetailsVo vo = new ConstructionDetailsVo();
+				vo.setUnitId(unitId);
+				vo.setDetails(ownerUnit.getDetails());
+				return Result.SUCCESS(vo);
+			}
+		}
+		return Result.SUCCESS();
+	}
+
+	@ApiOperation(tags = "业主单元(充电站)", value = "添加/修改充电站建设明细")
+	@PostMapping("/details")
+	public Result<ConstructionDetailsVo> saveConstructionDetailsDto(@RequestBody @Valid ConstructionDetailsDto data) {
+
+		OwnerUnit ownerUnit = ownerUnitService.getById(data.getUnitId());
+
+		if (ownerUnit == null) {
+			return Result.ERROR(400, "无操作权限");
+		}
+
+		if (!ProjectType.CHARGING_STATION.code().equalsIgnoreCase(ownerUnit.getType())) {
+			return Result.ERROR(400, "无操作权限");
+		}
+
+		// 导入数据不做检查
+		if (!"admin".equalsIgnoreCase(ownerUnit.getCreateBy())) {
+			// 非admin数据检查编辑权限 工作人员权限检查
+			checkPermission(ownerUnit, ownerUnit);
+		}
+
+		OwnerUnit update = new OwnerUnit();
+		update.setId(data.getUnitId());
+		update.setDetails(data.getDetails());
+		ownerUnitService.saveOrUpdate(update);
+
+		ConstructionDetailsVo vo = new ConstructionDetailsVo();
+		BeanUtils.copyProperties(data, vo);
+
+		return Result.SUCCESS(vo);
 	}
 
 }

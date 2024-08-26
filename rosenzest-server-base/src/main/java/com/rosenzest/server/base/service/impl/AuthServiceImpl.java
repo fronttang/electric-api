@@ -78,14 +78,11 @@ public class AuthServiceImpl implements AuthService {
 
 	private String getTokenKey(LoginUser loginUser) {
 
-		// 做了兼容
 		TerminalType terminal = loginUser.getTerminal();
 		String uuid = loginUser.getUuid();
+		Long userId = loginUser.getUserId();
 
-		if (terminal != null) {
-			return CacheKeyBuilder.getCustTokenKey(terminal.code(), uuid);
-		}
-		return CacheKeyBuilder.getCustTokenKey(uuid);
+		return CacheKeyBuilder.getCustTokenKey(terminal.code(), userId, uuid);
 	}
 
 	@Override

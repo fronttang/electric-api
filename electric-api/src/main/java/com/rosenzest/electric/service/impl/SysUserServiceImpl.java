@@ -27,6 +27,7 @@ import com.rosenzest.electric.vo.LoginVo;
 import com.rosenzest.electric.vo.ProjectVo;
 import com.rosenzest.model.base.service.ModelBaseServiceImpl;
 import com.rosenzest.server.base.cache.CacheKeyBuilder;
+import com.rosenzest.server.base.enums.UserStatus;
 import com.rosenzest.server.base.enums.UserType;
 import com.rosenzest.server.base.properties.TokenProperties;
 import com.rosenzest.server.base.util.JwtTokenUtil;
@@ -91,6 +92,11 @@ public class SysUserServiceImpl extends ModelBaseServiceImpl<SysUserMapper, SysU
 			BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 			// 匹配密码
 			if (passwordEncoder.matches(login.getPassword(), user.getPassword())) {
+
+				if (!UserStatus.OK.code().equalsIgnoreCase(user.getStatus())) {
+					throw new BusinessException("用户已被停用");
+				}
+
 				String token = generateToken(user, terminalType);
 				return getLoginVo(user, token, terminalType);
 			} else {
@@ -140,7 +146,7 @@ public class SysUserServiceImpl extends ModelBaseServiceImpl<SysUserMapper, SysU
 		// 20240730 可重复登录
 		String uuid = SnowFlakeUtil.uniqueString();
 
-		String tokenKey = CacheKeyBuilder.getCustTokenKey(terminalType.code(), uuid);
+		String tokenKey = CacheKeyBuilder.getCustTokenKey(terminalType.code(), user.getUserId(), uuid);
 
 		// 构建TOKEN
 		LoginUser payload = new LoginUser();

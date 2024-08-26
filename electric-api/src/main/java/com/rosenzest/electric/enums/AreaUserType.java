@@ -17,7 +17,7 @@ public enum AreaUserType implements IEnum<AreaUserType> {
 	/**
 	 * 街道账号
 	 */
-	STREET("street", "区账号"),
+	STREET("street", "街道账号"),
 
 	/**
 	 * 社区账号

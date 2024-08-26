@@ -158,4 +158,28 @@ public class ChargingStationVo {
 	@ApiModelProperty("点位图")
 	private String stationPic;
 
+	/**
+	 * 投入运营时间
+	 */
+	@ApiModelProperty("投入运营时间")
+	private String operatingDate;
+
+	/**
+	 * 场站服务车辆
+	 */
+	@ApiModelProperty("场站服务车辆")
+	private String vehicles;
+
+	/**
+	 * 有无休息室1有0无
+	 */
+	@ApiModelProperty("有无休息室1有0无")
+	private String lounge;
+
+	/**
+	 * 备注
+	 */
+	@ApiModelProperty("备注")
+	private String remark;
+
 }

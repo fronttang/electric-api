@@ -117,7 +117,8 @@ public class SysUserController extends ServerBaseController {
 //				tokenProperties.getExpire());
 
 		// 生成新项目token
-		String tokenKey = CacheKeyBuilder.getCustTokenKey(loginUser.getTerminal().code(), loginUser.getUuid());
+		String tokenKey = CacheKeyBuilder.getCustTokenKey(loginUser.getTerminal().code(), loginUser.getUserId(),
+				loginUser.getUuid());
 		loginUser.setProjectId(projectId);
 		String token = JwtTokenUtil.generateToken(loginUser);
 		// 用户token及用户信息缓存
@@ -132,7 +133,8 @@ public class SysUserController extends ServerBaseController {
 	public Result<?> logout() {
 		LoginUser loginUser = getLoginUser();
 
-		String tokenKey = CacheKeyBuilder.getCustTokenKey(loginUser.getTerminal().code(), loginUser.getUuid());
+		String tokenKey = CacheKeyBuilder.getCustTokenKey(loginUser.getTerminal().code(), loginUser.getUserId(),
+				loginUser.getUuid());
 		RedisUtil.del(tokenKey);
 
 		String projectKey = CacheKeyBuilder.getCustProjectKey(loginUser.getUserId(), loginUser.getProjectId());
@@ -187,7 +189,7 @@ public class SysUserController extends ServerBaseController {
 		if (sysUserService.saveOrUpdate(update)) {
 
 			// 删除token缓存,重新登录
-			String custTokenKey = CacheKeyBuilder.getCustTokenKey(TerminalType.APP.code(), loginUser.getUuid());
+			String custTokenKey = CacheKeyBuilder.getCustTokenKey(TerminalType.APP.code(), userId, loginUser.getUuid());
 			RedisUtil.del(custTokenKey);
 			RedisUtil.del(CacheKeyBuilder.getCustProjectKey(loginUser.getUserId(), loginUser.getProjectId()));
 

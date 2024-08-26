@@ -96,7 +96,7 @@ public class MiniAppLoginController {
 
 		String token = JwtTokenUtil.generateToken(payload);
 
-		String tokenKey = CacheKeyBuilder.getCustTokenKey(TerminalType.MINIAPP.code(), uuid);
+		String tokenKey = CacheKeyBuilder.getCustTokenKey(TerminalType.MINIAPP.code(), 0L, uuid);
 		// 用户token及用户信息缓存
 		RedisUtil.set(tokenKey, token, tokenProperties.getExpire());
 

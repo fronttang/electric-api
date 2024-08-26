@@ -28,10 +28,10 @@ public class CacheKeyBuilder {
 	 * @param custNo
 	 * @return
 	 */
-	public static String getCustTokenKey(String uuid) {
-		String key = StrUtil.format("{}:{}", CacheConstants.CUST_TOKEN_KEY, uuid);
-		return key;
-	}
+//	public static String getCustTokenKey(Long userId, String uuid) {
+//		String key = StrUtil.format("{}:{}", CacheConstants.CUST_TOKEN_KEY, uuid);
+//		return key;
+//	}
 
 	/**
 	 * 构建客户 APP端 token缓存key
@@ -39,19 +39,19 @@ public class CacheKeyBuilder {
 	 * @param custNo
 	 * @return
 	 */
-	public static String getCustAPPTokenKey(String uuid) {
-		return getCustTokenKey(TerminalType.APP.getName(), uuid);
+	public static String getCustAPPTokenKey(Long userId, String uuid) {
+		return getCustTokenKey(TerminalType.APP.getName(), userId, uuid);
 	}
 
 	/**
-	 * 构建客户token缓存key
+	 * 构建客户token缓存key CUST:USERID:TOKEN:TERMINAL:UUID
 	 * 
 	 * @param terminal
 	 * @param custNo
 	 * @return
 	 */
-	public static String getCustTokenKey(String terminal, String uuid) {
-		String key = StrUtil.format("{}:{}:{}", CacheConstants.CUST_TOKEN_KEY, terminal, uuid);
+	public static String getCustTokenKey(String terminal, Long userId, String uuid) {
+		String key = StrUtil.format("CUST:{}:TOKEN:{}:{}", userId, terminal, uuid);
 		return key;
 	}
 
