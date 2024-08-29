@@ -28,7 +28,7 @@ public class OwnerUnitStationPicServiceImpl extends ModelBaseServiceImpl<OwnerUn
 		queryWrapper.eq(OwnerUnitStationPic::getModule, data.getModule());
 		queryWrapper.eq(OwnerUnitStationPic::getRounds, data.getRounds());
 		if (data.getPileId() != null) {
-			queryWrapper.apply(" {0} member of(pileIds) ", data.getPileId());
+			queryWrapper.apply(" {0} member of(pile_ids) ", data.getPileId());
 		}
 		queryWrapper.last(" LIMIT 1 ");
 		return this.baseMapper.selectOne(queryWrapper);

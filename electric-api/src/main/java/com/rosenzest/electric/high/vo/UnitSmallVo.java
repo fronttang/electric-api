@@ -39,6 +39,18 @@ public class UnitSmallVo extends BaseHighDto {
 	private String phone;
 
 	/**
+	 * 档案编号
+	 */
+	@ApiModelProperty("档案编号")
+	private String code;
+
+	/**
+	 * 所属网格
+	 */
+	@ApiModelProperty("所属网格")
+	private String grid;
+
+	/**
 	 * 业主单元类型,同项目类型
 	 */
 	// private String type;
@@ -84,6 +96,12 @@ public class UnitSmallVo extends BaseHighDto {
 	@ApiModelProperty(value = "社区", required = true)
 	@NotBlank(message = "社区不能为空")
 	private String community;
+
+	/**
+	 * 建筑面积
+	 */
+	@ApiModelProperty("使用面积")
+	private String acreage;
 
 	/**
 	 * 签订安全承诺书1是0否
