@@ -29,6 +29,7 @@ import com.rosenzest.electric.enums.ProjectWorkerType;
 import com.rosenzest.electric.enums.ReviewStatus;
 import com.rosenzest.electric.enums.UnitReportType;
 import com.rosenzest.electric.mapper.OwnerUnitDangerMapper;
+import com.rosenzest.electric.miniapp.vo.AreaUserDangerVo;
 import com.rosenzest.electric.miniapp.vo.AreaUserInfoVo;
 import com.rosenzest.electric.miniapp.vo.GridmanDangerStatisticsVo;
 import com.rosenzest.electric.service.IOwnerUnitBuildingService;
@@ -472,7 +473,7 @@ public class OwnerUnitDangerServiceImpl extends ModelBaseServiceImpl<OwnerUnitDa
 	}
 
 	@Override
-	public List<OwnerUnitDanger> getOwnerUnitDangerByAreaUser(AreaUserInfoVo userInfo) {
+	public List<AreaUserDangerVo> getOwnerUnitDangerByAreaUser(AreaUserInfoVo userInfo) {
 		return this.baseMapper.getOwnerUnitDangerByAreaUser(userInfo);
 	}
 

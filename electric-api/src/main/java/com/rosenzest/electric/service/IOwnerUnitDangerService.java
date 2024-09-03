@@ -8,6 +8,7 @@ import com.rosenzest.electric.dto.DangerNotPassDto;
 import com.rosenzest.electric.dto.DangerPassDto;
 import com.rosenzest.electric.dto.OwnerUnitDangerQuery;
 import com.rosenzest.electric.entity.OwnerUnitDanger;
+import com.rosenzest.electric.miniapp.vo.AreaUserDangerVo;
 import com.rosenzest.electric.miniapp.vo.AreaUserInfoVo;
 import com.rosenzest.electric.miniapp.vo.GridmanDangerStatisticsVo;
 import com.rosenzest.electric.vo.OwnerUnitDangerVo;
@@ -57,7 +58,7 @@ public interface IOwnerUnitDangerService extends IModelBaseService<OwnerUnitDang
 
 	GridmanDangerStatisticsVo statisticsByGridman(LoginUser user);
 
-	List<OwnerUnitDanger> getOwnerUnitDangerByAreaUser(AreaUserInfoVo userInfo);
+	List<AreaUserDangerVo> getOwnerUnitDangerByAreaUser(AreaUserInfoVo userInfo);
 
 	List<OwnerUnitDanger> getTodayDangersByAreaUser(AreaUserInfoVo userInfo);
 

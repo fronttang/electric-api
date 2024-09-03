@@ -38,6 +38,7 @@ import com.rosenzest.electric.mapper.OwnerUnitMapper;
 import com.rosenzest.electric.miniapp.dto.MiniAppAreaUserOwnerUnitQuery;
 import com.rosenzest.electric.miniapp.dto.MiniAppOwnerUnitQuery;
 import com.rosenzest.electric.miniapp.dto.UnitStatisticsDto;
+import com.rosenzest.electric.miniapp.vo.AreaUserDangerVo;
 import com.rosenzest.electric.miniapp.vo.AreaUserIndexVo;
 import com.rosenzest.electric.miniapp.vo.AreaUserIndexVo.DangerStatistics;
 import com.rosenzest.electric.miniapp.vo.AreaUserIndexVo.TodayStatistics;
@@ -270,7 +271,7 @@ public class OwnerUnitServiceImpl extends ModelBaseServiceImpl<OwnerUnitMapper, 
 
 	@Override
 	public OwnerUnitDangerStatisticsVo buildOwnerUnitDangerStatisticsVo(OwnerUnitOverviewVo ownerUnit,
-			OwnerUnitBuilding building, List<OwnerUnitDanger> dangerLists, List<SysDictData> hazardLevel) {
+			OwnerUnitBuilding building, List<? extends OwnerUnitDanger> dangerLists, List<SysDictData> hazardLevel) {
 		OwnerUnitDangerStatisticsVo vo = new OwnerUnitDangerStatisticsVo();
 		BeanUtils.copyProperties(ownerUnit, vo);
 
@@ -284,7 +285,7 @@ public class OwnerUnitServiceImpl extends ModelBaseServiceImpl<OwnerUnitMapper, 
 	}
 
 	@Override
-	public void buildDangerStatisticsVo(List<OwnerUnitDanger> dangerLists, List<SysDictData> hazardLevel,
+	public void buildDangerStatisticsVo(List<? extends OwnerUnitDanger> dangerLists, List<SysDictData> hazardLevel,
 			IDangerStatisticsVo vo) {
 		vo.setDanger(0L);
 		vo.setFinish(0L);
@@ -485,7 +486,7 @@ public class OwnerUnitServiceImpl extends ModelBaseServiceImpl<OwnerUnitMapper, 
 		Project project = projectService.getById(userInfo.getProjectId());
 		if (project != null) {
 
-			List<OwnerUnitDanger> dangerLists = ownerUnitDangerService.getOwnerUnitDangerByAreaUser(userInfo);
+			List<AreaUserDangerVo> dangerLists = ownerUnitDangerService.getOwnerUnitDangerByAreaUser(userInfo);
 			DangerStatistics danger = new DangerStatistics();
 			final List<SysDictData> hazardLevel = this.getHazardLevel(project.getType());
 

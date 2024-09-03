@@ -1,39 +1,17 @@
 package com.rosenzest.electric.miniapp.vo;
 
+import com.rosenzest.electric.entity.OwnerUnitDanger;
+
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 @Data
-public class AreaUserInfoVo {
+@ToString(callSuper = true)
+@EqualsAndHashCode(callSuper = true)
+public class AreaUserDangerVo extends OwnerUnitDanger {
 
-	/**
-	 * 用户ID
-	 */
-	private Long userId;
-
-	/**
-	 * 项目ID
-	 */
-	private Long projectId;
-
-	/**
-	 * 项目类型
-	 */
-	private String projectType;
-
-	/**
-	 * 用户名
-	 */
-	private String userName;
-
-	/**
-	 * 用户昵称
-	 */
-	private String nickName;
-
-	/**
-	 * 街区名
-	 */
-	private String areaName;
+	private static final long serialVersionUID = 1L;
 
 	/**
 	 * 区县
@@ -74,4 +52,5 @@ public class AreaUserInfoVo {
 	 * 村
 	 */
 	private String hamletName;
+
 }

@@ -4,8 +4,10 @@
 
 	<select id="getAreaUserInfo" resultType="com.rosenzest.electric.miniapp.vo.AreaUserInfoVo" >
 	select u.user_id, u.project_id, u.user_name, u.nick_name, u.district, u.street , u.community, u.hamlet, CONCAT_WS('',a.dict_label,b.dict_label,c.dict_label,d.dict_label) as area_name,
-	a.dict_label as district_name, b.dict_label as street_name, c.dict_label as community_name, d.dict_label as hamlet_name
+	a.dict_label as district_name, b.dict_label as street_name, c.dict_label as community_name, d.dict_label as hamlet_name,
+	p.type as project_type
 	from sys_user u
+	left join project p on p.id = u.project_id
 	left join sys_dict_data a on (u.district = a.dict_value and a.dict_type='district' and a.project_id = u.project_id)
 	left join sys_dict_data b on (u.street = b.dict_value and b.dict_type='street' and b.project_id = u.project_id)
 	left join sys_dict_data c on (u.community = c.dict_value and c.dict_type='community' and c.project_id = u.project_id)

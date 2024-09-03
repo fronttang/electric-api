@@ -236,6 +236,25 @@ public class AreaUserController extends ServerBaseController {
 	@GetMapping("/statistics")
 	public Result<List<OwnerUnitDangerStatisticsVo>> statistics() {
 
+		LoginUser loginUser = getLoginUser();
+
+		AreaUserInfoVo userInfo = sysUserService.getAreaUserInfo(loginUser.getUserId(), loginUser.getProjectId());
+
+		if (userInfo == null) {
+			return Result.ERROR();
+		}
+
+		AreaUserType areaUserType = getAreaUserType(userInfo);
+		if (areaUserType == null) {
+			return Result.ERROR();
+		}
+
+		IAreaUserStatisticsHandler hander = AreaUserStatisticsHandlerFactory.getHander(areaUserType);
+		if (hander != null) {
+			List<OwnerUnitDangerStatisticsVo> statistics = hander.statistics(userInfo);
+			return Result.SUCCESS(statistics);
+		}
+
 		return Result.SUCCESS();
 	}
 }

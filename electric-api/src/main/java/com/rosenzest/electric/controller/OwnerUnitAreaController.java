@@ -104,7 +104,7 @@ public class OwnerUnitAreaController extends ElectricBaseController {
 			}
 
 			OwnerUnitBuilding building = unitBuildingService.getById(data.getBuildingId());
-			if (building == null || building.getUnitId() != ownerUnit.getId()) {
+			if (building == null || !building.getUnitId().equals(ownerUnit.getId())) {
 				return Result.ERROR(400, "无操作权限");
 			}
 

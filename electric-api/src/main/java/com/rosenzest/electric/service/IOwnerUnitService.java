@@ -55,9 +55,9 @@ public interface IOwnerUnitService extends IModelBaseService<OwnerUnit> {
 	OwnerUnitDangerStatisticsVo getOwnerUnitDangerStatistics(Long unitId, Long buildingId);
 
 	OwnerUnitDangerStatisticsVo buildOwnerUnitDangerStatisticsVo(OwnerUnitOverviewVo ownerUnit,
-			OwnerUnitBuilding building, List<OwnerUnitDanger> dangerLists, List<SysDictData> hazardLevel);
+			OwnerUnitBuilding building, List<? extends OwnerUnitDanger> dangerLists, List<SysDictData> hazardLevel);
 
-	void buildDangerStatisticsVo(List<OwnerUnitDanger> dangerLists, List<SysDictData> hazardLevel,
+	void buildDangerStatisticsVo(List<? extends OwnerUnitDanger> dangerLists, List<SysDictData> hazardLevel,
 			IDangerStatisticsVo vo);
 
 	List<SysDictData> getHazardLevel(String type);
