@@ -267,7 +267,9 @@ public class OwnerUnitDangerVo {
 			}
 		}
 
-		return this.location;
+		String unitAreaName = StrUtil.isNotBlank(this.unitAreaName) ? this.unitAreaName : "";
+		String buildingName = StrUtil.isNotBlank(this.buildingName) ? this.buildingName : "";
+		return StrUtil.format("{}{}{}", buildingName, unitAreaName, this.location);
 	}
 
 	public String getDescription() {
