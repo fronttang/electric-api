@@ -2,6 +2,8 @@ package com.rosenzest.electric.service;
 
 import java.util.List;
 
+import javax.validation.Valid;
+
 import com.rosenzest.base.LoginUser;
 import com.rosenzest.base.PageList;
 import com.rosenzest.electric.dto.DangerNotPassDto;
@@ -63,4 +65,6 @@ public interface IOwnerUnitDangerService extends IModelBaseService<OwnerUnitDang
 	List<OwnerUnitDanger> getTodayDangersByAreaUser(AreaUserInfoVo userInfo);
 
 	OwnerUnitDangerVo getOwnerUnitDangerById(Long dangerId);
+
+	List<OwnerUnitDangerVo> queryReviewOwnerUnitDanger(@Valid OwnerUnitDangerQuery query, PageList pageList);
 }

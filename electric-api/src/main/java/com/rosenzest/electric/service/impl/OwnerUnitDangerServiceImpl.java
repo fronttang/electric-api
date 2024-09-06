@@ -136,7 +136,6 @@ public class OwnerUnitDangerServiceImpl extends ModelBaseServiceImpl<OwnerUnitDa
 
 		boolean addLog = danger.getId() == null;
 
-		danger.setStatus(ReviewStatus.RECTIFIED.code());
 		OwnerUnitDanger b14 = null;
 
 		if (danger.getId() != null) {
@@ -480,6 +479,15 @@ public class OwnerUnitDangerServiceImpl extends ModelBaseServiceImpl<OwnerUnitDa
 	@Override
 	public List<OwnerUnitDanger> getTodayDangersByAreaUser(AreaUserInfoVo userInfo) {
 		return this.baseMapper.getTodayDangersByAreaUser(userInfo);
+	}
+
+	@Override
+	public List<OwnerUnitDangerVo> queryReviewOwnerUnitDanger(OwnerUnitDangerQuery query, PageList pageList) {
+		Page<OwnerUnitDangerVo> startPage = PageHelper.startPage(pageList.getPageNum(), pageList.getPageSize());
+		startPage.setReasonable(false);
+		List<OwnerUnitDangerVo> list = this.baseMapper.queryReviewOwnerUnitDanger(query);
+		pageList.setTotalNum(startPage.getTotal());
+		return list;
 	}
 
 }

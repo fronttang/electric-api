@@ -84,7 +84,8 @@ public class FormB3DangerHandler implements IFormbDangerHandler {
 		return null;
 	}
 
-	private String getResult(OwnerUnitDangerVo vo) {
+	@Override
+	public String getResult(OwnerUnitDangerVo vo) {
 		FormB3 formb = getFormb(vo);
 		if (formb != null) {
 			return formb.getResult();

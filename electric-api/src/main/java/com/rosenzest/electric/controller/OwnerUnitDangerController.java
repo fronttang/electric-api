@@ -81,6 +81,7 @@ public class OwnerUnitDangerController extends ElectricBaseController {
 
 		OwnerUnitDangerVo vo = new OwnerUnitDangerVo();
 		BeanUtils.copyProperties(danger, vo);
+		vo.setStatus(ReviewStatus.RECTIFIED.code());
 
 		if (danger.getId() != null) {
 			// id不为空是修改数据
@@ -205,6 +206,7 @@ public class OwnerUnitDangerController extends ElectricBaseController {
 		OwnerUnitDanger areaDanger = new OwnerUnitDanger();
 		BeanUtils.copyProperties(danger, areaDanger);
 
+		areaDanger.setStatus(vo.getStatus());
 		areaDanger.setInspector(loginUser.getName());
 		areaDanger.setInspectorId(loginUser.getUserId());
 		areaDanger.setInitialTime(new Date());
@@ -281,12 +283,22 @@ public class OwnerUnitDangerController extends ElectricBaseController {
 		}
 	}
 
-	@ApiOperation(tags = "隐患", value = "隐患列表")
-	@PostMapping("/list")
+	@ApiOperation(tags = "隐患", value = "隐患列表(初检)")
+	@PostMapping("/initial/list")
 	public ListResult<OwnerUnitDangerVo> dangerList(@RequestBody @Valid OwnerUnitDangerQuery query) {
 
 		PageList pageList = new PageList(query.getPage(), query.getPageSize());
 		List<OwnerUnitDangerVo> dangers = unitDangerService.queryOwnerUnitDanger(query, pageList);
+
+		return ListResult.SUCCESS(pageList.getTotalNum(), dangers);
+	}
+
+	@ApiOperation(tags = "隐患", value = "隐患列表(复检)")
+	@PostMapping("/list")
+	public ListResult<OwnerUnitDangerVo> reviewDangerList(@RequestBody @Valid OwnerUnitDangerQuery query) {
+
+		PageList pageList = new PageList(query.getPage(), query.getPageSize());
+		List<OwnerUnitDangerVo> dangers = unitDangerService.queryReviewOwnerUnitDanger(query, pageList);
 
 		return ListResult.SUCCESS(pageList.getTotalNum(), dangers);
 	}

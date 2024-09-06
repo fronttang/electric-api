@@ -48,4 +48,6 @@ public interface OwnerUnitDangerMapper extends ModelBaseMapper<OwnerUnitDanger> 
 
 	OwnerUnitDangerVo getOwnerUnitDangerById(@Param("dangerId") Long dangerId);
 
+	List<OwnerUnitDangerVo> queryReviewOwnerUnitDanger(OwnerUnitDangerQuery query);
+
 }

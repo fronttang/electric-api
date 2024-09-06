@@ -1,5 +1,7 @@
 package com.rosenzest.electric.formb.handler;
 
+import java.util.Objects;
+
 import com.alibaba.fastjson.JSONObject;
 import com.rosenzest.electric.enums.DetectFormB;
 import com.rosenzest.electric.formb.FormbDangerHandler;
@@ -118,6 +120,19 @@ public class FormB14DangerHandler implements IFormbDangerHandler {
 		FormB14 formb = getFormb(vo);
 		if (formb != null) {
 			return formb.getType();
+		}
+		return null;
+	}
+
+	@Override
+	public String getResult(OwnerUnitDangerVo vo) {
+		FormB14 formb = getFormb(vo);
+		if (formb != null) {
+			if ("residualCurrent".equals(formb.getType()) && Objects.nonNull(formb.getResidualCurrent())) {
+				return formb.getResidualCurrent().getResult();
+			} else if ("alarmTime".equals(formb.getType()) && Objects.nonNull(formb.getAlarmTime())) {
+				return formb.getAlarmTime().getResult();
+			}
 		}
 		return null;
 	}

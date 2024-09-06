@@ -311,4 +311,31 @@ public class OwnerUnitDangerVo {
 
 		return this.level;
 	}
+
+	public String getStatus() {
+		if ("B".equalsIgnoreCase(this.formType)) {
+			String result = getResult();
+			if (IFormbDangerHandler.QUALIFIED.equals(result)) {
+				// 非隐患
+				return "9";
+			} else if (IFormbDangerHandler.FAILURE.equals(result)) {
+				return this.status;
+			} else {
+				return "";
+			}
+		}
+		return this.status;
+	}
+
+	public String getResult() {
+		if ("B".equalsIgnoreCase(this.formType)) {
+			if (StrUtil.isNotBlank(this.formCode)) {
+				IFormbDangerHandler formbDangerHander = FormbDangerHandlerFactory.getFormbDangerHander(this.formCode);
+				if (formbDangerHander != null) {
+					return formbDangerHander.getResult(this);
+				}
+			}
+		}
+		return null;
+	}
 }

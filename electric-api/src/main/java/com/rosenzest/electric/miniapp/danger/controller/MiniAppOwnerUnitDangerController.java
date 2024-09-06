@@ -69,7 +69,7 @@ public class MiniAppOwnerUnitDangerController extends ServerBaseController {
 		data.setUnitId(unitId);
 
 		PageList pageList = new PageList(query.getPage(), query.getPageSize());
-		List<OwnerUnitDangerVo> dangers = ownerUnitDangerService.queryOwnerUnitDanger(query, pageList);
+		List<OwnerUnitDangerVo> dangers = ownerUnitDangerService.queryReviewOwnerUnitDanger(query, pageList);
 
 		return ListResult.SUCCESS(pageList.getTotalNum(), dangers);
 	}
