@@ -66,18 +66,18 @@ public class CodeGenerator {
 		// 数据源配置
 		DataSourceConfig dsc = new DataSourceConfig();
 		dsc.setUrl(
-				"jdbc:mysql://127.0.0.1:3306/dianantong?serverTimezone=Asia/Shanghai&useSSL=false&useUnicode=true&characterEncoding=UTF-8");
+				"jdbc:mysql://129.211.210.175:3306/dat?serverTimezone=Asia/Shanghai&useSSL=false&useUnicode=true&characterEncoding=UTF-8");
 		// dsc.setSchemaName("public");
 		dsc.setDriverName("com.mysql.cj.jdbc.Driver");
 		dsc.setUsername("root");
-		dsc.setPassword("password");
+		dsc.setPassword("DAT@TestMysql147");
 		mpg.setDataSource(dsc);
 
 		// 包配置
 		final PackageConfig pc = new PackageConfig();
 		// pc.setModuleName(scanner("模块名"));
-		pc.setModuleName("electric");
-		pc.setParent("com.rosenzest");
+		pc.setModuleName("station");
+		pc.setParent("com.rosenzest.electric");
 		mpg.setPackageInfo(pc);
 
 		// 自定义配置
@@ -144,7 +144,7 @@ public class CodeGenerator {
 		strategy.setSuperEntityColumns("SEQ_NO", "CRE_TLR", "CRE_DTE", "CRE_BR", "CRE_BK", "UPD_TLR", "UPD_DTE",
 				"UPD_BR", "UPD_BK", "CREATE_TIME", "CREATE_BY", "UPDATE_TIME", "UPDATE_BY");
 		// strategy.setInclude(scanner("表名，多个英文逗号分割").split(","));
-		strategy.setInclude("owner_unit");
+		strategy.setInclude("owner_unit_station_pepre_pic");
 		// strategy.setTablePrefix("xm_");
 		strategy.setControllerMappingHyphenStyle(true);
 		// strategy.setTablePrefix(pc.getModuleName() + "_");

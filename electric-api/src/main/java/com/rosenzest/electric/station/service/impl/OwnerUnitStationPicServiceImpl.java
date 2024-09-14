@@ -1,5 +1,7 @@
 package com.rosenzest.electric.station.service.impl;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
@@ -32,6 +34,14 @@ public class OwnerUnitStationPicServiceImpl extends ModelBaseServiceImpl<OwnerUn
 		}
 		queryWrapper.last(" LIMIT 1 ");
 		return this.baseMapper.selectOne(queryWrapper);
+	}
+
+	@Override
+	public List<OwnerUnitStationPic> getStationPicsByUnitId(Long unitId, Integer rounds) {
+		LambdaQueryWrapper<OwnerUnitStationPic> queryWrapper = new LambdaQueryWrapper<OwnerUnitStationPic>();
+		queryWrapper.eq(OwnerUnitStationPic::getUnitId, unitId);
+		queryWrapper.eq(OwnerUnitStationPic::getRounds, rounds);
+		return this.baseMapper.selectList(queryWrapper);
 	}
 
 }

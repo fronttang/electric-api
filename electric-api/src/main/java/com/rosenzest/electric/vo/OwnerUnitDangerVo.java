@@ -263,7 +263,7 @@ public class OwnerUnitDangerVo {
 		} else if (ProjectType.CHARGING_STATION == type) {
 			// 充电桩
 			if (StrUtil.isNotBlank(this.chargingPileName)) {
-				return StrUtil.format("{}{}", this.chargingPileName, this.location);
+				return StrUtil.format("({}) {}", this.chargingPileName, this.location);
 			}
 		}
 

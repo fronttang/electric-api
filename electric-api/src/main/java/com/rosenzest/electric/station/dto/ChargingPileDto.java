@@ -1,10 +1,6 @@
 package com.rosenzest.electric.station.dto;
 
-import java.util.Date;
-
 import javax.validation.constraints.NotNull;
-
-import com.fasterxml.jackson.annotation.JsonFormat;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -80,7 +76,6 @@ public class ChargingPileDto {
 	 * 生产日期
 	 */
 	@ApiModelProperty("生产日期")
-	@JsonFormat(pattern = "yyyy-MM-dd")
-	private Date productionDate;
+	private String productionDate;
 
 }

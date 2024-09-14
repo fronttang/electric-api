@@ -43,6 +43,12 @@ public class FormB1 {
 	private String deviceName;
 
 	/**
+	 * 检测位置
+	 */
+	@ApiModelProperty("检测位置")
+	private String location;
+
+	/**
 	 * 设备编号
 	 */
 	@ApiModelProperty("设备编号")

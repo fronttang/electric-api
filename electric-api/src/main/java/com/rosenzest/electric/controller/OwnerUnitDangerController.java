@@ -7,6 +7,7 @@ import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -17,6 +18,7 @@ import com.rosenzest.base.ListResult;
 import com.rosenzest.base.LoginUser;
 import com.rosenzest.base.PageList;
 import com.rosenzest.base.Result;
+import com.rosenzest.base.enums.EnumUtils;
 import com.rosenzest.base.util.BeanUtils;
 import com.rosenzest.electric.dto.OwnerUnitDangerDto;
 import com.rosenzest.electric.dto.OwnerUnitDangerQuery;
@@ -309,6 +311,50 @@ public class OwnerUnitDangerController extends ElectricBaseController {
 
 		OwnerUnitDangerVo danger = unitDangerService.getOwnerUnitDangerById(dangerId);
 		return Result.SUCCESS(danger);
+	}
+
+	@ApiOperation(tags = "隐患", value = "重置隐患状态")
+	@GetMapping("/reset/status/{dangerId}/{status}")
+	public Result<?> resetDangerStatus(Long dangerId, String status) {
+
+		OwnerUnitDanger danger = unitDangerService.getById(dangerId);
+		if (danger == null) {
+			return Result.ERROR(400, "无操作权限");
+		}
+
+		if (!EnumUtils.init(ReviewStatus.class).isInEnum(status)) {
+			return Result.ERROR(400, "状态参数不对");
+		}
+
+		if (StrUtil.isBlank(danger.getStatus()) || ReviewStatus.NOTDANGER.code().equalsIgnoreCase(danger.getStatus())) {
+			return Result.ERROR(400, "非隐患不能修改状态");
+		}
+
+		// 检查工作人员权限
+		OwnerUnit ownerUnit = ownerUnitService.getById(danger.getUnitId());
+		if (ownerUnit == null) {
+			return Result.ERROR(400, "无操作权限");
+		}
+
+		// 充电场项目检查轮次
+		if (ProjectType.CHARGING_STATION.code().equalsIgnoreCase(ownerUnit.getType())) {
+
+			if (!ownerUnit.getRounds().equals(danger.getRounds())) {
+				return Result.ERROR(400, "非当前轮次数据不能修改");
+			}
+		}
+
+		checkPermission(danger, ownerUnit);
+
+		OwnerUnitDanger update = new OwnerUnitDanger();
+		update.setId(dangerId);
+		update.setStatus(status);
+
+		if (unitDangerService.updateById(update)) {
+			return Result.SUCCESS();
+		} else {
+			return Result.ERROR();
+		}
 	}
 
 }

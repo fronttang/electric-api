@@ -399,6 +399,8 @@ public class OwnerUnitDangerServiceImpl extends ModelBaseServiceImpl<OwnerUnitDa
 		queryWrapper.select(OwnerUnitDanger::getStatus, OwnerUnitDanger::getUnitId, OwnerUnitDanger::getBuildingId,
 				OwnerUnitDanger::getId, OwnerUnitDanger::getLevel);
 		queryWrapper.eq(OwnerUnitDanger::getUnitId, unitId);
+		queryWrapper.ne(OwnerUnitDanger::getStatus, "9");
+		queryWrapper.ne(OwnerUnitDanger::getStatus, "");
 		if (CollUtil.isNotEmpty(buildingIds)) {
 			queryWrapper.in(OwnerUnitDanger::getBuildingId, buildingIds);
 		}

@@ -7,6 +7,12 @@ import lombok.Data;
 public class FormB5 {
 
 	/**
+	 * 场所类型
+	 */
+	@ApiModelProperty("场所类型")
+	private String venueType;
+
+	/**
 	 * 被测设备名称
 	 */
 	@ApiModelProperty("被测设备名称")

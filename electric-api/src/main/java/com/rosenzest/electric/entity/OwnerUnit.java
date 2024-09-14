@@ -290,6 +290,16 @@ public class OwnerUnit extends BaseEntity<OwnerUnit> {
 	private String humidity;
 
 	/**
+	 * 天气
+	 */
+	private String weather;
+
+	/**
+	 * 风速（m/s）
+	 */
+	private String windSpeed;
+
+	/**
 	 * 业主二维码
 	 */
 	private String mngQrcode;

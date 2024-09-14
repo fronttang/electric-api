@@ -27,6 +27,11 @@ public enum ReviewStatus implements IEnum<ReviewStatus> {
 	 */
 	FINISH("2", "完成"),
 
+	/**
+	 * 非隐患
+	 */
+	NOTDANGER("9", "非隐患"),
+
 	;
 
 	final String code;

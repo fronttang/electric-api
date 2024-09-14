@@ -19,7 +19,7 @@
 		ua.type as unit_area_type, d.danger_id, d.form_type, d.form_id, d.form_code, d.level, d.description, d.suggestions, d.location,
 		d.danger_pic, d.rectification_pic, d.detect_pic, d.reason, d.status, d.inspector, d.initial_time, 
 		d.rectification, d.rectification_date, d.reviewer, d.reviewer_date, d.formb, d.charging_pile_id, d.remark, 
-		( select GROUP_CONCAT(cp.name) from charging_pile cp where cp.id member of(d.charging_pile_id) and cp.unit_id = d.unit_id ) as charging_pile_name 
+		( select GROUP_CONCAT(DISTINCT cp.name SEPARATOR '、') from charging_pile cp where cp.id member of(d.charging_pile_id) and cp.unit_id = d.unit_id ) as charging_pile_name 
 		from owner_unit_danger d 
 		left join owner_unit u on u.id = d.unit_id 
 		left join project p on p.id = u.project_id
@@ -68,7 +68,7 @@
 		ua.type as unit_area_type, d.danger_id, d.form_type, d.form_id, d.form_code, d.level, d.description, d.suggestions, d.location,
 		d.danger_pic, d.rectification_pic, d.detect_pic, d.reason, d.status, d.inspector, d.initial_time, 
 		d.rectification, d.rectification_date, d.reviewer, d.reviewer_date, d.formb, d.charging_pile_id, d.remark, 
-		( select GROUP_CONCAT(cp.name) from charging_pile cp where cp.id member of(d.charging_pile_id) and cp.unit_id = d.unit_id ) as charging_pile_name 
+		( select GROUP_CONCAT(DISTINCT cp.name SEPARATOR '、') from charging_pile cp where cp.id member of(d.charging_pile_id) and cp.unit_id = d.unit_id ) as charging_pile_name 
 		from owner_unit_danger d 
 		left join owner_unit u on u.id = d.unit_id 
 		left join project p on p.id = u.project_id
@@ -163,14 +163,14 @@
 		ua.type as unit_area_type, d.danger_id, d.form_type, d.form_id, d.form_code, d.level, d.description, d.suggestions, d.location,
 		d.danger_pic, d.rectification_pic, d.detect_pic, d.reason, d.status, d.inspector, d.initial_time, 
 		d.rectification, d.rectification_date, d.reviewer, d.reviewer_date, d.formb, d.charging_pile_id, d.remark, 
-		( select GROUP_CONCAT(cp.name) from charging_pile cp where cp.id member of(d.charging_pile_id) and cp.unit_id = d.unit_id ) as charging_pile_name 
+		( select GROUP_CONCAT(DISTINCT cp.name SEPARATOR '、') from charging_pile cp where cp.id member of(d.charging_pile_id) and cp.unit_id = d.unit_id ) as charging_pile_name 
 		from owner_unit_danger d 
 		left join owner_unit u on u.id = d.unit_id 
 		left join project p on p.id = u.project_id
 		left join detect_unit du on du.id = u.detect_id
 		left join owner_unit_building ub on ub.id = d.building_id 
 		left join owner_unit_area ua on ua.id = d.unit_area_id
-		where d.unit_id = #{unitId} and (d.status != '9' or d.status != '') 
+		where d.unit_id = #{unitId} and (d.status != '9' and d.status != '') 
 		<if test="buildingId != null and buildingId != ''"> and d.building_id = #{buildingId} </if>
 		<if test="unitAreaId != null and unitAreaId != ''"> and ua.id = #{unitAreaId} </if>
 		<if test="unitAreatype != null and unitAreatype != ''"> and ua.type = #{unitAreatype} </if>

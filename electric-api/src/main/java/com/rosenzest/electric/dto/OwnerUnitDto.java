@@ -216,5 +216,17 @@ public class OwnerUnitDto {
 	@ApiModelProperty("湿度")
 	private String humidity;
 
+	/**
+	 * 天气
+	 */
+	@ApiModelProperty("天气")
+	private String weather;
+
+	/**
+	 * 风速（m/s）
+	 */
+	@ApiModelProperty("风速（m/s）")
+	private String windSpeed;
+
 	private String createBy;
 }
