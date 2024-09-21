@@ -113,8 +113,8 @@
 	
 	<select id="countByUnitIdAndDataIdAndPileId" resultType="Integer">
 		select count(1) from owner_unit_danger d 
-		left join owner_unit o on o.id = d.unit_id and o.rounds = d.rounds
-		where d.unit_id = #{unitId} 
+		left join owner_unit o on o.id = d.unit_id
+		where d.unit_id = #{unitId} and d.rounds = o.rounds
 		<if test="dataId != null">
 			and d.form_data_id = #{dataId}
 		</if>
