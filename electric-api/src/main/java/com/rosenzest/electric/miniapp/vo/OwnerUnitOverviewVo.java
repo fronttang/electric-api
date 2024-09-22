@@ -25,6 +25,12 @@ public class OwnerUnitOverviewVo {
 	private String name;
 
 	/**
+	 * 地址
+	 */
+	@ApiModelProperty("业主单元地址")
+	private String address;
+
+	/**
 	 * 业主单元类型 1城中村2工业园3高风险4充电站
 	 */
 	@ApiModelProperty("业主单元类型 1城中村2工业园3高风险4充电站")

@@ -49,6 +49,11 @@ public class OwnerUnitDangerVo {
 	private String unitName;
 
 	/**
+	 * 地址
+	 */
+	private String address;
+
+	/**
 	 * 检测单位名称
 	 */
 	@ApiModelProperty("检测单位名称")

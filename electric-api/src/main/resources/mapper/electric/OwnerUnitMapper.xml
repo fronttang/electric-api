@@ -13,7 +13,7 @@
 		(select count(1) as dangers from owner_unit_danger ud2 where ud2.unit_id = o.id and ud2.status = 1 and ud2.rounds = o.rounds ) as reexaminations,
 		(select count(1) as dangers from owner_unit_danger ud3 where ud3.unit_id = o.id and ud3.status = 2 and ud3.rounds = o.rounds ) as finishs,
 		(select count(1) as piles from charging_pile cp where cp.unit_id = o.id and cp.rounds = o.rounds ) as piles,
-		(select count(1) from owner_unit_danger t where t.unit_id = o.id and t.rounds = o.rounds and t.status != '9' and t.status != '') as dangers,
+		(select count(1) from owner_unit_danger t where t.unit_id = o.id and t.rounds = o.rounds) as dangers,
 		o.project_id, r.is_danger_notice,  r.is_complete, r.is_test, r.is_test_reason,
 		CASE WHEN r.detect_status is null THEN 0 ELSE r.detect_status END as status 
 		
@@ -131,7 +131,7 @@
 	</select>
 	
 	<select id="getOwnerUnitListByOwner" resultType="com.rosenzest.electric.miniapp.vo.OwnerUnitOverviewVo" >
-		select o.id, o.name, o.type, o.project_id,
+		select o.id, o.name, o.type, o.project_id, o.address,
 		o.district, o.street, o.community, o.hamlet, a.dict_label as district_name, b.dict_label as street_name, c.dict_label as community_name, d.dict_label as hamlet_name 
 		from owner_unit o 
 		left join sys_dict_data a on (o.district = a.dict_value and a.dict_type='district' and a.project_id = o.project_id)
@@ -142,7 +142,7 @@
 	</select>
 	
 	<select id="getOwnerUnitInfoById" resultType="com.rosenzest.electric.miniapp.vo.OwnerUnitOverviewVo" >
-		select o.id, o.name, o.type, o.project_id,
+		select o.id, o.name, o.type, o.project_id, o.address,
 		o.district, o.street, o.community, o.hamlet, a.dict_label as district_name, b.dict_label as street_name, c.dict_label as community_name, d.dict_label as hamlet_name 
 		from owner_unit o 
 		left join sys_dict_data a on (o.district = a.dict_value and a.dict_type='district' and a.project_id = o.project_id)
@@ -153,7 +153,7 @@
 	</select>
 	
 	<select id="getOwnerUnitListByGridman" resultType="com.rosenzest.electric.miniapp.vo.OwnerUnitOverviewVo" >
-		select o.id, o.name, o.type, o.project_id,
+		select o.id, o.name, o.type, o.project_id, o.address,
 		o.district, o.street, o.community, o.hamlet, a.dict_label as district_name, b.dict_label as street_name, c.dict_label as community_name, d.dict_label as hamlet_name 
 		from owner_unit o 
 		left join sys_dict_data a on (o.district = a.dict_value and a.dict_type='district' and a.project_id = o.project_id)
@@ -223,7 +223,7 @@
 	</select>
 	
 	<select id="unitStatistics" resultType="com.rosenzest.electric.miniapp.dto.UnitStatisticsDto" parameterType="com.rosenzest.electric.miniapp.vo.AreaUserInfoVo" >
-		select u.id, u.name ,r.id as report_id, 
+		select u.id, u.name ,r.id as report_id, u.address,
 		CASE WHEN r.detect_status is null THEN 0 ELSE r.detect_status END as status 
 		from owner_unit u
 		left join owner_unit_report r on (r.unit_id = u.id and r.type = '1' )
