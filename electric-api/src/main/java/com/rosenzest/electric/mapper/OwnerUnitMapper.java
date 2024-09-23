@@ -7,8 +7,10 @@ import org.apache.ibatis.annotations.Param;
 import com.rosenzest.electric.dto.OwnerUnitQuery;
 import com.rosenzest.electric.dto.OwnerUnitReviewQuery;
 import com.rosenzest.electric.entity.OwnerUnit;
+import com.rosenzest.electric.miniapp.dto.MiniAppAreaQuery;
 import com.rosenzest.electric.miniapp.dto.MiniAppAreaUserOwnerUnitQuery;
 import com.rosenzest.electric.miniapp.dto.MiniAppOwnerUnitQuery;
+import com.rosenzest.electric.miniapp.dto.StatisticsHighQuery;
 import com.rosenzest.electric.miniapp.dto.UnitStatisticsDto;
 import com.rosenzest.electric.miniapp.vo.AreaUserInfoVo;
 import com.rosenzest.electric.miniapp.vo.OwnerUnitOverviewVo;
@@ -43,6 +45,12 @@ public interface OwnerUnitMapper extends ModelBaseMapper<OwnerUnit> {
 	List<OwnerUnitOverviewVo> queryOwnerUnitListByGridman(MiniAppOwnerUnitQuery query);
 
 	List<UnitStatisticsDto> unitStatistics(AreaUserInfoVo userInfo);
+
+	List<UnitStatisticsDto> unitStatisticsByGridman(@Param("userId") Long userId, @Param("type") String type);
+
+	List<UnitStatisticsDto> unitStatisticsHigh(StatisticsHighQuery query);
+
+	List<UnitStatisticsDto> unitStatisticsByArea(MiniAppAreaQuery data);
 
 	Long countTodayDetectUnit(AreaUserInfoVo userInfo);
 

@@ -2,18 +2,15 @@ package com.rosenzest.electric.miniapp.hamlet.controller;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.rosenzest.electric.entity.SysDictData;
 import com.rosenzest.electric.enums.AreaUserType;
-import com.rosenzest.electric.miniapp.vo.AreaUserDangerVo;
+import com.rosenzest.electric.enums.ProjectType;
+import com.rosenzest.electric.miniapp.dto.MiniAppAreaQuery;
+import com.rosenzest.electric.miniapp.dto.UnitStatisticsDto;
 import com.rosenzest.electric.miniapp.vo.AreaUserInfoVo;
 import com.rosenzest.electric.miniapp.vo.OwnerUnitDangerStatisticsVo;
-import com.rosenzest.electric.miniapp.vo.OwnerUnitOverviewVo;
-import com.rosenzest.electric.service.IOwnerUnitDangerService;
 import com.rosenzest.electric.service.IOwnerUnitService;
 
 import cn.hutool.core.collection.CollUtil;
@@ -25,39 +22,26 @@ import cn.hutool.core.collection.CollUtil;
 public class AreaUserHamletStatisticsHandler implements IAreaUserStatisticsHandler {
 
 	@Autowired
-	private IOwnerUnitDangerService ownerUnitDangerService;
-
-	@Autowired
 	private IOwnerUnitService ownerUnitService;
 
 	@Override
-	public List<OwnerUnitDangerStatisticsVo> statistics(AreaUserInfoVo userInfo) {
-
-		List<AreaUserDangerVo> userDangers = ownerUnitDangerService.getOwnerUnitDangerByAreaUser(userInfo);
+	public List<OwnerUnitDangerStatisticsVo> statistics(AreaUserInfoVo userInfo, MiniAppAreaQuery areaQuery) {
 
 		List<OwnerUnitDangerStatisticsVo> result = new ArrayList<OwnerUnitDangerStatisticsVo>();
 
-		if (CollUtil.isNotEmpty(userDangers)) {
+		if (ProjectType.URBAN_VILLAGE.code().equalsIgnoreCase(userInfo.getProjectType())) {
+			List<UnitStatisticsDto> unitStatisticsResult = ownerUnitService.unitStatisticsByArea(areaQuery);
 
-			Map<Long, List<AreaUserDangerVo>> groupMap = userDangers.stream()
-					.collect(Collectors.groupingBy((d) -> d.getUnitId(), Collectors.toList()));
+			if (CollUtil.isNotEmpty(unitStatisticsResult)) {
 
-			List<SysDictData> hazardLevel = ownerUnitService.getHazardLevel(userInfo.getProjectType());
+				unitStatisticsResult.forEach((unit) -> {
 
-			groupMap.forEach((unitId, dangers) -> {
+					OwnerUnitDangerStatisticsVo vo = ownerUnitService.getOwnerUnitDangerStatistics(unit.getId(), null);
 
-				OwnerUnitOverviewVo ownerUnitOverviewVo = ownerUnitService.getOwnerUnitInfoById(unitId);
-
-				if (ownerUnitOverviewVo != null) {
-					OwnerUnitDangerStatisticsVo vo = ownerUnitService
-							.buildOwnerUnitDangerStatisticsVo(ownerUnitOverviewVo, null, dangers, hazardLevel);
-
-					vo.setName(ownerUnitOverviewVo.getName());
-
+					vo.setName(unit.getName());
 					result.add(vo);
-
-				}
-			});
+				});
+			}
 		}
 
 		return result;

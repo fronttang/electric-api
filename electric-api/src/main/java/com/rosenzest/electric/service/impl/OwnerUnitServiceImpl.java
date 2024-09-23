@@ -35,8 +35,10 @@ import com.rosenzest.electric.enums.InitialInspectionStatus;
 import com.rosenzest.electric.enums.ReviewStatus;
 import com.rosenzest.electric.enums.UnitReportType;
 import com.rosenzest.electric.mapper.OwnerUnitMapper;
+import com.rosenzest.electric.miniapp.dto.MiniAppAreaQuery;
 import com.rosenzest.electric.miniapp.dto.MiniAppAreaUserOwnerUnitQuery;
 import com.rosenzest.electric.miniapp.dto.MiniAppOwnerUnitQuery;
+import com.rosenzest.electric.miniapp.dto.StatisticsHighQuery;
 import com.rosenzest.electric.miniapp.dto.UnitStatisticsDto;
 import com.rosenzest.electric.miniapp.vo.AreaUserDangerVo;
 import com.rosenzest.electric.miniapp.vo.AreaUserIndexVo;
@@ -47,6 +49,7 @@ import com.rosenzest.electric.miniapp.vo.AreaUserInfoVo;
 import com.rosenzest.electric.miniapp.vo.IDangerStatisticsVo;
 import com.rosenzest.electric.miniapp.vo.OwnerUnitDangerStatisticsVo;
 import com.rosenzest.electric.miniapp.vo.OwnerUnitOverviewVo;
+import com.rosenzest.electric.miniapp.vo.StatisticsHighVo;
 import com.rosenzest.electric.service.IOwnerUnitAreaService;
 import com.rosenzest.electric.service.IOwnerUnitBuildingService;
 import com.rosenzest.electric.service.IOwnerUnitDangerService;
@@ -61,6 +64,7 @@ import com.rosenzest.model.base.service.ModelBaseServiceImpl;
 import com.rosenzest.server.base.context.IRequestContext;
 import com.rosenzest.server.base.context.RequestContextHolder;
 
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
 
@@ -497,6 +501,90 @@ public class OwnerUnitServiceImpl extends ModelBaseServiceImpl<OwnerUnitMapper, 
 
 		TodayStatistics today = this.getTodayStatistics(userInfo);
 		result.setToday(today);
+		return result;
+	}
+
+	@Override
+	public List<UnitStatisticsDto> unitStatisticsByArea(MiniAppAreaQuery data) {
+		return this.baseMapper.unitStatisticsByArea(data);
+	}
+
+	@Override
+	public StatisticsHighVo statisticsHighByArea(AreaUserInfoVo userInfo, String type) {
+
+		StatisticsHighVo result = new StatisticsHighVo();
+
+		StatisticsHighQuery query = new StatisticsHighQuery();
+		BeanUtil.copyProperties(userInfo, query);
+		query.setType(type);
+
+		List<UnitStatisticsDto> unitStatisticsResult = this.baseMapper.unitStatisticsHigh(query);
+		UnitStatistics unit = new UnitStatistics();
+
+		if (CollUtil.isNotEmpty(unitStatisticsResult)) {
+
+			unit.setTotal(unitStatisticsResult.stream().count());
+
+			long detected = unitStatisticsResult.stream().filter((e) -> Objects.nonNull(e.getReportId())).count();
+			unit.setDetected(detected);
+
+			long detecting = unitStatisticsResult.stream().filter((e) -> Objects.isNull(e.getReportId())).count();
+			unit.setDetecting(detecting);
+
+			long undetect = unitStatisticsResult.stream()
+					.filter((e) -> Objects.nonNull(e.getStatus()) && "1".equals(e.getStatus())).count();
+			unit.setUndetect(undetect);
+		}
+
+		List<AreaUserDangerVo> dangerLists = ownerUnitDangerService.getOwnerUnitDangerByAreaUser(userInfo);
+		DangerStatistics danger = new DangerStatistics();
+		final List<SysDictData> hazardLevel = this.getHazardLevel(userInfo.getProjectType());
+
+		buildDangerStatisticsVo(dangerLists, hazardLevel, danger);
+
+		result.setDanger(danger);
+		result.setUnit(unit);
+
+		return result;
+	}
+
+	@Override
+	public StatisticsHighVo statisticsHighByGridman(LoginUser loginUser, String type) {
+
+		StatisticsHighVo result = new StatisticsHighVo();
+
+		List<UnitStatisticsDto> unitStatisticsResult = this.baseMapper.unitStatisticsByGridman(loginUser.getUserId(),
+				type);
+		UnitStatistics unit = new UnitStatistics();
+
+		if (CollUtil.isNotEmpty(unitStatisticsResult)) {
+
+			unit.setTotal(unitStatisticsResult.stream().count());
+
+			long detected = unitStatisticsResult.stream().filter((e) -> Objects.nonNull(e.getReportId())).count();
+			unit.setDetected(detected);
+
+			long detecting = unitStatisticsResult.stream().filter((e) -> Objects.isNull(e.getReportId())).count();
+			unit.setDetecting(detecting);
+
+			long undetect = unitStatisticsResult.stream()
+					.filter((e) -> Objects.nonNull(e.getStatus()) && "1".equals(e.getStatus())).count();
+			unit.setUndetect(undetect);
+		}
+		DangerStatistics danger = new DangerStatistics();
+		Project project = projectService.getById(loginUser.getProjectId());
+		if (project != null) {
+
+			List<OwnerUnitDanger> dangerLists = ownerUnitDangerService
+					.getOwnerUnitDangerByGridman(loginUser.getUserId(), type);
+
+			final List<SysDictData> hazardLevel = this.getHazardLevel(project.getType());
+
+			buildDangerStatisticsVo(dangerLists, hazardLevel, danger);
+
+		}
+		result.setDanger(danger);
+		result.setUnit(unit);
 		return result;
 	}
 

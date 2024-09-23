@@ -234,6 +234,41 @@
 		<if test="hamlet != null and hamlet != ''"> and u.hamlet = #{hamlet} </if>
 	</select>
 	
+	<select id="unitStatisticsByGridman" resultType="com.rosenzest.electric.miniapp.dto.UnitStatisticsDto" >
+		select u.id, u.name ,r.id as report_id, u.address,
+		CASE WHEN r.detect_status is null THEN 0 ELSE r.detect_status END as status 
+		from owner_unit u
+		left join owner_unit_report r on (r.unit_id = u.id and r.type = '1' )
+		where 
+		exists (select project_id from sys_user s where s.user_id = u.gridman and s.project_id = u.project_id and s.user_id = #{userId} )
+		<if test="type != null and type != ''"> and u.high_risk_type = #{type} </if>
+	</select>
+	
+	<select id="unitStatisticsHigh" resultType="com.rosenzest.electric.miniapp.dto.UnitStatisticsDto" parameterType="com.rosenzest.electric.miniapp.dto.StatisticsHighQuery" >
+		select u.id, u.name ,r.id as report_id, u.address,
+		CASE WHEN r.detect_status is null THEN 0 ELSE r.detect_status END as status 
+		from owner_unit u
+		left join owner_unit_report r on (r.unit_id = u.id and r.type = '1' )
+		where u.project_id = #{projectId} 
+		<if test="type != null and type != ''"> and u.high_risk_type = #{type} </if>
+		<if test="district != null and district != ''"> and u.district = #{district} </if>
+		<if test="street != null and street != ''"> and u.street = #{street} </if>
+		<if test="community != null and community != ''"> and u.community = #{community} </if>
+		<if test="hamlet != null and hamlet != ''"> and u.hamlet = #{hamlet} </if>
+	</select>
+	
+	<select id="unitStatisticsByArea" resultType="com.rosenzest.electric.miniapp.dto.UnitStatisticsDto" parameterType="com.rosenzest.electric.miniapp.dto.MiniAppAreaQuery" >
+		select u.id, u.name ,r.id as report_id, u.address,
+		CASE WHEN r.detect_status is null THEN 0 ELSE r.detect_status END as status 
+		from owner_unit u
+		left join owner_unit_report r on (r.unit_id = u.id and r.type = '1' )
+		where u.project_id = #{projectId} 
+		<if test="district != null and district != ''"> and u.district = #{district} </if>
+		<if test="street != null and street != ''"> and u.street = #{street} </if>
+		<if test="community != null and community != ''"> and u.community = #{community} </if>
+		<if test="hamlet != null and hamlet != ''"> and u.hamlet = #{hamlet} </if>
+	</select>
+	
 	<select id="countTodayDetectUnit" resultType="Long" parameterType="com.rosenzest.electric.miniapp.vo.AreaUserInfoVo" >
 		select count(1)
 		from owner_unit u

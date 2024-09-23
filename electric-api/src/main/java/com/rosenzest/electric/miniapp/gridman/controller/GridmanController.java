@@ -24,14 +24,18 @@ import com.rosenzest.base.constant.ResultEnum;
 import com.rosenzest.base.enums.TerminalType;
 import com.rosenzest.base.exception.BusinessException;
 import com.rosenzest.electric.entity.OwnerUnit;
+import com.rosenzest.electric.entity.Project;
+import com.rosenzest.electric.enums.ProjectType;
 import com.rosenzest.electric.miniapp.dto.MiniAppOwnerUnitQuery;
 import com.rosenzest.electric.miniapp.owner.executor.OwnerUnitBelongPermissionExecutor;
 import com.rosenzest.electric.miniapp.vo.GridmanDangerStatisticsVo;
 import com.rosenzest.electric.miniapp.vo.OwnerUnitDangerStatisticsVo;
 import com.rosenzest.electric.miniapp.vo.OwnerUnitOverviewVo;
+import com.rosenzest.electric.miniapp.vo.StatisticsHighVo;
 import com.rosenzest.electric.service.IOwnerUnitBuildingService;
 import com.rosenzest.electric.service.IOwnerUnitDangerService;
 import com.rosenzest.electric.service.IOwnerUnitService;
+import com.rosenzest.electric.service.IProjectService;
 import com.rosenzest.electric.vo.ProjectAreaVo;
 import com.rosenzest.server.base.annotation.Permission;
 import com.rosenzest.server.base.annotation.PermissionParam;
@@ -59,6 +63,9 @@ public class GridmanController extends ServerBaseController {
 
 	@Autowired
 	private IOwnerUnitBuildingService ownerUnitBuildingService;
+
+	@Autowired
+	private IProjectService projectService;
 
 	@ApiOperation(tags = "网格员端", value = "首页")
 	@GetMapping("/index")
@@ -174,6 +181,23 @@ public class GridmanController extends ServerBaseController {
 		}
 
 		List<ProjectAreaVo> result = new ArrayList<ProjectAreaVo>(districtMap.values());
+		return Result.SUCCESS(result);
+	}
+
+	@ApiOperation(tags = "网格员端", value = "场所统计")
+	@GetMapping("/statistics/high")
+	public Result<StatisticsHighVo> statisticsHigh(@RequestParam(required = false) String type) {
+
+		LoginUser loginUser = getLoginUser();
+
+		Project project = projectService.getById(loginUser.getProjectId());
+
+		if (!ProjectType.HIGH_RISK.code().equalsIgnoreCase(project.getType())) {
+			return Result.SUCCESS();
+		}
+
+		StatisticsHighVo result = ownerUnitService.statisticsHighByGridman(loginUser, type);
+
 		return Result.SUCCESS(result);
 	}
 }

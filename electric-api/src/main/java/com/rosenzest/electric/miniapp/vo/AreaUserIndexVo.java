@@ -58,6 +58,12 @@ public class AreaUserIndexVo {
 		 */
 		@ApiModelProperty("已检测")
 		private Long detected = 0L;
+
+		/**
+		 * 无法检测
+		 */
+		@ApiModelProperty("无法检测")
+		private Long undetect = 0L;
 	}
 
 	@Data

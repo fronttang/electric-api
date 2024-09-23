@@ -6,7 +6,9 @@ import org.apache.ibatis.annotations.Param;
 
 import com.rosenzest.electric.dto.OwnerUnitDangerQuery;
 import com.rosenzest.electric.entity.OwnerUnitDanger;
+import com.rosenzest.electric.miniapp.dto.MiniAppAreaQuery;
 import com.rosenzest.electric.miniapp.dto.MiniAppOwnerUnitDangerQuery;
+import com.rosenzest.electric.miniapp.dto.StatisticsHighQuery;
 import com.rosenzest.electric.miniapp.vo.AreaUserDangerVo;
 import com.rosenzest.electric.miniapp.vo.AreaUserInfoVo;
 import com.rosenzest.electric.miniapp.vo.MiniAppOwnerUnitDangerVo;
@@ -40,9 +42,13 @@ public interface OwnerUnitDangerMapper extends ModelBaseMapper<OwnerUnitDanger> 
 
 	List<MiniAppOwnerUnitDangerVo> queryOwnerUnitDangerList(MiniAppOwnerUnitDangerQuery query);
 
-	List<OwnerUnitDanger> getOwnerUnitDangerByGridman(Long userId);
+	List<OwnerUnitDanger> getOwnerUnitDangerByGridman(@Param("userId") Long userId, @Param("type") String type);
 
 	List<AreaUserDangerVo> getOwnerUnitDangerByAreaUser(AreaUserInfoVo userInfo);
+
+	List<AreaUserDangerVo> getHighOwnerUnitDangerByAreaUser(StatisticsHighQuery query);
+
+	List<AreaUserDangerVo> getOwnerUnitDangerByArea(MiniAppAreaQuery data);
 
 	List<OwnerUnitDanger> getTodayDangersByAreaUser(AreaUserInfoVo userInfo);
 

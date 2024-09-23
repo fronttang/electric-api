@@ -27,11 +27,14 @@ import com.rosenzest.base.util.BeanUtils;
 import com.rosenzest.electric.dto.ProjectAreaDto;
 import com.rosenzest.electric.entity.OwnerUnit;
 import com.rosenzest.electric.enums.AreaUserType;
+import com.rosenzest.electric.enums.ProjectType;
+import com.rosenzest.electric.miniapp.dto.MiniAppAreaQuery;
 import com.rosenzest.electric.miniapp.dto.MiniAppAreaUserOwnerUnitQuery;
 import com.rosenzest.electric.miniapp.dto.MiniAppOwnerUnitQuery;
 import com.rosenzest.electric.miniapp.vo.AreaUserIndexVo;
 import com.rosenzest.electric.miniapp.vo.AreaUserInfoVo;
 import com.rosenzest.electric.miniapp.vo.OwnerUnitDangerStatisticsVo;
+import com.rosenzest.electric.miniapp.vo.StatisticsHighVo;
 import com.rosenzest.electric.service.IOwnerUnitBuildingService;
 import com.rosenzest.electric.service.IOwnerUnitService;
 import com.rosenzest.electric.service.IProjectAreaService;
@@ -232,9 +235,32 @@ public class AreaUserController extends ServerBaseController {
 		return null;
 	}
 
+	private AreaUserType getAreaUserType(MiniAppAreaQuery areaQuery) {
+
+		boolean district = StrUtil.isNotBlank(areaQuery.getDistrict());
+		boolean street = StrUtil.isNotBlank(areaQuery.getStreet());
+		boolean community = StrUtil.isNotBlank(areaQuery.getCommunity());
+		boolean hamlet = StrUtil.isNotBlank(areaQuery.getHamlet());
+
+		if (!district) {
+			// 区为空直接返回空
+			return null;
+		} else if (district && !street && !community && !hamlet) {
+			return AreaUserType.DISTRICT;
+		} else if (district && street && !community && !hamlet) {
+			return AreaUserType.STREET;
+		} else if (district && street && community && !hamlet) {
+			return AreaUserType.COMMUNITY;
+		} else if (district && street && community && hamlet) {
+			return AreaUserType.HAMLET;
+		}
+
+		return null;
+	}
+
 	@ApiOperation(tags = "街区账号", value = "数据统计")
-	@GetMapping("/statistics")
-	public Result<List<OwnerUnitDangerStatisticsVo>> statistics() {
+	@PostMapping("/statistics")
+	public Result<List<OwnerUnitDangerStatisticsVo>> statistics(@RequestBody MiniAppAreaQuery areaQuery) {
 
 		LoginUser loginUser = getLoginUser();
 
@@ -244,17 +270,49 @@ public class AreaUserController extends ServerBaseController {
 			return Result.ERROR();
 		}
 
-		AreaUserType areaUserType = getAreaUserType(userInfo);
+		areaQuery.setProjectId(userInfo.getProjectId());
+
+		if (StrUtil.isBlank(areaQuery.getDistrict()) && StrUtil.isBlank(areaQuery.getStreet())
+				&& StrUtil.isBlank(areaQuery.getCommunity()) && StrUtil.isBlank(areaQuery.getHamlet())) {
+
+			areaQuery.setDistrict(userInfo.getDistrict());
+			areaQuery.setStreet(userInfo.getStreet());
+			areaQuery.setCommunity(userInfo.getCommunity());
+			areaQuery.setHamlet(userInfo.getHamlet());
+		}
+
+		AreaUserType areaUserType = getAreaUserType(areaQuery);
 		if (areaUserType == null) {
 			return Result.ERROR();
 		}
 
 		IAreaUserStatisticsHandler hander = AreaUserStatisticsHandlerFactory.getHander(areaUserType);
 		if (hander != null) {
-			List<OwnerUnitDangerStatisticsVo> statistics = hander.statistics(userInfo);
+			List<OwnerUnitDangerStatisticsVo> statistics = hander.statistics(userInfo, areaQuery);
 			return Result.SUCCESS(statistics);
 		}
 
 		return Result.SUCCESS();
+	}
+
+	@ApiOperation(tags = "街区账号", value = "场所统计")
+	@GetMapping("/statistics/high")
+	public Result<StatisticsHighVo> statisticsHigh(@RequestParam(required = false) String type) {
+
+		LoginUser loginUser = getLoginUser();
+
+		AreaUserInfoVo userInfo = sysUserService.getAreaUserInfo(loginUser.getUserId(), loginUser.getProjectId());
+
+		if (userInfo == null) {
+			return Result.ERROR();
+		}
+
+		if (!ProjectType.HIGH_RISK.code().equalsIgnoreCase(userInfo.getProjectType())) {
+			return Result.SUCCESS();
+		}
+
+		StatisticsHighVo result = ownerUnitService.statisticsHighByArea(userInfo, type);
+
+		return Result.SUCCESS(result);
 	}
 }

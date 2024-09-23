@@ -124,10 +124,11 @@
 		</if>
 	</select>
 	
-	<select id="getOwnerUnitDangerByGridman" resultMap="OwnerUnitDangerMap" parameterType="Long">
+	<select id="getOwnerUnitDangerByGridman" resultMap="OwnerUnitDangerMap" >
 		select d.id,d.level,d.status from owner_unit_danger d 
 		where exists (
 		select u.id from owner_unit u where u.id = d.unit_id 
+		<if test="type != null and type != ''"> and u.high_risk_type = #{type} </if>
 		and exists (select project_id from sys_user s where s.user_id = u.gridman and s.project_id = u.project_id and s.user_id = #{userId} )
 		)
 	</select>
@@ -142,6 +143,39 @@
 		left join sys_dict_data c on (o.community = c.dict_value and c.dict_type='community' and c.project_id = o.project_id)
 		left join sys_dict_data d on (o.hamlet = d.dict_value and d.dict_type='hamlet' and d.project_id = o.project_id)
 		where o.project_id = #{projectId} and o.rounds = ud.rounds 
+		<if test="district != null and district != ''"> and o.district = #{district} </if>
+		<if test="street != null and street != ''"> and o.street = #{street} </if>
+		<if test="community != null and community != ''"> and o.community = #{community} </if>
+		<if test="hamlet != null and hamlet != ''"> and o.hamlet = #{hamlet} </if>
+	</select>
+	
+	<select id="getOwnerUnitDangerByArea" resultType="com.rosenzest.electric.miniapp.vo.AreaUserDangerVo" parameterType="com.rosenzest.electric.miniapp.dto.MiniAppAreaQuery">
+		select ud.id,ud.level,ud.status,ud.unit_id,
+		o.district, a.dict_label as district_name, o.street, b.dict_label as street_name, o.community, c.dict_label as community_name, o.hamlet, d.dict_label as hamlet_name
+		from owner_unit_danger ud 
+		left join owner_unit o on o.id = ud.unit_id
+		left join sys_dict_data a on (o.district = a.dict_value and a.dict_type='district' and a.project_id = o.project_id)
+		left join sys_dict_data b on (o.street = b.dict_value and b.dict_type='street' and b.project_id = o.project_id)
+		left join sys_dict_data c on (o.community = c.dict_value and c.dict_type='community' and c.project_id = o.project_id)
+		left join sys_dict_data d on (o.hamlet = d.dict_value and d.dict_type='hamlet' and d.project_id = o.project_id)
+		where o.project_id = #{projectId} and o.rounds = ud.rounds 
+		<if test="district != null and district != ''"> and o.district = #{district} </if>
+		<if test="street != null and street != ''"> and o.street = #{street} </if>
+		<if test="community != null and community != ''"> and o.community = #{community} </if>
+		<if test="hamlet != null and hamlet != ''"> and o.hamlet = #{hamlet} </if>
+	</select>
+	
+	<select id="getHighOwnerUnitDangerByAreaUser" resultType="com.rosenzest.electric.miniapp.vo.AreaUserDangerVo" parameterType="com.rosenzest.electric.miniapp.dto.StatisticsHighQuery">
+		select ud.id,ud.level,ud.status,ud.unit_id,
+		o.district, a.dict_label as district_name, o.street, b.dict_label as street_name, o.community, c.dict_label as community_name, o.hamlet, d.dict_label as hamlet_name
+		from owner_unit_danger ud 
+		left join owner_unit o on o.id = ud.unit_id
+		left join sys_dict_data a on (o.district = a.dict_value and a.dict_type='district' and a.project_id = o.project_id)
+		left join sys_dict_data b on (o.street = b.dict_value and b.dict_type='street' and b.project_id = o.project_id)
+		left join sys_dict_data c on (o.community = c.dict_value and c.dict_type='community' and c.project_id = o.project_id)
+		left join sys_dict_data d on (o.hamlet = d.dict_value and d.dict_type='hamlet' and d.project_id = o.project_id)
+		where o.project_id = #{projectId} and o.rounds = ud.rounds 
+		<if test="type != null and type != ''"> and o.high_risk_type = #{type} </if>
 		<if test="district != null and district != ''"> and o.district = #{district} </if>
 		<if test="street != null and street != ''"> and o.street = #{street} </if>
 		<if test="community != null and community != ''"> and o.community = #{community} </if>

@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import com.rosenzest.electric.dto.ProjectAreaDto;
 import com.rosenzest.electric.entity.ProjectArea;
 import com.rosenzest.electric.mapper.ProjectAreaMapper;
+import com.rosenzest.electric.miniapp.dto.MiniAppAreaQuery;
 import com.rosenzest.electric.miniapp.vo.AreaUserInfoVo;
 import com.rosenzest.electric.service.IProjectAreaService;
 import com.rosenzest.model.base.service.ModelBaseServiceImpl;
@@ -31,6 +32,11 @@ public class ProjectAreaServiceImpl extends ModelBaseServiceImpl<ProjectAreaMapp
 	@Override
 	public List<ProjectAreaDto> getProjectAreasByAreaUser(AreaUserInfoVo userInfo) {
 		return this.baseMapper.getProjectAreasByAreaUser(userInfo);
+	}
+
+	@Override
+	public List<ProjectAreaDto> getProjectArea(MiniAppAreaQuery data) {
+		return this.baseMapper.getProjectArea(data);
 	}
 
 }

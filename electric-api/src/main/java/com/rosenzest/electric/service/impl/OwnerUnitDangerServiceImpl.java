@@ -29,6 +29,7 @@ import com.rosenzest.electric.enums.ProjectWorkerType;
 import com.rosenzest.electric.enums.ReviewStatus;
 import com.rosenzest.electric.enums.UnitReportType;
 import com.rosenzest.electric.mapper.OwnerUnitDangerMapper;
+import com.rosenzest.electric.miniapp.dto.MiniAppAreaQuery;
 import com.rosenzest.electric.miniapp.vo.AreaUserDangerVo;
 import com.rosenzest.electric.miniapp.vo.AreaUserInfoVo;
 import com.rosenzest.electric.miniapp.vo.GridmanDangerStatisticsVo;
@@ -462,7 +463,7 @@ public class OwnerUnitDangerServiceImpl extends ModelBaseServiceImpl<OwnerUnitDa
 		Project project = projectService.getById(user.getProjectId());
 		if (project != null) {
 
-			List<OwnerUnitDanger> dangers = this.baseMapper.getOwnerUnitDangerByGridman(user.getUserId());
+			List<OwnerUnitDanger> dangers = this.baseMapper.getOwnerUnitDangerByGridman(user.getUserId(), null);
 
 			final List<SysDictData> hazardLevel = ownerUnitService.getHazardLevel(project.getType());
 
@@ -492,4 +493,13 @@ public class OwnerUnitDangerServiceImpl extends ModelBaseServiceImpl<OwnerUnitDa
 		return list;
 	}
 
+	@Override
+	public List<AreaUserDangerVo> getOwnerUnitDangerByArea(MiniAppAreaQuery query) {
+		return this.baseMapper.getOwnerUnitDangerByArea(query);
+	}
+
+	@Override
+	public List<OwnerUnitDanger> getOwnerUnitDangerByGridman(Long userId, String type) {
+		return this.baseMapper.getOwnerUnitDangerByGridman(userId, type);
+	}
 }

@@ -2,6 +2,8 @@ package com.rosenzest.electric.miniapp.vo;
 
 import java.util.Map;
 
+import com.rosenzest.electric.miniapp.vo.AreaUserIndexVo.UnitStatistics;
+
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -77,5 +79,10 @@ public class OwnerUnitDangerStatisticsVo extends OwnerUnitOverviewVo implements 
 	 */
 	@ApiModelProperty("待复检汇总")
 	private Map<String, Long> reviews;
+
+	/**
+	 * 业主单元统计
+	 */
+	private UnitStatistics unit;
 
 }

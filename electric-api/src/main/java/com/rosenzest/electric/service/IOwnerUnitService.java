@@ -2,6 +2,7 @@ package com.rosenzest.electric.service;
 
 import java.util.List;
 
+import com.rosenzest.base.LoginUser;
 import com.rosenzest.base.PageList;
 import com.rosenzest.electric.dto.OwnerUnitDto;
 import com.rosenzest.electric.dto.OwnerUnitQuery;
@@ -10,13 +11,16 @@ import com.rosenzest.electric.entity.OwnerUnit;
 import com.rosenzest.electric.entity.OwnerUnitBuilding;
 import com.rosenzest.electric.entity.OwnerUnitDanger;
 import com.rosenzest.electric.entity.SysDictData;
+import com.rosenzest.electric.miniapp.dto.MiniAppAreaQuery;
 import com.rosenzest.electric.miniapp.dto.MiniAppAreaUserOwnerUnitQuery;
 import com.rosenzest.electric.miniapp.dto.MiniAppOwnerUnitQuery;
+import com.rosenzest.electric.miniapp.dto.UnitStatisticsDto;
 import com.rosenzest.electric.miniapp.vo.AreaUserIndexVo;
 import com.rosenzest.electric.miniapp.vo.AreaUserInfoVo;
 import com.rosenzest.electric.miniapp.vo.IDangerStatisticsVo;
 import com.rosenzest.electric.miniapp.vo.OwnerUnitDangerStatisticsVo;
 import com.rosenzest.electric.miniapp.vo.OwnerUnitOverviewVo;
+import com.rosenzest.electric.miniapp.vo.StatisticsHighVo;
 import com.rosenzest.electric.vo.InitialOwnerUnitVo;
 import com.rosenzest.electric.vo.OwnerUnitReviewVo;
 import com.rosenzest.electric.vo.OwnerUnitVo;
@@ -73,5 +77,11 @@ public interface IOwnerUnitService extends IModelBaseService<OwnerUnit> {
 
 	List<OwnerUnitDangerStatisticsVo> getOwnerUnitDangerStatisticsByAreaUser(MiniAppAreaUserOwnerUnitQuery query,
 			PageList pageList);
+
+	List<UnitStatisticsDto> unitStatisticsByArea(MiniAppAreaQuery data);
+
+	StatisticsHighVo statisticsHighByArea(AreaUserInfoVo userInfo, String type);
+
+	StatisticsHighVo statisticsHighByGridman(LoginUser loginUser, String type);
 
 }
