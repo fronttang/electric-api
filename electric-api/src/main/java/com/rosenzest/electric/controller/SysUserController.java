@@ -127,7 +127,7 @@ public class SysUserController extends ServerBaseController {
 	}
 
 	@TokenRule(terminal = { TerminalType.APP, TerminalType.MINIAPP }, userType = { UserType.WORKER, UserType.GRADMAN,
-			UserType.OWNER_UNIT, UserType.AREA_USER, UserType.VISITOR })
+			UserType.OWNER_UNIT, UserType.AREA_USER, UserType.VISITOR, UserType.STORAGE })
 	@ApiOperation(tags = "用户相关", value = "退出登录")
 	@GetMapping("/logout")
 	public Result<?> logout() {
@@ -159,7 +159,7 @@ public class SysUserController extends ServerBaseController {
 	}
 
 	@TokenRule(project = false, terminal = { TerminalType.APP, TerminalType.MINIAPP }, userType = { UserType.WORKER,
-			UserType.GRADMAN, UserType.OWNER_UNIT, UserType.AREA_USER })
+			UserType.GRADMAN, UserType.OWNER_UNIT, UserType.AREA_USER, UserType.STORAGE })
 	@ApiOperation(tags = "用户相关", value = "修改密码")
 	@PutMapping("/password")
 	public Result<LoginVo> modifyPassword(@RequestBody @Valid ModifyPasswordDto data) {

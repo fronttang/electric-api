@@ -139,4 +139,9 @@ public class SysUser extends BaseEntity<SysUser> {
 	 */
 	private Long projectId;
 
+	/**
+	 * 账号类型 1操作员 2单位
+	 */
+	private String accountType;
+
 }

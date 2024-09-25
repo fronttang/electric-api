@@ -72,10 +72,11 @@ public class SysUserServiceImpl extends ModelBaseServiceImpl<SysUserMapper, SysU
 
 			TerminalType terminalType = EnumUtils.init(TerminalType.class).fromCode(login.getTerminal());
 
-			// 只能 工作人员/电力设计/售电账号 登录APP
+			// 只能 工作人员/电力设计/光伏&储能 登录APP
 
 			if (TerminalType.APP == terminalType) {
-				if (!UserType.WORKER.code().equalsIgnoreCase(user.getUserType())) {
+				if (!UserType.WORKER.code().equalsIgnoreCase(user.getUserType())
+						&& !UserType.STORAGE.code().equalsIgnoreCase(user.getUserType())) {
 					throw new BusinessException(ElectricErrorCode.VERIFICATION_ERROR);
 				}
 			} else if (TerminalType.MINIAPP == terminalType) {
@@ -157,6 +158,7 @@ public class SysUserServiceImpl extends ModelBaseServiceImpl<SysUserMapper, SysU
 		payload.setDetectId(user.getDetectId());
 		payload.setName(user.getNickName());
 		payload.setUuid(uuid);
+		payload.setAccountType(user.getAccountType());
 
 		// if (TerminalType.MINIAPP == terminalType) {
 		payload.setProjectId(user.getProjectId());

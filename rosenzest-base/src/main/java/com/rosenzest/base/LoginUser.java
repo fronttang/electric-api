@@ -51,4 +51,9 @@ public class LoginUser extends JwtPayLoad {
 	 */
 	private Long unitId;
 
+	/**
+	 * 账号类型 1操作员 2单位
+	 */
+	private String accountType;
+
 }
