@@ -164,4 +164,9 @@ public class EnergyStorageVo {
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	private Date createTime;
 
+	/**
+	 * 项目时间
+	 */
+	private String projectDate;
+
 }

@@ -7,6 +7,7 @@ import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -24,6 +25,7 @@ import com.rosenzest.electric.storage.dto.EnergyStorageMonthDto;
 import com.rosenzest.electric.storage.dto.EnergyStorageQuery;
 import com.rosenzest.electric.storage.entity.EnergyStorage;
 import com.rosenzest.electric.storage.entity.EnergyStorageMonth;
+import com.rosenzest.electric.storage.service.EnergyStorageReportService;
 import com.rosenzest.electric.storage.service.IEnergyStorageMonthService;
 import com.rosenzest.electric.storage.service.IEnergyStorageService;
 import com.rosenzest.electric.storage.vo.EnergyStorageMonthVo;
@@ -32,6 +34,7 @@ import com.rosenzest.server.base.annotation.TokenRule;
 import com.rosenzest.server.base.enums.UserType;
 
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.util.StrUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
@@ -54,6 +57,9 @@ public class EnergyStorageController extends ElectricBaseController {
 
 	@Autowired
 	private IEnergyStorageMonthService energyStorageMonthService;
+
+	@Autowired
+	private EnergyStorageReportService energyStorageReportService;
 
 	@ApiOperation(tags = "储能", value = "项目列表")
 	@PostMapping("/list")
@@ -143,6 +149,16 @@ public class EnergyStorageController extends ElectricBaseController {
 
 		if (energyStorageMonthService.removeById(id)) {
 			return Result.SUCCESS();
+		}
+		return Result.ERROR();
+	}
+
+	@ApiOperation(tags = "储能", value = "项目报告(word)")
+	@GetMapping("/report/word/{id}")
+	public Result<String> report(@PathVariable Long id) {
+		String url = energyStorageReportService.report(id);
+		if (StrUtil.isNotBlank(url)) {
+			return Result.SUCCESS(url);
 		}
 		return Result.ERROR();
 	}

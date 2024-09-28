@@ -1,5 +1,7 @@
 package com.rosenzest.electric.storage.service;
 
+import java.util.List;
+
 import com.rosenzest.electric.storage.entity.EnergyStorageMonth;
 import com.rosenzest.model.base.service.IModelBaseService;
 
@@ -13,4 +15,5 @@ import com.rosenzest.model.base.service.IModelBaseService;
  */
 public interface IEnergyStorageMonthService extends IModelBaseService<EnergyStorageMonth> {
 
+	List<EnergyStorageMonth> getListByEnergyStorageId(Long storageId);
 }

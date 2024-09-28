@@ -45,12 +45,12 @@ public class Photovoltaic extends BaseEntity<Photovoltaic> {
 	private String address;
 
 	/**
-	 * 屋顶面积
+	 * 屋顶面积 (G)
 	 */
 	private String acreage;
 
 	/**
-	 * 电价折扣比例（%）
+	 * 电价折扣比例（%） (F)
 	 */
 	private BigDecimal discountRate;
 
@@ -70,7 +70,7 @@ public class Photovoltaic extends BaseEntity<Photovoltaic> {
 	private BigDecimal capacityMw;
 
 	/**
-	 * 安装容量（KW）
+	 * 安装容量（KW） (B)
 	 */
 	private BigDecimal capacityKw;
 
@@ -80,27 +80,27 @@ public class Photovoltaic extends BaseEntity<Photovoltaic> {
 	private BigDecimal unitPrice;
 
 	/**
-	 * 光伏发电时间段（峰、平时段加权平均电价（度/元）
+	 * 光伏发电时间段（峰、平时段加权平均电价（度/元） (E)
 	 */
 	private BigDecimal averagePrice;
 
 	/**
-	 * 年有效利用小时数（h）
+	 * 年有效利用小时数（h） (A)
 	 */
 	private BigDecimal effectiveHours;
 
 	/**
-	 * 首年衰减率（%）
+	 * 首年衰减率（%）(C)
 	 */
 	private BigDecimal firstDecayRate;
 
 	/**
-	 * 逐步衰减率（%）
+	 * 逐步衰减率（%）(D)
 	 */
 	private BigDecimal stepDecayRate;
 
 	/**
-	 * 光伏组件功率（W）
+	 * 光伏组件功率（W） (H)
 	 */
 	private BigDecimal power;
 

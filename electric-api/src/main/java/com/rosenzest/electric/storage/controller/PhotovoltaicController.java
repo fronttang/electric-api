@@ -26,12 +26,14 @@ import com.rosenzest.electric.storage.entity.Photovoltaic;
 import com.rosenzest.electric.storage.entity.PhotovoltaicConfig;
 import com.rosenzest.electric.storage.service.IPhotovoltaicConfigService;
 import com.rosenzest.electric.storage.service.IPhotovoltaicService;
+import com.rosenzest.electric.storage.service.PhotovoltaicReportService;
 import com.rosenzest.electric.storage.vo.PhotovoltaicConfigVo;
 import com.rosenzest.electric.storage.vo.PhotovoltaicVo;
 import com.rosenzest.server.base.annotation.TokenRule;
 import com.rosenzest.server.base.enums.UserType;
 
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.util.StrUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
@@ -54,6 +56,9 @@ public class PhotovoltaicController extends ElectricBaseController {
 
 	@Autowired
 	private IPhotovoltaicConfigService configService;
+
+	@Autowired
+	private PhotovoltaicReportService photovoltaicReportService;
 
 	@ApiOperation(tags = "光伏", value = "项目列表")
 	@PostMapping("/list")
@@ -115,6 +120,16 @@ public class PhotovoltaicController extends ElectricBaseController {
 		BeanUtils.copyProperties(config, result);
 
 		return Result.SUCCESS(result);
+	}
+
+	@ApiOperation(tags = "光伏", value = "项目报告(word)")
+	@GetMapping("/report/word/{id}")
+	public Result<String> report(@PathVariable Long id) {
+		String url = photovoltaicReportService.report(id);
+		if (StrUtil.isNotBlank(url)) {
+			return Result.SUCCESS(url);
+		}
+		return Result.ERROR();
 	}
 
 }

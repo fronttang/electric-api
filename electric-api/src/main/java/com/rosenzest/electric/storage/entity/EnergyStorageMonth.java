@@ -32,7 +32,7 @@ public class EnergyStorageMonth extends BaseEntity<EnergyStorageMonth> {
 	private Long storageId;
 
 	/**
-	 * 月份
+	 * 月份 yyyy-MM
 	 */
 	private String month;
 

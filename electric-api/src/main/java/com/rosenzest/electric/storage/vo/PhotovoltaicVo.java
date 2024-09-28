@@ -67,6 +67,20 @@ public class PhotovoltaicVo {
 	@ApiModelProperty("安装方式")
 	private String installation;
 
+	@SuppressWarnings("unused")
+	private String installationType;
+
+	public String getInstallationType() {
+		if ("混凝土（光伏阵列）".equalsIgnoreCase(this.installation)) {
+			return "1";
+		} else if ("混凝土（光伏棚）".equalsIgnoreCase(this.installation)) {
+			return "2";
+		} else if ("彩钢瓦".equalsIgnoreCase(this.installation)) {
+			return "3";
+		}
+		return null;
+	}
+
 	/**
 	 * 安装容量（MW）
 	 */
@@ -127,5 +141,10 @@ public class PhotovoltaicVo {
 	@ApiModelProperty("创建时间")
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	private Date createTime;
+
+	/**
+	 * 项目时间
+	 */
+	private String projectDate;
 
 }
