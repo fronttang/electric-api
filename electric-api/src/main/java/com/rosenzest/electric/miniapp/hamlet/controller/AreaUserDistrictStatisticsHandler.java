@@ -63,6 +63,7 @@ public class AreaUserDistrictStatisticsHandler implements IAreaUserStatisticsHan
 				MiniAppAreaQuery query = new MiniAppAreaQuery();
 				query.setDistrict(projectAreaDto.getDistrict());
 				query.setStreet(projectAreaDto.getStreet());
+				query.setProjectId(userInfo.getProjectId());
 
 				List<UnitStatisticsDto> unitStatisticsResult = ownerUnitService.unitStatisticsByArea(query);
 

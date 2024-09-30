@@ -32,6 +32,17 @@ public class SystemProperties {
 	 */
 	private String ownerUnitDesKey = "0185786A0362F7F2B0C316B31D1BAD62";
 
+	private Echarts echarts = new Echarts();
+
+	@Data
+	public static class Echarts {
+
+		/**
+		 * echarts 渲染接口
+		 */
+		private String api;
+	}
+
 	@Data
 	public static class Miniapp {
 

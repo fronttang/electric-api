@@ -25,6 +25,7 @@ import com.rosenzest.base.LoginUser;
 import com.rosenzest.base.PageList;
 import com.rosenzest.base.Result;
 import com.rosenzest.base.constant.ResultEnum;
+import com.rosenzest.base.enums.TerminalType;
 import com.rosenzest.base.exception.BusinessException;
 import com.rosenzest.base.util.BeanUtils;
 import com.rosenzest.base.util.SnowFlakeUtil;
@@ -49,6 +50,8 @@ import com.rosenzest.electric.util.FileUploadUtils;
 import com.rosenzest.electric.vo.InitialOwnerUnitVo;
 import com.rosenzest.electric.vo.OwnerUnitQrcodeVo;
 import com.rosenzest.electric.vo.OwnerUnitVo;
+import com.rosenzest.server.base.annotation.TokenRule;
+import com.rosenzest.server.base.enums.UserType;
 
 import cn.binarywang.wx.miniapp.api.WxMaQrcodeService;
 import cn.binarywang.wx.miniapp.api.WxMaService;
@@ -311,6 +314,8 @@ public class OwnerUnitController extends ElectricBaseController {
 		}
 	}
 
+	@TokenRule(project = false, terminal = { TerminalType.APP, TerminalType.MINIAPP }, userType = { UserType.WORKER,
+			UserType.GRADMAN, UserType.OWNER_UNIT, UserType.AREA_USER, UserType.VISITOR })
 	@ApiOperation(tags = "业主单元", value = "业主单元二维码")
 	@GetMapping("/qrcode/{unitId}")
 	public Result<OwnerUnitQrcodeVo> unitQrcode(@PathVariable Long unitId) throws WxErrorException, IOException {

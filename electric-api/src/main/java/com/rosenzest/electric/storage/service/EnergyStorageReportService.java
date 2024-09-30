@@ -87,6 +87,8 @@ public class EnergyStorageReportService {
 			reportData.setTotal(totalYearData);
 			reportData.setAverage(averageYearData);
 			reportData.setFirst(firstYearData);
+			reportData.setBar1(dataComputer.getEnergyBarImage1(project));
+			reportData.setBar2(dataComputer.getEnergyBarImage2(project));
 
 			try {
 				LoopRowTableRenderPolicy policy = new LoopRowTableRenderPolicy();
@@ -122,7 +124,6 @@ public class EnergyStorageReportService {
 			}
 
 		}
-
 		return null;
 	}
 

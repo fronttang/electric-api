@@ -87,6 +87,7 @@ public class AreaUserStreetStatisticsHandler implements IAreaUserStatisticsHandl
 					query.setDistrict(projectAreaDto.getDistrict());
 					query.setStreet(projectAreaDto.getStreet());
 					query.setCommunity(projectAreaDto.getCommunity());
+					query.setProjectId(userInfo.getProjectId());
 
 					List<UnitStatisticsDto> unitStatisticsResult = ownerUnitService.unitStatisticsByArea(query);
 

@@ -5,12 +5,14 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.servlet.ServletComponentScan;
 
+import com.rosenzest.server.base.annotation.EnableHttpClient;
 import com.rosenzest.server.base.annotation.EnableJwt;
 
 @SpringBootApplication()
 @ServletComponentScan
 @EnableJwt
 @MapperScan("com.rosenzest.electric.**.mapper")
+@EnableHttpClient
 public class ElectricApiApplication {
 
 	public static void main(String[] args) {

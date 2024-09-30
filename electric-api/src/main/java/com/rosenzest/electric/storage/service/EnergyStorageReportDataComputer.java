@@ -1,5 +1,6 @@
 package com.rosenzest.electric.storage.service;
 
+import java.awt.image.BufferedImage;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
@@ -8,21 +9,38 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
 
+import com.deepoove.poi.data.ByteArrayPictureRenderData;
+import com.deepoove.poi.data.style.PictureStyle;
+import com.deepoove.poi.xwpf.WidthScalePattern;
+import com.rosenzest.base.Result;
+import com.rosenzest.electric.properties.SystemProperties;
 import com.rosenzest.electric.storage.entity.EnergyStorage;
 import com.rosenzest.electric.storage.entity.EnergyStorageMonth;
+import com.rosenzest.electric.storage.report.EchartRenderingData;
+import com.rosenzest.electric.storage.report.EnergyStorageEchartsData;
 import com.rosenzest.electric.storage.report.EnergyStorageMonthPowerData;
 import com.rosenzest.electric.storage.report.EnergyStoragePowerData;
 import com.rosenzest.electric.storage.report.EnergyStorageYearData;
 import com.rosenzest.electric.util.BigDecimalUtil;
+import com.rosenzest.server.base.util.RestTemplateUtils;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.img.ImgUtil;
+import cn.hutool.core.util.StrUtil;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Component
 public class EnergyStorageReportDataComputer {
+
+	@Autowired
+	private SystemProperties properties;
 
 	public List<EnergyStorageMonthPowerData> monthPowerData(EnergyStorage project,
 			List<EnergyStorageMonth> monthDatas) {
@@ -342,6 +360,167 @@ public class EnergyStorageReportDataComputer {
 		}
 
 		return result;
+	}
+
+	public List<EnergyStorageEchartsData> echartsData1(EnergyStorage project) {
+
+		List<EnergyStorageEchartsData> result = new ArrayList<EnergyStorageEchartsData>();
+
+		// BigDecimal M = BigDecimal.ZERO;
+		BigDecimal J = BigDecimal.ZERO;
+		BigDecimal K = BigDecimal.ZERO;
+		BigDecimal L = BigDecimal.ZERO;
+
+		if (project != null) {
+			// M = Objects.nonNull(project.getJian()) ? project.getJian() : BigDecimal.ZERO;
+			J = Objects.nonNull(project.getFeng()) ? project.getFeng() : BigDecimal.ZERO;
+			K = Objects.nonNull(project.getPing()) ? project.getPing() : BigDecimal.ZERO;
+			L = Objects.nonNull(project.getGu()) ? project.getGu() : BigDecimal.ZERO;
+		}
+
+		// double A = M.setScale(2, RoundingMode.HALF_EVEN).doubleValue();
+		double B = J.setScale(2, RoundingMode.HALF_EVEN).doubleValue();
+		double C = K.setScale(2, RoundingMode.HALF_EVEN).doubleValue();
+		double D = L.setScale(2, RoundingMode.HALF_EVEN).doubleValue();
+
+		// 谷（充电）
+		result.add(new EnergyStorageEchartsData(D, "#e1eed7"));
+		result.add(new EnergyStorageEchartsData(D, "#e1eed7"));
+		result.add(new EnergyStorageEchartsData(D, "#e1eed7"));
+		result.add(new EnergyStorageEchartsData(D, "#e1eed7"));
+		result.add(new EnergyStorageEchartsData(D, "#e1eed7"));
+		result.add(new EnergyStorageEchartsData(D, "#e1eed7"));
+		result.add(new EnergyStorageEchartsData(D, "#e1eed7"));
+		result.add(new EnergyStorageEchartsData(D, "#e1eed7"));
+		// 平（待机）
+		result.add(new EnergyStorageEchartsData(C, "#f6c244"));
+		result.add(new EnergyStorageEchartsData(C, "#f6c244"));
+		// 峰（充电）
+		result.add(new EnergyStorageEchartsData(B, "#de8244"));
+		result.add(new EnergyStorageEchartsData(B, "#de8244"));
+		// 平（充电）
+		result.add(new EnergyStorageEchartsData(C, "#f6c244"));
+		result.add(new EnergyStorageEchartsData(C, "#f6c244"));
+		// 峰（放电）
+		result.add(new EnergyStorageEchartsData(B, "#de8244"));
+		result.add(new EnergyStorageEchartsData(B, "#de8244"));
+		result.add(new EnergyStorageEchartsData(B, "#de8244"));
+		result.add(new EnergyStorageEchartsData(B, "#de8244"));
+		result.add(new EnergyStorageEchartsData(B, "#de8244"));
+		// 平（待机）
+		result.add(new EnergyStorageEchartsData(C, "#f6c244"));
+		result.add(new EnergyStorageEchartsData(C, "#f6c244"));
+		result.add(new EnergyStorageEchartsData(C, "#f6c244"));
+		result.add(new EnergyStorageEchartsData(C, "#f6c244"));
+		result.add(new EnergyStorageEchartsData(C, "#f6c244"));
+
+		return result;
+	}
+
+	public List<EnergyStorageEchartsData> echartsData2(EnergyStorage project) {
+
+		List<EnergyStorageEchartsData> result = new ArrayList<EnergyStorageEchartsData>();
+
+		BigDecimal M = BigDecimal.ZERO;
+		BigDecimal J = BigDecimal.ZERO;
+		BigDecimal K = BigDecimal.ZERO;
+		BigDecimal L = BigDecimal.ZERO;
+
+		if (project != null) {
+			M = Objects.nonNull(project.getJian()) ? project.getJian() : BigDecimal.ZERO;
+			J = Objects.nonNull(project.getFeng()) ? project.getFeng() : BigDecimal.ZERO;
+			K = Objects.nonNull(project.getPing()) ? project.getPing() : BigDecimal.ZERO;
+			L = Objects.nonNull(project.getGu()) ? project.getGu() : BigDecimal.ZERO;
+		}
+
+		double A = M.setScale(2, RoundingMode.HALF_EVEN).doubleValue();
+		double B = J.setScale(2, RoundingMode.HALF_EVEN).doubleValue();
+		double C = K.setScale(2, RoundingMode.HALF_EVEN).doubleValue();
+		double D = L.setScale(2, RoundingMode.HALF_EVEN).doubleValue();
+
+		// 谷（充电）
+		result.add(new EnergyStorageEchartsData(D, "#e1eed7"));
+		result.add(new EnergyStorageEchartsData(D, "#e1eed7"));
+		result.add(new EnergyStorageEchartsData(D, "#e1eed7"));
+		result.add(new EnergyStorageEchartsData(D, "#e1eed7"));
+		result.add(new EnergyStorageEchartsData(D, "#e1eed7"));
+		result.add(new EnergyStorageEchartsData(D, "#e1eed7"));
+		result.add(new EnergyStorageEchartsData(D, "#e1eed7"));
+		result.add(new EnergyStorageEchartsData(D, "#e1eed7"));
+		// 平（待机）
+		result.add(new EnergyStorageEchartsData(C, "#f6c244"));
+		result.add(new EnergyStorageEchartsData(C, "#f6c244"));
+		// 峰（放电）
+		result.add(new EnergyStorageEchartsData(B, "#de8244"));
+		// 尖（放电）
+		result.add(new EnergyStorageEchartsData(A, "#ff0000"));
+		// 平（充电）
+		result.add(new EnergyStorageEchartsData(C, "#f6c244"));
+		result.add(new EnergyStorageEchartsData(C, "#f6c244"));
+		// 峰（待机）
+		result.add(new EnergyStorageEchartsData(B, "#de8244"));
+		// 尖（放电）
+		result.add(new EnergyStorageEchartsData(A, "#ff0000"));
+		result.add(new EnergyStorageEchartsData(A, "#ff0000"));
+		// 峰（放电）
+		result.add(new EnergyStorageEchartsData(B, "#de8244"));
+		result.add(new EnergyStorageEchartsData(B, "#de8244"));
+		// 平（待机）
+		result.add(new EnergyStorageEchartsData(C, "#f6c244"));
+		result.add(new EnergyStorageEchartsData(C, "#f6c244"));
+		result.add(new EnergyStorageEchartsData(C, "#f6c244"));
+		result.add(new EnergyStorageEchartsData(C, "#f6c244"));
+		result.add(new EnergyStorageEchartsData(C, "#f6c244"));
+
+		return result;
+	}
+
+	public ByteArrayPictureRenderData getEnergyBarImage1(EnergyStorage project) {
+
+		return getEnergyBarImage1(echartsData1(project));
+	}
+
+	public ByteArrayPictureRenderData getEnergyBarImage2(EnergyStorage project) {
+
+		return getEnergyBarImage2(echartsData2(project));
+	}
+
+	public ByteArrayPictureRenderData getEnergyBarImage1(List<EnergyStorageEchartsData> data) {
+
+		EchartRenderingData param = new EchartRenderingData();
+		param.setData(data);
+		param.setChartType("option1");
+		return getEnergyBarImage(param);
+	}
+
+	public ByteArrayPictureRenderData getEnergyBarImage2(List<EnergyStorageEchartsData> data) {
+
+		EchartRenderingData param = new EchartRenderingData();
+		param.setData(data);
+		param.setChartType("option2");
+		return getEnergyBarImage(param);
+	}
+
+	public ByteArrayPictureRenderData getEnergyBarImage(EchartRenderingData param) {
+		try {
+			@SuppressWarnings("unchecked")
+			Result<String> result = RestTemplateUtils.exchange(properties.getEcharts().getApi(), HttpMethod.POST, null,
+					param, Result.class);
+
+			if (result != null && result.getData() != null) {
+
+				BufferedImage image = ImgUtil.toImage(StrUtil.subAfter(result.getData(), ",", false));
+
+				ByteArrayPictureRenderData picture = new ByteArrayPictureRenderData(ImgUtil.toBytes(image, "png"));
+				PictureStyle pictureStyle = new PictureStyle();
+				pictureStyle.setScalePattern(WidthScalePattern.FIT);
+				picture.setPictureStyle(pictureStyle);
+				return picture;
+			}
+		} catch (Exception e) {
+			log.error("", e);
+		}
+		return null;
 	}
 
 }
