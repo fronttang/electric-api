@@ -24,7 +24,7 @@ public class ChargingPile extends BaseEntity<ChargingPile> {
 	/**
 	 * ID
 	 */
-	@TableId(value = "id", type = IdType.AUTO)
+	@TableId(value = "id", type = IdType.INPUT)
 	private Long id;
 
 	/**
@@ -76,5 +76,10 @@ public class ChargingPile extends BaseEntity<ChargingPile> {
 	 * 生产日期
 	 */
 	private String productionDate;
+
+	/**
+	 * 原始充电桩ID
+	 */
+	private Long originalId;
 
 }

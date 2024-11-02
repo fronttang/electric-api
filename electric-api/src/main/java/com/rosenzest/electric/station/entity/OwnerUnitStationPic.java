@@ -53,8 +53,13 @@ public class OwnerUnitStationPic extends BaseEntity<OwnerUnitStationPic> {
 	private List<Long> pileIds;
 
 	/**
-	 * 合格照片
+	 * 照片
 	 */
 	private String pictures;
+
+	/**
+	 * 照片类型 1合格照片,2原始记录照片
+	 */
+	private String type;
 
 }

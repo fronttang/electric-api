@@ -1,3 +1,8 @@
+system: 
+  echarts:
+    api: http://10.206.16.13:3000
+  admin: http://10.206.16.13:8082
+    
 server:
   port: 8083
   
@@ -17,3 +22,9 @@ spring:
 
 #token配置
 token: 
+
+wx:
+  mp:
+    configs:
+      - appId: wxb5930c3148e86017
+        secret: 6cb08aec1c895b67a66fb174fba96d8f

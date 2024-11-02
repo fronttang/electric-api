@@ -48,7 +48,7 @@ public class OwnerUnitStationPicController extends ElectricBaseController {
 	@Autowired
 	private IOwnerUnitService ownerUnitService;
 
-	@ApiOperation(tags = "业主单元(充电站)", value = "修改/添加充电站/充电桩合格照片")
+	@ApiOperation(tags = "业主单元(充电站)", value = "修改/添加充电站/充电桩合格/原始照片")
 	@PostMapping("/")
 	public Result<ChargingStationPictureVo> saveStationPic(@RequestBody @Valid ChargingStationPictureDto data) {
 
@@ -65,6 +65,7 @@ public class OwnerUnitStationPicController extends ElectricBaseController {
 			stationPic.setUnitId(data.getUnitId());
 			stationPic.setModule(data.getModule());
 			stationPic.setRounds(data.getRounds());
+			stationPic.setType(data.getType());
 			if (data.getPileId() != null) {
 				stationPic.setPileIds(Arrays.asList(data.getPileId()));
 			}
@@ -80,7 +81,7 @@ public class OwnerUnitStationPicController extends ElectricBaseController {
 		return Result.SUCCESS(vo);
 	}
 
-	@ApiOperation(tags = "业主单元(充电站)", value = "查询充电站/充电桩合格照片")
+	@ApiOperation(tags = "业主单元(充电站)", value = "查询充电站/充电桩合格/原始照片")
 	@PostMapping("/list")
 	public Result<ChargingStationPictureVo> stationPic(@RequestBody @Valid ChargingStationPictureDto data) {
 
@@ -101,16 +102,17 @@ public class OwnerUnitStationPicController extends ElectricBaseController {
 		return Result.SUCCESS();
 	}
 
-	@ApiOperation(tags = "业主单元(充电站)", value = "查询充电站所有合格照片")
-	@GetMapping("/list/{unitId}")
-	public Result<List<String>> stationPics(@PathVariable Long unitId) {
+	@ApiOperation(tags = "业主单元(充电站)", value = "查询充电站所有合格/原始照片")
+	@GetMapping("/list/{unitId}/{type}")
+	public Result<List<String>> stationPics(@PathVariable Long unitId, @PathVariable String type) {
 
 		OwnerUnit ownerUnit = ownerUnitService.getById(unitId);
 		if (ownerUnit == null) {
 			return Result.ERROR(400, "无操作权限");
 		}
 
-		List<OwnerUnitStationPic> stationPics = stationPicService.getStationPicsByUnitId(unitId, ownerUnit.getRounds());
+		List<OwnerUnitStationPic> stationPics = stationPicService.getStationPicsByUnitId(unitId, ownerUnit.getRounds(),
+				type);
 
 		if (CollUtil.isNotEmpty(stationPics)) {
 

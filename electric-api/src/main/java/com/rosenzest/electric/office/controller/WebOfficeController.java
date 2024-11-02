@@ -18,6 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.alibaba.fastjson.JSONObject;
 import com.rosenzest.base.Result;
 import com.rosenzest.electric.constant.ElectricConstant;
+import com.rosenzest.electric.entity.OwnerUnit;
 import com.rosenzest.electric.entity.OwnerUnitReport;
 import com.rosenzest.electric.office.dto.FileUploadDto;
 import com.rosenzest.electric.office.vo.FileDownloadVo;
@@ -25,6 +26,7 @@ import com.rosenzest.electric.office.vo.FileInfoVo;
 import com.rosenzest.electric.office.vo.FilePermissionVo;
 import com.rosenzest.electric.properties.SystemProperties;
 import com.rosenzest.electric.service.IOwnerUnitReportService;
+import com.rosenzest.electric.service.IOwnerUnitService;
 import com.rosenzest.server.base.controller.ServerBaseController;
 
 import cn.hutool.core.collection.CollUtil;
@@ -44,6 +46,9 @@ public class WebOfficeController extends ServerBaseController {
 	@Autowired
 	private SystemProperties systemProperties;
 
+	@Autowired
+	private IOwnerUnitService ownerUnitService;
+
 	@GetMapping("/files/{fileId}")
 	public Result<FileInfoVo> fileInfo(@PathVariable String fileId) {
 
@@ -61,17 +66,23 @@ public class WebOfficeController extends ServerBaseController {
 			return Result.ERROR(40004, "文档不存在");
 		}
 
+		OwnerUnit ownerUnit = ownerUnitService.getById(report.getUnitId());
+		String unitName = "初检报告";
+		if (ownerUnit != null) {
+			unitName = ownerUnit.getName();
+		}
+
 		String docName = "初检报告";
 		String fileName = null;
 
 		if ("3".equalsIgnoreCase(type)) {
-			docName = "归档Pdf报告";
+			docName = StrUtil.format("C{}", unitName);
 			fileName = report.getArchivedPdf();
 		} else if ("2".equalsIgnoreCase(type)) {
-			docName = "归档Word报告";
+			docName = StrUtil.format("C{}", unitName);
 			fileName = report.getArchivedWord();
 		} else {
-			docName = "制式Word报告";
+			docName = StrUtil.format("Z{}", unitName);
 			fileName = report.getWordFile();
 		}
 

@@ -12,6 +12,7 @@ import java.util.List;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpMethod;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,6 +26,7 @@ import com.rosenzest.base.LoginUser;
 import com.rosenzest.base.PageList;
 import com.rosenzest.base.Result;
 import com.rosenzest.base.constant.ResultEnum;
+import com.rosenzest.base.enums.EnumUtils;
 import com.rosenzest.base.enums.TerminalType;
 import com.rosenzest.base.exception.BusinessException;
 import com.rosenzest.base.util.BeanUtils;
@@ -50,8 +52,10 @@ import com.rosenzest.electric.util.FileUploadUtils;
 import com.rosenzest.electric.vo.InitialOwnerUnitVo;
 import com.rosenzest.electric.vo.OwnerUnitQrcodeVo;
 import com.rosenzest.electric.vo.OwnerUnitVo;
+import com.rosenzest.electric.vo.ReportFileVo;
 import com.rosenzest.server.base.annotation.TokenRule;
 import com.rosenzest.server.base.enums.UserType;
+import com.rosenzest.server.base.util.RestTemplateUtils;
 
 import cn.binarywang.wx.miniapp.api.WxMaQrcodeService;
 import cn.binarywang.wx.miniapp.api.WxMaService;
@@ -385,5 +389,42 @@ public class OwnerUnitController extends ElectricBaseController {
 			return Result.SUCCESS(vo);
 		}
 		return Result.ERROR(ResultEnum.FORBIDDEN);
+	}
+
+	@TokenRule(project = false, terminal = { TerminalType.APP, TerminalType.MINIAPP }, userType = { UserType.WORKER,
+			UserType.GRADMAN, UserType.OWNER_UNIT, UserType.AREA_USER, UserType.VISITOR })
+	@ApiOperation(tags = "业主单元", value = "业主单元word报告")
+	@GetMapping("/report/word/{unitId}/{type}")
+	public Result<ReportFileVo> reportWord(@PathVariable Long unitId, @PathVariable String type) {
+
+		LoginUser loginUser = getLoginUser();
+
+		UnitReportType reportType = EnumUtils.init(UnitReportType.class).fromCode(type);
+		if (reportType == null) {
+			return Result.ERROR();
+		}
+
+		OwnerUnitReport report = ownerUnitReportService.getReportByUnitIdAndType(unitId, reportType);
+
+		if (report == null) {
+
+			report = new OwnerUnitReport();
+			report.setType(type);
+			report.setInspector(loginUser.getName());
+			report.setInspectorId(loginUser.getUserId());
+			report.setUnitId(unitId);
+			report.setDetectData(new Date());
+			report.setDetectStatus("0");
+			report.setStatus("0");
+
+			ownerUnitReportService.saveOrUpdate(report);
+		}
+
+		String url = StrUtil.format("{}/report/download/{}", properties.getAdmin(), report.getId());
+
+		@SuppressWarnings("unchecked")
+		Result<ReportFileVo> result = RestTemplateUtils.exchange(url, HttpMethod.GET, null, null, Result.class);
+
+		return result;
 	}
 }

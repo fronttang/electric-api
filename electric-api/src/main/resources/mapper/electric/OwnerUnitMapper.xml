@@ -119,7 +119,17 @@
 			and t.hamlet = #{hamlet}
 		</if>
 		<if test="status != null and status != ''">
-			and t.status = #{status}
+			<choose>
+				<when test="status == 0">
+					and t.rectifications > 0
+				</when>
+				<when test="status == 1">
+					and t.reexaminations > 0
+				</when>
+				<when test="status == 2">
+					and ( t.dangers > 0 and t.dangers = t.finishs)
+				</when>
+			</choose>
 		</if>
 		<if test="highRiskType != null and highRiskType != ''">
 			and t.high_risk_type = #{highRiskType}

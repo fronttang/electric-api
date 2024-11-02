@@ -115,6 +115,7 @@ public class SysUserServiceImpl extends ModelBaseServiceImpl<SysUserMapper, SysU
 		loginVo.setType(user.getUserType());
 		loginVo.setToken(token);
 		loginVo.setNickName(user.getNickName());
+		loginVo.setPicModel(user.getPicModel());
 
 		// 获取用户检测单位
 		Long detectId = user.getDetectId();

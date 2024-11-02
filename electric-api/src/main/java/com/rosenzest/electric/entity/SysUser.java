@@ -144,4 +144,9 @@ public class SysUser extends BaseEntity<SysUser> {
 	 */
 	private String accountType;
 
+	/**
+	 * 图片选择模式1可选手机相册0不可选手机相册
+	 */
+	private String picModel;
+
 }

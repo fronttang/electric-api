@@ -1,6 +1,9 @@
 system: 
   profile: /dat/upload
   domain: https://admin.kingpey.cn
+  echarts:
+    api: http://10.206.16.12:3000
+  admin: http://10.206.16.12:8082
   
 server:
   port: 8083

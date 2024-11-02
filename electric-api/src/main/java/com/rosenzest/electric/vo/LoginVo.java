@@ -53,6 +53,12 @@ public class LoginVo {
 	private String type;
 
 	/**
+	 * 图片选择模式1可选手机相册0不可选手机相册
+	 */
+	@ApiModelProperty("图片选择模式1可选手机相册0不可选手机相册")
+	private String picModel;
+
+	/**
 	 * 检测单位
 	 */
 	@ApiModelProperty("检测单位")

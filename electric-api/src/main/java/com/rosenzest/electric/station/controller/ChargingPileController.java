@@ -19,6 +19,7 @@ import com.rosenzest.base.LoginUser;
 import com.rosenzest.base.PageList;
 import com.rosenzest.base.Result;
 import com.rosenzest.base.util.BeanUtils;
+import com.rosenzest.base.util.IdUtils;
 import com.rosenzest.electric.controller.ElectricBaseController;
 import com.rosenzest.electric.entity.OwnerUnit;
 import com.rosenzest.electric.enums.ProjectType;
@@ -106,6 +107,10 @@ public class ChargingPileController extends ElectricBaseController {
 		if (chargingPile.getId() == null) {
 			chargingPile.setCreateBy(String.valueOf(loginUser.getUserId()));
 		}
+
+		Long id = IdUtils.getSnowflakeNextId();
+		chargingPile.setId(id);
+		chargingPile.setOriginalId(id);
 
 		if (chargingPileService.saveOrUpdate(chargingPile)) {
 			ChargingPileVo vo = new ChargingPileVo();

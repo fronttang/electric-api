@@ -53,7 +53,7 @@ public class StationChargingPileDto {
 	 * 功率
 	 */
 	@ApiModelProperty("功率")
-	private String power;
+	private Long power;
 
 	/**
 	 * 数量

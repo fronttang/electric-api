@@ -18,6 +18,6 @@ public interface IOwnerUnitStationPicService extends IModelBaseService<OwnerUnit
 
 	OwnerUnitStationPic getStationPic(ChargingStationPictureDto data);
 
-	List<OwnerUnitStationPic> getStationPicsByUnitId(Long unitId, Integer rounds);
+	List<OwnerUnitStationPic> getStationPicsByUnitId(Long unitId, Integer rounds, String type);
 
 }

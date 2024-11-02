@@ -34,8 +34,14 @@ public class ChargingStationPictureDto {
 	private Long pileId;
 
 	/**
-	 * 合格照片
+	 * 照片类型1合格照片,2原始记录照片
 	 */
-	@ApiModelProperty("合格照片")
+	@ApiModelProperty("照片类型1合格照片,2原始记录照片")
+	private String type = "1";
+
+	/**
+	 * 照片
+	 */
+	@ApiModelProperty("照片")
 	private String pictures;
 }

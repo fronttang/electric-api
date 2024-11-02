@@ -22,7 +22,7 @@ public class BigDecimalUtil extends NumberUtil {
 			deviation = (deviation.add(value.divide(deviation, mc))).divide(num2, mc);
 			cnt++;
 		}
-		deviation = deviation.setScale(scale, BigDecimal.ROUND_HALF_UP);
+		deviation = deviation.setScale(scale, RoundingMode.HALF_EVEN);
 		return deviation;
 	}
 }

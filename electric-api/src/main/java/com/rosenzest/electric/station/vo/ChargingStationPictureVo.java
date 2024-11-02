@@ -37,4 +37,10 @@ public class ChargingStationPictureVo {
 	 */
 	@ApiModelProperty("合格照片")
 	private String pictures;
+
+	/**
+	 * 照片类型1合格照片,2原始记录照片
+	 */
+	@ApiModelProperty("照片类型1合格照片,2原始记录照片")
+	private String type;
 }

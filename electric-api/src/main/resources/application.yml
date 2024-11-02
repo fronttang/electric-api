@@ -1,6 +1,9 @@
 system: 
   profile: /dat/upload
   domain: https://admin.dat.kingpey.cn
+  echarts:
+    api: http://127.0.0.1:3000
+  admin: http://127.0.0.1:8080
     
 wx:
   mp:
