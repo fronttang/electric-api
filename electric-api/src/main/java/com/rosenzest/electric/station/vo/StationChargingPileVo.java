@@ -48,7 +48,7 @@ public class StationChargingPileVo {
 	 * 功率
 	 */
 	@ApiModelProperty("功率")
-	private Long power;
+	private String power;
 
 	/**
 	 * 数量

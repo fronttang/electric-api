@@ -15,7 +15,7 @@
 		<if test="keyword != null and keyword != ''">
 			and t.name like concat('%', #{keyword}, '%')
 		</if>
-		order by t.id asc
+		order by t.id desc
 	</select>
 	
 	
@@ -33,7 +33,7 @@
 		<if test="keyword != null and keyword != ''">
 			and t.name like concat('%', #{keyword}, '%')
 		</if>
-		order by t.id asc
+		order by t.id desc
 	</select>
 	
 	<select id="getBuildingReviewStatus" parameterType="Long" resultType="com.rosenzest.electric.dto.ReportDetectStatusDto">

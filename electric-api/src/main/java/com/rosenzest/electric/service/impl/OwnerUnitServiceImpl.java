@@ -525,17 +525,20 @@ public class OwnerUnitServiceImpl extends ModelBaseServiceImpl<OwnerUnitMapper, 
 
 			unit.setTotal(unitStatisticsResult.stream().count());
 
-			long detected = unitStatisticsResult.stream().filter((e) -> Objects.nonNull(e.getReportId())).count();
+			long detected = unitStatisticsResult.stream().filter((e) -> Objects.nonNull(e.getStatus())
+					&& InitialInspectionStatus.FINISH.code().equalsIgnoreCase(e.getStatus())).count();
 			unit.setDetected(detected);
 
-			long detecting = unitStatisticsResult.stream().filter((e) -> Objects.isNull(e.getReportId())).count();
+			long detecting = unitStatisticsResult.stream().filter((e) -> Objects.nonNull(e.getStatus())
+					&& InitialInspectionStatus.CHECKING.code().equalsIgnoreCase(e.getStatus())).count();
 			unit.setDetecting(detecting);
 
-			long undetect = unitStatisticsResult.stream()
-					.filter((e) -> Objects.nonNull(e.getStatus()) && "1".equals(e.getStatus())).count();
+			long undetect = unitStatisticsResult.stream().filter((e) -> Objects.nonNull(e.getStatus())
+					&& InitialInspectionStatus.UNABLE_TO_DETECT.code().equalsIgnoreCase(e.getStatus())).count();
 			unit.setUndetect(undetect);
 		}
 
+		userInfo.setType(type);
 		List<AreaUserDangerVo> dangerLists = ownerUnitDangerService.getOwnerUnitDangerByAreaUser(userInfo);
 		DangerStatistics danger = new DangerStatistics();
 		final List<SysDictData> hazardLevel = this.getHazardLevel(userInfo.getProjectType());
@@ -561,14 +564,16 @@ public class OwnerUnitServiceImpl extends ModelBaseServiceImpl<OwnerUnitMapper, 
 
 			unit.setTotal(unitStatisticsResult.stream().count());
 
-			long detected = unitStatisticsResult.stream().filter((e) -> Objects.nonNull(e.getReportId())).count();
+			long detected = unitStatisticsResult.stream().filter((e) -> Objects.nonNull(e.getStatus())
+					&& InitialInspectionStatus.FINISH.code().equalsIgnoreCase(e.getStatus())).count();
 			unit.setDetected(detected);
 
-			long detecting = unitStatisticsResult.stream().filter((e) -> Objects.isNull(e.getReportId())).count();
+			long detecting = unitStatisticsResult.stream().filter((e) -> Objects.nonNull(e.getStatus())
+					&& InitialInspectionStatus.CHECKING.code().equalsIgnoreCase(e.getStatus())).count();
 			unit.setDetecting(detecting);
 
-			long undetect = unitStatisticsResult.stream()
-					.filter((e) -> Objects.nonNull(e.getStatus()) && "1".equals(e.getStatus())).count();
+			long undetect = unitStatisticsResult.stream().filter((e) -> Objects.nonNull(e.getStatus())
+					&& InitialInspectionStatus.UNABLE_TO_DETECT.code().equalsIgnoreCase(e.getStatus())).count();
 			unit.setUndetect(undetect);
 		}
 		DangerStatistics danger = new DangerStatistics();

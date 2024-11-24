@@ -108,9 +108,11 @@ public class ChargingPileController extends ElectricBaseController {
 			chargingPile.setCreateBy(String.valueOf(loginUser.getUserId()));
 		}
 
-		Long id = IdUtils.getSnowflakeNextId();
-		chargingPile.setId(id);
-		chargingPile.setOriginalId(id);
+		if (data.getId() == null) {
+			Long id = IdUtils.getSnowflakeNextId();
+			chargingPile.setId(id);
+			chargingPile.setOriginalId(id);
+		}
 
 		if (chargingPileService.saveOrUpdate(chargingPile)) {
 			ChargingPileVo vo = new ChargingPileVo();

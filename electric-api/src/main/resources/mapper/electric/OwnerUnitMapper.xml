@@ -59,7 +59,7 @@
 		<if test="keyword != null and keyword != ''">
 			and (t.name like concat('%', #{keyword}, '%') or t.address like concat('%', #{keyword}, '%'))
 		</if>
-		order by t.id asc
+		order by t.id desc
 	</select>
 	
 	<select id="getOwnerUnitById" parameterType="Long" resultType="com.rosenzest.electric.vo.OwnerUnitVo">
@@ -137,7 +137,7 @@
 		<if test="keyword != null and keyword != ''">
 			and (t.name like concat('%', #{keyword}, '%') or t.address like concat('%', #{keyword}, '%'))
 		</if>
-		order by t.id asc
+		order by t.id desc
 	</select>
 	
 	<select id="getOwnerUnitListByOwner" resultType="com.rosenzest.electric.miniapp.vo.OwnerUnitOverviewVo" >
@@ -170,7 +170,7 @@
 		left join sys_dict_data b on (o.street = b.dict_value and b.dict_type='street' and b.project_id = o.project_id)
 		left join sys_dict_data c on (o.community = c.dict_value and c.dict_type='community' and c.project_id = o.project_id)
 		left join sys_dict_data d on (o.hamlet = d.dict_value and d.dict_type='hamlet' and d.project_id = o.project_id)
-		where o.project_id = #{projectId} and o.gridman = #{userId} order by o.id asc
+		where o.project_id = #{projectId} and o.gridman = #{userId} order by o.id desc
 	</select>
 	
 	<select id="queryOwnerUnitListByGridman" resultType="com.rosenzest.electric.miniapp.vo.OwnerUnitOverviewVo" parameterType="com.rosenzest.electric.miniapp.dto.MiniAppOwnerUnitQuery" >
@@ -184,7 +184,7 @@
 		left join sys_dict_data b on (o.street = b.dict_value and b.dict_type='street' and b.project_id = o.project_id)
 		left join sys_dict_data c on (o.community = c.dict_value and c.dict_type='community' and c.project_id = o.project_id)
 		left join sys_dict_data d on (o.hamlet = d.dict_value and d.dict_type='hamlet' and d.project_id = o.project_id)
-		where o.project_id = #{projectId} and o.gridman = #{userId} order by o.id asc
+		where o.project_id = #{projectId} and o.gridman = #{userId} order by o.id desc
 		) t where 1=1
 		<if test="district != null and district != ''"> and t.district = #{district} </if>
 		<if test="street != null and street != ''"> and t.street = #{street} </if>
@@ -197,7 +197,7 @@
 		<if test="keyword != null and keyword != ''">
 			and (t.name like concat('%', #{keyword}, '%') or t.address like concat('%', #{keyword}, '%'))
 		</if>
-		order by t.id asc
+		order by t.id desc
 	</select>
 	
 	<select id="queryOwnerUnitListByAreaUser" resultType="com.rosenzest.electric.miniapp.vo.OwnerUnitOverviewVo" parameterType="com.rosenzest.electric.miniapp.dto.MiniAppAreaUserOwnerUnitQuery" >
@@ -216,7 +216,7 @@
 		<if test="userStreet != null and userStreet != ''"> and o.street = #{userStreet} </if>
 		<if test="userCommunity != null and userCommunity != ''"> and o.community = #{userCommunity} </if>
 		<if test="userHamlet != null and userHamlet != ''"> and o.hamlet = #{userHamlet} </if>
-		order by o.id asc
+		order by o.id desc
 		) t where 1=1
 		<if test="district != null and district != ''"> and t.district = #{district} </if>
 		<if test="street != null and street != ''"> and t.street = #{street} </if>
@@ -229,7 +229,7 @@
 		<if test="keyword != null and keyword != ''">
 			and (t.name like concat('%', #{keyword}, '%') or t.address like concat('%', #{keyword}, '%'))
 		</if>
-		order by t.id asc
+		order by t.id desc
 	</select>
 	
 	<select id="unitStatistics" resultType="com.rosenzest.electric.miniapp.dto.UnitStatisticsDto" parameterType="com.rosenzest.electric.miniapp.vo.AreaUserInfoVo" >
@@ -252,6 +252,7 @@
 		where 
 		exists (select project_id from sys_user s where s.user_id = u.gridman and s.project_id = u.project_id and s.user_id = #{userId} )
 		<if test="type != null and type != ''"> and u.high_risk_type = #{type} </if>
+		order by u.id desc
 	</select>
 	
 	<select id="unitStatisticsHigh" resultType="com.rosenzest.electric.miniapp.dto.UnitStatisticsDto" parameterType="com.rosenzest.electric.miniapp.dto.StatisticsHighQuery" >
@@ -265,6 +266,7 @@
 		<if test="street != null and street != ''"> and u.street = #{street} </if>
 		<if test="community != null and community != ''"> and u.community = #{community} </if>
 		<if test="hamlet != null and hamlet != ''"> and u.hamlet = #{hamlet} </if>
+		order by u.id desc
 	</select>
 	
 	<select id="unitStatisticsByArea" resultType="com.rosenzest.electric.miniapp.dto.UnitStatisticsDto" parameterType="com.rosenzest.electric.miniapp.dto.MiniAppAreaQuery" >
@@ -277,6 +279,7 @@
 		<if test="street != null and street != ''"> and u.street = #{street} </if>
 		<if test="community != null and community != ''"> and u.community = #{community} </if>
 		<if test="hamlet != null and hamlet != ''"> and u.hamlet = #{hamlet} </if>
+		order by u.id desc
 	</select>
 	
 	<select id="countTodayDetectUnit" resultType="Long" parameterType="com.rosenzest.electric.miniapp.vo.AreaUserInfoVo" >

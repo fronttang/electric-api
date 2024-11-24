@@ -15,6 +15,6 @@
 		<if test="keyword != null and keyword != ''">
 			and p.name like concat('%', #{keyword}, '%')
 		</if>
-		order by p.id asc
+		order by p.id desc
 	</select>
 </mapper>

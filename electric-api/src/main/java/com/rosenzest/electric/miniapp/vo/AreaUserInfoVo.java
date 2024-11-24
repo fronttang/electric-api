@@ -74,4 +74,9 @@ public class AreaUserInfoVo {
 	 * 村
 	 */
 	private String hamletName;
+
+	/**
+	 * 高风险类型
+	 */
+	private String type;
 }

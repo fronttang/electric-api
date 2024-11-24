@@ -19,6 +19,7 @@ public class ChargingPileVo {
 	/**
 	 * ID
 	 */
+	// @JsonSerialize(using = ToStringSerializer.class)
 	@ApiModelProperty("id")
 	private Long id;
 

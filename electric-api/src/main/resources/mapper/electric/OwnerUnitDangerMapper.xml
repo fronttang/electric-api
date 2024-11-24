@@ -61,7 +61,7 @@
 			or u.address like concat('%', #{keyword}, '%')
 			)
 		</if>
- 
+ 		order by d.id desc
 	</select>
 	
 	<select id="getOwnerUnitDangerById" resultMap="OwnerUnitDangerVoResultMap" parameterType="Long">
@@ -147,6 +147,8 @@
 		<if test="street != null and street != ''"> and o.street = #{street} </if>
 		<if test="community != null and community != ''"> and o.community = #{community} </if>
 		<if test="hamlet != null and hamlet != ''"> and o.hamlet = #{hamlet} </if>
+		<if test="type != null and type != ''"> and o.high_risk_type = #{type} </if>
+		order by ud.id desc
 	</select>
 	
 	<select id="getOwnerUnitDangerByArea" resultType="com.rosenzest.electric.miniapp.vo.AreaUserDangerVo" parameterType="com.rosenzest.electric.miniapp.dto.MiniAppAreaQuery">
@@ -163,6 +165,7 @@
 		<if test="street != null and street != ''"> and o.street = #{street} </if>
 		<if test="community != null and community != ''"> and o.community = #{community} </if>
 		<if test="hamlet != null and hamlet != ''"> and o.hamlet = #{hamlet} </if>
+		order by ud.id desc
 	</select>
 	
 	<select id="getHighOwnerUnitDangerByAreaUser" resultType="com.rosenzest.electric.miniapp.vo.AreaUserDangerVo" parameterType="com.rosenzest.electric.miniapp.dto.StatisticsHighQuery">
@@ -180,6 +183,7 @@
 		<if test="street != null and street != ''"> and o.street = #{street} </if>
 		<if test="community != null and community != ''"> and o.community = #{community} </if>
 		<if test="hamlet != null and hamlet != ''"> and o.hamlet = #{hamlet} </if>
+		order by ud.id desc
 	</select>
 	
 	<select id="getTodayDangersByAreaUser" resultMap="OwnerUnitDangerMap" parameterType="com.rosenzest.electric.miniapp.vo.AreaUserInfoVo">
@@ -240,7 +244,7 @@
 			or u.address like concat('%', #{keyword}, '%')
 			)
 		</if>
- 
+ 		order by d.id desc
 	</select>
 	
 </mapper>

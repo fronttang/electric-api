@@ -397,30 +397,14 @@ public class OwnerUnitController extends ElectricBaseController {
 	@GetMapping("/report/word/{unitId}/{type}")
 	public Result<ReportFileVo> reportWord(@PathVariable Long unitId, @PathVariable String type) {
 
-		LoginUser loginUser = getLoginUser();
+		// LoginUser loginUser = getLoginUser();
 
 		UnitReportType reportType = EnumUtils.init(UnitReportType.class).fromCode(type);
 		if (reportType == null) {
 			return Result.ERROR();
 		}
 
-		OwnerUnitReport report = ownerUnitReportService.getReportByUnitIdAndType(unitId, reportType);
-
-		if (report == null) {
-
-			report = new OwnerUnitReport();
-			report.setType(type);
-			report.setInspector(loginUser.getName());
-			report.setInspectorId(loginUser.getUserId());
-			report.setUnitId(unitId);
-			report.setDetectData(new Date());
-			report.setDetectStatus("0");
-			report.setStatus("0");
-
-			ownerUnitReportService.saveOrUpdate(report);
-		}
-
-		String url = StrUtil.format("{}/report/download/{}", properties.getAdmin(), report.getId());
+		String url = StrUtil.format("{}/report/download/{}/{}", properties.getAdmin(), unitId, type);
 
 		@SuppressWarnings("unchecked")
 		Result<ReportFileVo> result = RestTemplateUtils.exchange(url, HttpMethod.GET, null, null, Result.class);
