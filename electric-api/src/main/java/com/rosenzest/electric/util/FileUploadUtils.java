@@ -28,9 +28,9 @@ import cn.hutool.crypto.SecureUtil;
  */
 public class FileUploadUtils {
 	/**
-	 * 默认大小 10M
+	 * 默认大小 1000M
 	 */
-	public static final long DEFAULT_MAX_SIZE = 10 * 1024 * 1024;
+	public static final long DEFAULT_MAX_SIZE = 1000 * 1024 * 1024;
 
 	/**
 	 * 默认的文件名最大长度 100

@@ -40,12 +40,12 @@ public enum UserType implements IEnum<UserType> {
 	OWNER_UNIT("05", "业主单元账号"),
 
 	/**
-	 * 业主单元账号
+	 * 电力设计账号
 	 */
 	ELECTRIC("06", "电力设计"),
 
 	/**
-	 * 业主单元账号
+	 * 光伏储能账号
 	 */
 	STORAGE("07", "光伏储能"),
 

@@ -76,7 +76,8 @@ public class SysUserServiceImpl extends ModelBaseServiceImpl<SysUserMapper, SysU
 
 			if (TerminalType.APP == terminalType) {
 				if (!UserType.WORKER.code().equalsIgnoreCase(user.getUserType())
-						&& !UserType.STORAGE.code().equalsIgnoreCase(user.getUserType())) {
+						&& !UserType.STORAGE.code().equalsIgnoreCase(user.getUserType())
+						&& !UserType.ELECTRIC.code().equalsIgnoreCase(user.getUserType())) {
 					throw new BusinessException(ElectricErrorCode.VERIFICATION_ERROR);
 				}
 			} else if (TerminalType.MINIAPP == terminalType) {
