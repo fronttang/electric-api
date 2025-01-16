@@ -32,4 +32,13 @@ public interface IFormbDangerHandler {
 	 * 结果
 	 */
 	String getResult(OwnerUnitDangerVo vo);
+	
+	/**
+	 * 
+	 * @param vo
+	 * @return
+	 */
+	default Boolean isImportant(OwnerUnitDangerVo vo) {
+		return false;
+	}
 }

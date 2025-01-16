@@ -72,6 +72,24 @@ public class FormB14DangerHandler implements IFormbDangerHandler {
 
 		return suggestions;
 	}
+	
+	@Override
+	public Boolean isImportant(OwnerUnitDangerVo vo) {
+		Boolean important = false;
+		String type = getType(vo);
+		if (FormB14.TYPE_RESIDUALCURRENT.equals(type)) {
+			String residualCurrentResult = getResidualCurrentResult(vo);
+			if (FAILURE.equalsIgnoreCase(residualCurrentResult)) {
+				important = true;
+			}
+		} else if (FormB14.TYPE_ALARMTIME.equals(type)) {
+			String alarmTimeResult = getAlarmTimeResult(vo);
+			if (FAILURE.equalsIgnoreCase(alarmTimeResult)) {
+				important = true;
+			}
+		}
+		return important;
+	}
 
 	@Override
 	public String getInfoLocation(OwnerUnitDangerVo vo) {

@@ -75,6 +75,16 @@ public class FormB7DangerHandler implements IFormbDangerHandler {
 		}
 		return suggestions;
 	}
+	
+	@Override
+	public Boolean isImportant(OwnerUnitDangerVo vo) {
+		Boolean important = false;
+		String result = getResult(vo);
+		if (FAILURE.equalsIgnoreCase(result)) {
+			important = true;
+		}
+		return important;
+	}
 
 	@Override
 	public String getInfoLocation(OwnerUnitDangerVo vo) {

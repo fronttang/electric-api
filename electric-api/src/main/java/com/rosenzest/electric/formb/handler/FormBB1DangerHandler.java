@@ -91,4 +91,14 @@ public class FormBB1DangerHandler implements IFormbDangerHandler {
 		}
 		return null;
 	}
+	
+	@Override
+	public Boolean isImportant(OwnerUnitDangerVo vo) {
+		Boolean important = false;
+		String result = getResult(vo);
+		if (FAILURE.equalsIgnoreCase(result)) {
+			important = true;
+		}
+		return important;
+	}
 }

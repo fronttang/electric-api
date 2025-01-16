@@ -56,7 +56,6 @@ public class FormB6DangerHandler implements IFormbDangerHandler {
 		String manualTest = getManualTest(vo);
 		String other = getOther(vo);
 
-		// 合格
 		if (QUALIFIED.equalsIgnoreCase(result)) {
 
 			if (ACTION_FILL.equalsIgnoreCase(action)) {
@@ -88,7 +87,6 @@ public class FormB6DangerHandler implements IFormbDangerHandler {
 		String manualTest = getManualTest(vo);
 		String other = getOther(vo);
 
-		// 合格
 		if (FAILURE.equalsIgnoreCase(result)) {
 			// 不合格
 			if (ACTION_FILL.equalsIgnoreCase(action) || ACTION_1000.equalsIgnoreCase(action)
@@ -104,6 +102,16 @@ public class FormB6DangerHandler implements IFormbDangerHandler {
 			}
 		}
 		return suggestions;
+	}
+	
+	@Override
+	public Boolean isImportant(OwnerUnitDangerVo vo) {
+		Boolean important = false;
+		String result = getResult(vo);
+		if (FAILURE.equalsIgnoreCase(result)) {
+			important = true;
+		}
+		return important;
 	}
 
 	@Override
