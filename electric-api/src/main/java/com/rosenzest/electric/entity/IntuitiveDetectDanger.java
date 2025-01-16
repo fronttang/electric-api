@@ -60,6 +60,10 @@ public class IntuitiveDetectDanger extends BaseEntity<IntuitiveDetectDanger> {
      * 扣分数
      */
     private Double score;
-
+    
+    /**
+     * 是否重大隐患1是0否
+     */
+    private Integer important;
 
 }

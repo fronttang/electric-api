@@ -5,6 +5,12 @@ import lombok.Data;
 
 @Data
 public class FormB6 {
+	
+	/**
+	 * 检测位置
+	 */
+	@ApiModelProperty("检测位置")
+	private String location;
 
 	/**
 	 * 被测设备型号
