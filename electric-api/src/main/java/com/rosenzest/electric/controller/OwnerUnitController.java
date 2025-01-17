@@ -171,6 +171,7 @@ public class OwnerUnitController extends ElectricBaseController {
 		report.setDetectData(new Date());
 		if ("1".equalsIgnoreCase(data.getIsComplete())) {
 			report.setDetectStatus(InitialInspectionStatus.FINISH.code());
+			report.setFinishDate(new Date());
 		} else if ("1".equalsIgnoreCase(data.getIsTest())) {
 			report.setDetectStatus(InitialInspectionStatus.UNABLE_TO_DETECT.code());
 		} else {

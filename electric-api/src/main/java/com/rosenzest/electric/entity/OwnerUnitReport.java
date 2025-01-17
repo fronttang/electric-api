@@ -73,6 +73,11 @@ public class OwnerUnitReport extends BaseEntity<OwnerUnitReport> {
 	 * 检测状态
 	 */
 	private String detectStatus;
+	
+	/**
+	 * 完成时间
+	 */
+	private Date finishDate;
 
 	/**
 	 * 检测员
