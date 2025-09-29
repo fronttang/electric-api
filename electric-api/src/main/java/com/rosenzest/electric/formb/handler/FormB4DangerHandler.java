@@ -93,4 +93,12 @@ public class FormB4DangerHandler implements IFormbDangerHandler {
 		return null;
 	}
 
+	@Override
+	public String getPicture(OwnerUnitDangerVo vo) {
+		FormB4 formb = getFormb(vo);
+		if (formb != null) {
+			return formb.getOverallPic();
+		}
+		return null;
+	}
 }

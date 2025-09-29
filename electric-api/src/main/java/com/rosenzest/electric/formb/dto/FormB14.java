@@ -126,4 +126,21 @@ public class FormB14 {
 		private String inspectionPic;
 	}
 
+	/**
+	 * 检测位置
+	 */
+	@ApiModelProperty("检测位置")
+	private String location;
+
+	/**
+	 * 整体外观图
+	 */
+	@ApiModelProperty("整体外观图")
+	private String overallPic;
+
+	/**
+	 * 现场检测图
+	 */
+	@ApiModelProperty("现场检测图")
+	private String inspectionPic;
 }

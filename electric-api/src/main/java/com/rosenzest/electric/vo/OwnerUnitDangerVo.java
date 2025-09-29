@@ -343,4 +343,16 @@ public class OwnerUnitDangerVo {
 		}
 		return null;
 	}
+	
+	public String getDangerPic() {
+		if ("B".equalsIgnoreCase(this.formType)) {
+			if (StrUtil.isNotBlank(this.formCode)) {
+				IFormbDangerHandler formbDangerHander = FormbDangerHandlerFactory.getFormbDangerHander(this.formCode);
+				if (formbDangerHander != null) {
+					return formbDangerHander.getPicture(this);
+				}
+			}
+		}
+		return this.dangerPic;
+	}
 }

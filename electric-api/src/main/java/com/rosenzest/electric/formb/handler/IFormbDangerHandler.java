@@ -33,6 +33,8 @@ public interface IFormbDangerHandler {
 	 */
 	String getResult(OwnerUnitDangerVo vo);
 	
+	String getPicture(OwnerUnitDangerVo vo);
+	
 	/**
 	 * 
 	 * @param vo

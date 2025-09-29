@@ -86,6 +86,15 @@ public class FormB10DangerHandler implements IFormbDangerHandler {
 		}
 		return null;
 	}
+	
+	@Override
+	public String getPicture(OwnerUnitDangerVo vo) {
+		FormB10 formb = getFormb(vo);
+		if (formb != null) {
+			return formb.getOverallPic();
+		}
+		return null;
+	}
 
 	@Override
 	public String getResult(OwnerUnitDangerVo vo) {

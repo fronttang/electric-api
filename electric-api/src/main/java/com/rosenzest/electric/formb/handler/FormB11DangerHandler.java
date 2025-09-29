@@ -121,6 +121,15 @@ public class FormB11DangerHandler implements IFormbDangerHandler {
 		}
 		return null;
 	}
+	
+	@Override
+	public String getPicture(OwnerUnitDangerVo vo) {
+		FormB11 formb = getFormb(vo);
+		if (formb != null) {
+			return formb.getOverallPic();
+		}
+		return null;
+	}
 
 	private String getTestResults(OwnerUnitDangerVo vo) {
 		FormB11 formb = getFormb(vo);
