@@ -108,7 +108,7 @@ public class ProjectController extends ServerBaseController {
 								communityVo.setCode(area.getCommunity());
 								communityVo.setName(area.getCommunityName());
 								communityVo.setType("community");
-								communityMap.put(area.getCommunity(), streetVo);
+								communityMap.put(area.getCommunity(), communityVo);
 								streetVo.getSub().add(communityVo);
 							}
 							if (StrUtil.isNotBlank(area.getHamlet())) {
