@@ -301,7 +301,7 @@ public class OwnerUnitServiceImpl extends ModelBaseServiceImpl<OwnerUnitMapper, 
 		final Map<String, Long> rectificationLevelMap = new HashMap<String, Long>();
 		final Map<String, Long> reviewLevelMap = new HashMap<String, Long>();
 		if (CollUtil.isNotEmpty(dangerLists)) {
-			vo.setDanger(dangerLists.stream().count());
+			vo.setDanger(dangerLists.stream().filter(d -> !"9".equals(d.getStatus())).count());
 
 			// 完成数
 			Long finish = dangerLists.stream().filter((d) -> ReviewStatus.FINISH.code().equalsIgnoreCase(d.getStatus()))
@@ -320,7 +320,7 @@ public class OwnerUnitServiceImpl extends ModelBaseServiceImpl<OwnerUnitMapper, 
 					.collect(Collectors.counting());
 			vo.setReview(review);
 
-			dangerLevelMap.putAll(dangerLists.stream().filter((d) -> Objects.nonNull(d.getLevel()))
+			dangerLevelMap.putAll(dangerLists.stream().filter((d) -> Objects.nonNull(d.getLevel()) && !"9".equals(d.getStatus()))
 					.collect(Collectors.groupingBy(OwnerUnitDanger::getLevel, Collectors.counting())).entrySet()
 					.stream()
 					.collect(Collectors.toMap((d) -> StrUtil.format("count{}", d.getKey()), (d) -> d.getValue())));
@@ -471,7 +471,7 @@ public class OwnerUnitServiceImpl extends ModelBaseServiceImpl<OwnerUnitMapper, 
 
 		List<OwnerUnitDanger> todayDangers = ownerUnitDangerService.getTodayDangersByAreaUser(userInfo);
 		if (CollUtil.isNotEmpty(todayDangers)) {
-			today.setDanger(todayDangers.stream().count());
+			today.setDanger(todayDangers.stream().filter(d -> !"9".equals(d.getStatus())).count());
 			today.setFinish(todayDangers.stream()
 					.filter((d) -> ReviewStatus.FINISH.code().equalsIgnoreCase(d.getStatus())).count());
 		}
