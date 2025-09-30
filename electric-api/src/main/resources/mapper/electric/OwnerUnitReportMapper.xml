@@ -4,9 +4,9 @@
 
 	<select id="selectReportDetectStatus" parameterType="Long" resultType="com.rosenzest.electric.dto.ReportDetectStatusDto">
 		select o.id as unit_id, 
-		(select count(1) as dangers from owner_unit_danger ud1 where ud1.unit_id = o.id and ud1.status = 0 ) as rectifications,
-		(select count(1) as dangers from owner_unit_danger ud2 where ud2.unit_id = o.id and ud2.status = 1 ) as reexaminations,
-		(select count(1) as dangers from owner_unit_danger ud3 where ud3.unit_id = o.id and ud3.status = 2 ) as finishs,
+		(select count(1) as dangers from owner_unit_danger ud1 where ud1.unit_id = o.id and ud1.status = '0' ) as rectifications,
+		(select count(1) as dangers from owner_unit_danger ud2 where ud2.unit_id = o.id and ud2.status = '1' ) as reexaminations,
+		(select count(1) as dangers from owner_unit_danger ud3 where ud3.unit_id = o.id and ud3.status = '2' ) as finishs,
 		(select count(1) from owner_unit_danger t where t.unit_id = o.id and t.status != '9' and t.status != '' ) as dangers 
 		from owner_unit o 
 		where o.id = #{unitId} limit 1
