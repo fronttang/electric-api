@@ -3,64 +3,151 @@
 <mapper namespace="com.rosenzest.electric.mapper.OwnerUnitMapper">
 
 
-	<select id="queryInitialList" parameterType="com.rosenzest.electric.dto.OwnerUnitQuery" resultType="com.rosenzest.electric.vo.InitialOwnerUnitVo" >
-		select t.* from (select o.id, o.name, o.layers, o.address, o.high_risk_type, o.rounds, o.detect_module,
-		o.temperature, o.humidity, 
-		o.district, o.street, o.community, o.hamlet, a.dict_label as district_name, b.dict_label as street_name, c.dict_label as community_name, d.dict_label as hamlet_name,
-		(select count(1) from owner_unit_area a where a.unit_id = o.id and a.type = '2') as doors, 
-		(select count(1) from ( select ua.id, (select count(1) from owner_unit_danger d where d.unit_area_id = ua.id) as dangers from owner_unit_area ua where ua.unit_id = o.id ) t where t.dangers>0) as households,
-		(select count(1) as dangers from owner_unit_danger ud1 where ud1.unit_id = o.id and ud1.status = '0' and ud1.rounds = o.rounds ) as rectifications,
-		(select count(1) as dangers from owner_unit_danger ud2 where ud2.unit_id = o.id and ud2.status = '1' and ud2.rounds = o.rounds ) as reexaminations,
-		(select count(1) as dangers from owner_unit_danger ud3 where ud3.unit_id = o.id and ud3.status = '2' and ud3.rounds = o.rounds ) as finishs,
-		(select count(1) as piles from charging_pile cp where cp.unit_id = o.id and cp.rounds = o.rounds ) as piles,
-		(select count(1) from owner_unit_danger t where t.unit_id = o.id and t.rounds = o.rounds and t.status != '9') as dangers,
-		o.project_id, r.is_danger_notice,  r.is_complete, r.is_test, r.is_test_reason,
-		CASE WHEN r.detect_status is null THEN 0 ELSE r.detect_status END as status 
-		
-		from owner_unit o left join owner_unit_report r on (r.unit_id = o.id and r.type = '1' )
-		left join sys_dict_data a on (o.district = a.dict_value and a.dict_type='district' and a.project_id = o.project_id)
-		left join sys_dict_data b on (o.street = b.dict_value and b.dict_type='street' and b.project_id = o.project_id)
-		left join sys_dict_data c on (o.community = c.dict_value and c.dict_type='community' and c.project_id = o.project_id)
-		left join sys_dict_data d on (o.hamlet = d.dict_value and d.dict_type='hamlet' and d.project_id = o.project_id)
-		
-		where o.project_id = #{projectId} and o.type=#{type}
-		
-		<choose>
-			<when test="type == 2 or type == 4">
-			 and exists (select w.id from project_worker_area w where w.worker_id = #{workerId} and type= '1' and w.district = o.district and w.street = o.street)
-			</when>
-			<when test="type == 3">
-			 and exists (select w.id from project_worker_area w where w.worker_id = #{workerId} and type= '1' and w.district = o.district and w.street = o.street and w.community = o.community)
-			</when>
-			<otherwise>
-			and exists (select w.id from project_worker_area w where w.worker_id = #{workerId} and type= '1' and w.district = o.district and w.street = o.street and w.community = o.community and w.hamlet = o.hamlet )
-			</otherwise>
-		</choose>
-		
-		) t where 1=1
-		<if test="district != null and district != ''">
-			and t.district = #{district}
-		</if>
-		<if test="street != null and street != ''">
-			and t.street = #{street}
-		</if>
-		<if test="community != null and community != ''">
-			and t.community = #{community}
-		</if>
-		<if test="hamlet != null and hamlet != ''">
-			and t.hamlet = #{hamlet}
-		</if>
-		<if test="status != null and status != ''">
-			and t.status = #{status}
-		</if>
-		<if test="highRiskType != null and highRiskType != ''">
-			and t.high_risk_type = #{highRiskType}
-		</if>
-		<if test="keyword != null and keyword != ''">
-			and (t.name like concat('%', #{keyword}, '%') or t.address like concat('%', #{keyword}, '%'))
-		</if>
-		order by t.id desc
+	<select id="queryInitialList" parameterType="com.rosenzest.electric.dto.OwnerUnitQuery" resultType="com.rosenzest.electric.vo.InitialOwnerUnitVo">
+	    WITH
+	    area_doors AS (
+	        SELECT unit_id, COUNT(1) AS doors
+	        FROM owner_unit_area
+	        WHERE type = '2'
+	        GROUP BY unit_id
+	    ),
+	    area_dangers AS (
+	        SELECT ua.unit_id, COUNT(DISTINCT ua.id) AS households
+	        FROM owner_unit_area ua
+	        JOIN owner_unit_danger d ON d.unit_area_id = ua.id
+	        GROUP BY ua.unit_id
+	    ),
+	    rectifications AS (
+	        SELECT unit_id, rounds, COUNT(*) AS rectifications
+	        FROM owner_unit_danger
+	        WHERE status = '0'
+	        GROUP BY unit_id, rounds
+	    ),
+	    reexaminations AS (
+	        SELECT unit_id, rounds, COUNT(*) AS reexaminations
+	        FROM owner_unit_danger
+	        WHERE status = '1'
+	        GROUP BY unit_id, rounds
+	    ),
+	    finishs AS (
+	        SELECT unit_id, rounds, COUNT(*) AS finishs
+	        FROM owner_unit_danger
+	        WHERE status = '2'
+	        GROUP BY unit_id, rounds
+	    ),
+	    all_dangers AS (
+	        SELECT unit_id, rounds, COUNT(*) AS dangers
+	        FROM owner_unit_danger
+	        WHERE status != '9'
+	        GROUP BY unit_id, rounds
+	    ),
+	    piles AS (
+	        SELECT unit_id, rounds, COUNT(*) AS piles
+	        FROM charging_pile
+	        GROUP BY unit_id, rounds
+	    )
+	
+	    SELECT 
+	        o.id, o.name, o.layers, o.address, o.high_risk_type, o.rounds, o.detect_module,
+	        o.temperature, o.humidity,
+	        o.district, o.street, o.community, o.hamlet,
+	        a.dict_label AS district_name,
+	        b.dict_label AS street_name,
+	        c.dict_label AS community_name,
+	        d.dict_label AS hamlet_name,
+	
+	        COALESCE(ad.doors, 0) AS doors,
+	        COALESCE(ah.households, 0) AS households,
+	        COALESCE(rf.rectifications, 0) AS rectifications,
+	        COALESCE(re.reexaminations, 0) AS reexaminations,
+	        COALESCE(fs.finishs, 0) AS finishs,
+	        COALESCE(dn.dangers, 0) AS dangers,
+	        COALESCE(pl.piles, 0) AS piles,
+	
+	        o.project_id,
+	        r.is_danger_notice, r.is_complete, r.is_test, r.is_test_reason,
+	        CASE WHEN r.detect_status IS NULL THEN 0 ELSE r.detect_status END AS status
+	
+	    FROM owner_unit o
+	
+	    LEFT JOIN owner_unit_report r ON r.unit_id = o.id AND r.type = '1'
+	
+	    LEFT JOIN sys_dict_data a ON o.district = a.dict_value AND a.dict_type = 'district' AND a.project_id = o.project_id
+	    LEFT JOIN sys_dict_data b ON o.street = b.dict_value AND b.dict_type = 'street' AND b.project_id = o.project_id
+	    LEFT JOIN sys_dict_data c ON o.community = c.dict_value AND c.dict_type = 'community' AND c.project_id = o.project_id
+	    LEFT JOIN sys_dict_data d ON o.hamlet = d.dict_value AND d.dict_type = 'hamlet' AND d.project_id = o.project_id
+	
+	    LEFT JOIN area_doors ad ON ad.unit_id = o.id
+	    LEFT JOIN area_dangers ah ON ah.unit_id = o.id
+	    LEFT JOIN rectifications rf ON rf.unit_id = o.id AND rf.rounds = o.rounds
+	    LEFT JOIN reexaminations re ON re.unit_id = o.id AND re.rounds = o.rounds
+	    LEFT JOIN finishs fs ON fs.unit_id = o.id AND fs.rounds = o.rounds
+	    LEFT JOIN all_dangers dn ON dn.unit_id = o.id AND dn.rounds = o.rounds
+	    LEFT JOIN piles pl ON pl.unit_id = o.id AND pl.rounds = o.rounds
+	
+	    WHERE o.project_id = #{projectId} AND o.type = #{type}
+	
+	    <choose>
+	        <when test="type == 2 or type == 4">
+	            AND EXISTS (
+	                SELECT 1
+	                FROM project_worker_area w
+	                WHERE w.worker_id = #{workerId}
+	                AND w.type = '1'
+	                AND w.district = o.district
+	                AND w.street = o.street
+	            )
+	        </when>
+	        <when test="type == 3">
+	            AND EXISTS (
+	                SELECT 1
+	                FROM project_worker_area w
+	                WHERE w.worker_id = #{workerId}
+	                AND w.type = '1'
+	                AND w.district = o.district
+	                AND w.street = o.street
+	                AND w.community = o.community
+	            )
+	        </when>
+	        <otherwise>
+	            AND EXISTS (
+	                SELECT 1
+	                FROM project_worker_area w
+	                WHERE w.worker_id = #{workerId}
+	                AND w.type = '1'
+	                AND w.district = o.district
+	                AND w.street = o.street
+	                AND w.community = o.community
+	                AND w.hamlet = o.hamlet
+	            )
+	        </otherwise>
+	    </choose>
+	
+	    <if test="district != null and district != ''">
+	        AND o.district = #{district}
+	    </if>
+	    <if test="street != null and street != ''">
+	        AND o.street = #{street}
+	    </if>
+	    <if test="community != null and community != ''">
+	        AND o.community = #{community}
+	    </if>
+	    <if test="hamlet != null and hamlet != ''">
+	        AND o.hamlet = #{hamlet}
+	    </if>
+	    <if test="status != null and status != ''">
+	        AND (CASE WHEN r.detect_status IS NULL THEN 0 ELSE r.detect_status END) = #{status}
+	    </if>
+	    <if test="highRiskType != null and highRiskType != ''">
+	        AND o.high_risk_type = #{highRiskType}
+	    </if>
+	    <if test="keyword != null and keyword != ''">
+	        AND (o.name LIKE CONCAT('%', #{keyword}, '%') OR o.address LIKE CONCAT('%', #{keyword}, '%'))
+	    </if>
+	
+	    ORDER BY o.id DESC
 	</select>
+
 	
 	<select id="getOwnerUnitById" parameterType="Long" resultType="com.rosenzest.electric.vo.OwnerUnitVo">
 		select u.id,u.code,u.name,u.type,u.detect_id,u.detect_name,u.project_id,u.project_name,u.high_risk_type,
