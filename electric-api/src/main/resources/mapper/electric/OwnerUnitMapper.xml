@@ -38,7 +38,7 @@
 	    all_dangers AS (
 	        SELECT unit_id, rounds, COUNT(*) AS dangers
 	        FROM owner_unit_danger
-	        WHERE status != '9'
+	        WHERE status != '9' and status is not null and status != ''
 	        GROUP BY unit_id, rounds
 	    ),
 	    piles AS (
@@ -167,7 +167,7 @@
 		(select count(1) as dangers from owner_unit_danger ud1 where ud1.unit_id = o.id and ud1.status = '0' and ud1.rounds = o.rounds) as rectifications,
 		(select count(1) as dangers from owner_unit_danger ud2 where ud2.unit_id = o.id and ud2.status = '1' and ud2.rounds = o.rounds) as reexaminations,
 		(select count(1) as dangers from owner_unit_danger ud3 where ud3.unit_id = o.id and ud3.status = '2' and ud3.rounds = o.rounds) as finishs,
-		(select count(1) from owner_unit_danger t where t.unit_id = o.id and t.rounds = o.rounds and t.status != '9' and t.status != '' ) as dangers, 
+		(select count(1) from owner_unit_danger t where t.unit_id = o.id and t.rounds = o.rounds and t.status != '9' and t.status != '' and t.status is not null ) as dangers, 
 		(select count(1) as piles from charging_pile cp where cp.unit_id = o.id and cp.rounds = o.rounds ) as piles,
 		CASE WHEN ur.detect_status is null THEN 0 ELSE ur.detect_status END as status,
 		o.project_id

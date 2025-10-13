@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.rosenzest.electric.enums.DetectFormB;
 import com.rosenzest.electric.formb.FormbDangerHandler;
 import com.rosenzest.electric.formb.dto.FormB8;
+import com.rosenzest.electric.vo.IOwnerUnitDanger;
 import com.rosenzest.electric.vo.OwnerUnitDangerVo;
 
 import cn.hutool.core.util.StrUtil;
@@ -20,7 +21,7 @@ public class FormB8DangerHandler implements IFormbDangerHandler {
 	// private static String TEST_RESULT_4 = "抄表到户";
 
 	@Override
-	public String getLevel(OwnerUnitDangerVo vo) {
+	public String getLevel(IOwnerUnitDanger vo) {
 
 		String level = null;
 		String result = getResult(vo);
@@ -85,7 +86,7 @@ public class FormB8DangerHandler implements IFormbDangerHandler {
 		return location;
 	}
 
-	private FormB8 getFormb(OwnerUnitDangerVo vo) {
+	private FormB8 getFormb(IOwnerUnitDanger vo) {
 		if (vo == null) {
 			return null;
 		}
@@ -102,7 +103,7 @@ public class FormB8DangerHandler implements IFormbDangerHandler {
 	}
 
 	@Override
-	public String getResult(OwnerUnitDangerVo vo) {
+	public String getResult(IOwnerUnitDanger vo) {
 		FormB8 formb = getFormb(vo);
 		if (formb != null) {
 			return formb.getResult();
@@ -110,7 +111,7 @@ public class FormB8DangerHandler implements IFormbDangerHandler {
 		return null;
 	}
 
-	private String getTestResults(OwnerUnitDangerVo vo) {
+	private String getTestResults(IOwnerUnitDanger vo) {
 		FormB8 formb = getFormb(vo);
 		if (formb != null) {
 			return formb.getTestResults();
@@ -119,7 +120,7 @@ public class FormB8DangerHandler implements IFormbDangerHandler {
 	}
 	
 	@Override
-	public String getPicture(OwnerUnitDangerVo vo) {
+	public String getPicture(IOwnerUnitDanger vo) {
 		FormB8 formb = getFormb(vo);
 		if (formb != null) {
 			return formb.getOverallPic();

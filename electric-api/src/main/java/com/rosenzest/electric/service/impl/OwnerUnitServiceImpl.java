@@ -301,7 +301,7 @@ public class OwnerUnitServiceImpl extends ModelBaseServiceImpl<OwnerUnitMapper, 
 		final Map<String, Long> rectificationLevelMap = new HashMap<String, Long>();
 		final Map<String, Long> reviewLevelMap = new HashMap<String, Long>();
 		if (CollUtil.isNotEmpty(dangerLists)) {
-			vo.setDanger(dangerLists.stream().filter(d -> !"9".equals(d.getStatus())).count());
+			vo.setDanger(dangerLists.stream().filter(d -> StrUtil.isNotBlank(d.getStatus()) && !"9".equals(d.getStatus())).count());
 
 			// 完成数
 			Long finish = dangerLists.stream().filter((d) -> ReviewStatus.FINISH.code().equalsIgnoreCase(d.getStatus()))
@@ -320,24 +320,24 @@ public class OwnerUnitServiceImpl extends ModelBaseServiceImpl<OwnerUnitMapper, 
 					.collect(Collectors.counting());
 			vo.setReview(review);
 
-			dangerLevelMap.putAll(dangerLists.stream().filter((d) -> Objects.nonNull(d.getLevel()) && !"9".equals(d.getStatus()))
+			dangerLevelMap.putAll(dangerLists.stream().filter((d) -> StrUtil.isNotBlank(d.getLevel()) && StrUtil.isNotBlank(d.getStatus()) && !"9".equals(d.getStatus()))
 					.collect(Collectors.groupingBy(OwnerUnitDanger::getLevel, Collectors.counting())).entrySet()
 					.stream()
 					.collect(Collectors.toMap((d) -> StrUtil.format("count{}", d.getKey()), (d) -> d.getValue())));
 
-			finishLevelMap.putAll(dangerLists.stream().filter((d) -> Objects.nonNull(d.getLevel()))
+			finishLevelMap.putAll(dangerLists.stream().filter((d) -> StrUtil.isNotBlank(d.getLevel()))
 					.filter((d) -> ReviewStatus.FINISH.code().equalsIgnoreCase(d.getStatus()))
 					.collect(Collectors.groupingBy(OwnerUnitDanger::getLevel, Collectors.counting())).entrySet()
 					.stream()
 					.collect(Collectors.toMap((d) -> StrUtil.format("count{}", d.getKey()), (d) -> d.getValue())));
 
-			rectificationLevelMap.putAll(dangerLists.stream().filter((d) -> Objects.nonNull(d.getLevel()))
+			rectificationLevelMap.putAll(dangerLists.stream().filter((d) -> StrUtil.isNotBlank(d.getLevel()))
 					.filter((d) -> ReviewStatus.RECTIFIED.code().equalsIgnoreCase(d.getStatus()))
 					.collect(Collectors.groupingBy(OwnerUnitDanger::getLevel, Collectors.counting())).entrySet()
 					.stream()
 					.collect(Collectors.toMap((d) -> StrUtil.format("count{}", d.getKey()), (d) -> d.getValue())));
 
-			reviewLevelMap.putAll(dangerLists.stream().filter((d) -> Objects.nonNull(d.getLevel()))
+			reviewLevelMap.putAll(dangerLists.stream().filter((d) -> StrUtil.isNotBlank(d.getLevel()))
 					.filter((d) -> ReviewStatus.RE_EXAMINATION.code().equalsIgnoreCase(d.getStatus()))
 					.collect(Collectors.groupingBy(OwnerUnitDanger::getLevel, Collectors.counting())).entrySet()
 					.stream()
@@ -471,7 +471,7 @@ public class OwnerUnitServiceImpl extends ModelBaseServiceImpl<OwnerUnitMapper, 
 
 		List<OwnerUnitDanger> todayDangers = ownerUnitDangerService.getTodayDangersByAreaUser(userInfo);
 		if (CollUtil.isNotEmpty(todayDangers)) {
-			today.setDanger(todayDangers.stream().filter(d -> !"9".equals(d.getStatus())).count());
+			today.setDanger(todayDangers.stream().filter(d -> StrUtil.isNotBlank(d.getStatus()) && !"9".equals(d.getStatus())).count());
 			today.setFinish(todayDangers.stream()
 					.filter((d) -> ReviewStatus.FINISH.code().equalsIgnoreCase(d.getStatus())).count());
 		}

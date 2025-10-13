@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.rosenzest.electric.enums.DetectFormB;
 import com.rosenzest.electric.formb.FormbDangerHandler;
 import com.rosenzest.electric.formb.dto.FormB2;
+import com.rosenzest.electric.vo.IOwnerUnitDanger;
 import com.rosenzest.electric.vo.OwnerUnitDangerVo;
 
 import cn.hutool.core.util.StrUtil;
@@ -42,7 +43,7 @@ public class FormB2DangerHandler implements IFormbDangerHandler {
 	public static final String SYSTEM_NULL = "无测试地点";
 
 	@Override
-	public String getLevel(OwnerUnitDangerVo vo) {
+	public String getLevel(IOwnerUnitDanger vo) {
 
 		String level = null;
 		String result = getResult(vo);
@@ -141,7 +142,7 @@ public class FormB2DangerHandler implements IFormbDangerHandler {
 		return location;
 	}
 
-	private FormB2 getFormb(OwnerUnitDangerVo vo) {
+	private FormB2 getFormb(IOwnerUnitDanger vo) {
 		if (vo == null) {
 			return null;
 		}
@@ -158,7 +159,7 @@ public class FormB2DangerHandler implements IFormbDangerHandler {
 	}
 
 	@Override
-	public String getResult(OwnerUnitDangerVo vo) {
+	public String getResult(IOwnerUnitDanger vo) {
 		FormB2 formb = getFormb(vo);
 		if (formb != null) {
 			return formb.getResult();
@@ -191,7 +192,7 @@ public class FormB2DangerHandler implements IFormbDangerHandler {
 	}
 	
 	@Override
-	public String getPicture(OwnerUnitDangerVo vo) {
+	public String getPicture(IOwnerUnitDanger vo) {
 		FormB2 formb = getFormb(vo);
 		if (formb != null) {
 			return formb.getOverallPic();

@@ -1,5 +1,6 @@
 package com.rosenzest.electric.formb.handler;
 
+import com.rosenzest.electric.vo.IOwnerUnitDanger;
 import com.rosenzest.electric.vo.OwnerUnitDangerVo;
 
 public interface IFormbDangerHandler {
@@ -11,7 +12,7 @@ public interface IFormbDangerHandler {
 	/**
 	 * 隐患等级
 	 */
-	String getLevel(OwnerUnitDangerVo vo);
+	String getLevel(IOwnerUnitDanger vo);
 
 	/**
 	 * 隐患描述
@@ -31,9 +32,9 @@ public interface IFormbDangerHandler {
 	/**
 	 * 结果
 	 */
-	String getResult(OwnerUnitDangerVo vo);
+	String getResult(IOwnerUnitDanger vo);
 	
-	String getPicture(OwnerUnitDangerVo vo);
+	String getPicture(IOwnerUnitDanger vo);
 	
 	/**
 	 * 

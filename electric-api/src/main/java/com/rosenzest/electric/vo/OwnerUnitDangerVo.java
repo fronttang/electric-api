@@ -18,7 +18,7 @@ import lombok.NoArgsConstructor;
 @Data
 @ApiModel
 @NoArgsConstructor
-public class OwnerUnitDangerVo {
+public class OwnerUnitDangerVo implements IOwnerUnitDanger {
 
 	/**
 	 * ID

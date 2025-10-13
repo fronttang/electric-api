@@ -14,6 +14,7 @@ import com.rosenzest.model.base.type.LongListTypeHandler;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * <p>
@@ -23,6 +24,7 @@ import lombok.EqualsAndHashCode;
  * @author fronttang
  * @since 2024-07-08
  */
+@Slf4j
 @Data
 @EqualsAndHashCode(callSuper = true)
 @TableName(autoResultMap = true)
@@ -90,7 +92,7 @@ public class OwnerUnitDanger extends BaseEntity<OwnerUnitDanger> {
 	/**
 	 * 隐患等级
 	 */
-	private String level;
+	protected String level;
 
 	/**
 	 * 隐患描述
@@ -115,7 +117,7 @@ public class OwnerUnitDanger extends BaseEntity<OwnerUnitDanger> {
 	/**
 	 * 状态
 	 */
-	private String status;
+	protected String status;
 
 	/**
 	 * 检测员
@@ -196,5 +198,4 @@ public class OwnerUnitDanger extends BaseEntity<OwnerUnitDanger> {
 	 * 备注
 	 */
 	private String remark;
-
 }

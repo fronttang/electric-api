@@ -6,6 +6,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.rosenzest.electric.enums.DetectFormB;
 import com.rosenzest.electric.formb.FormbDangerHandler;
 import com.rosenzest.electric.formb.dto.FormB14;
+import com.rosenzest.electric.vo.IOwnerUnitDanger;
 import com.rosenzest.electric.vo.OwnerUnitDangerVo;
 
 import cn.hutool.core.util.StrUtil;
@@ -14,7 +15,7 @@ import cn.hutool.core.util.StrUtil;
 public class FormB14DangerHandler implements IFormbDangerHandler {
 
 	@Override
-	public String getLevel(OwnerUnitDangerVo vo) {
+	public String getLevel(IOwnerUnitDanger vo) {
 
 		String level = null;
 		String type = getType(vo);
@@ -98,7 +99,7 @@ public class FormB14DangerHandler implements IFormbDangerHandler {
 		return location;
 	}
 
-	private FormB14 getFormb(OwnerUnitDangerVo vo) {
+	private FormB14 getFormb(IOwnerUnitDanger vo) {
 		if (vo == null) {
 			return null;
 		}
@@ -114,7 +115,7 @@ public class FormB14DangerHandler implements IFormbDangerHandler {
 		return null;
 	}
 
-	private String getResidualCurrentResult(OwnerUnitDangerVo vo) {
+	private String getResidualCurrentResult(IOwnerUnitDanger vo) {
 		FormB14 formb = getFormb(vo);
 		if (formb != null) {
 			if (formb.getResidualCurrent() != null) {
@@ -124,7 +125,7 @@ public class FormB14DangerHandler implements IFormbDangerHandler {
 		return null;
 	}
 
-	private String getAlarmTimeResult(OwnerUnitDangerVo vo) {
+	private String getAlarmTimeResult(IOwnerUnitDanger vo) {
 		FormB14 formb = getFormb(vo);
 		if (formb != null) {
 			if (formb.getAlarmTime() != null) {
@@ -134,7 +135,7 @@ public class FormB14DangerHandler implements IFormbDangerHandler {
 		return null;
 	}
 
-	private String getType(OwnerUnitDangerVo vo) {
+	private String getType(IOwnerUnitDanger vo) {
 		FormB14 formb = getFormb(vo);
 		if (formb != null) {
 			return formb.getType();
@@ -143,7 +144,7 @@ public class FormB14DangerHandler implements IFormbDangerHandler {
 	}
 
 	@Override
-	public String getResult(OwnerUnitDangerVo vo) {
+	public String getResult(IOwnerUnitDanger vo) {
 		FormB14 formb = getFormb(vo);
 		if (formb != null) {
 			if ("residualCurrent".equals(formb.getType()) && Objects.nonNull(formb.getResidualCurrent())) {
@@ -156,7 +157,7 @@ public class FormB14DangerHandler implements IFormbDangerHandler {
 	}
 	
 	@Override
-	public String getPicture(OwnerUnitDangerVo vo) {
+	public String getPicture(IOwnerUnitDanger vo) {
 		FormB14 formb = getFormb(vo);
 		if (formb != null) {
 			String type = getType(vo);
