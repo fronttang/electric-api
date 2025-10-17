@@ -264,7 +264,7 @@
 		select t.* from (select o.id, o.name, o.type, o.project_id, o.address, o.high_risk_type,
 		o.district, o.street, o.community, o.hamlet, a.dict_label as district_name, b.dict_label as street_name, c.dict_label as community_name, d.dict_label as hamlet_name,
 		CASE WHEN r.detect_status is null THEN 0 ELSE r.detect_status END as status,  
-		CASE WHEN r.detect_data is null THEN now() ELSE r.detect_data END as detect_data  
+		r.detect_data  
 		from owner_unit o 
 		left join owner_unit_report r on (r.unit_id = o.id and r.type = '1' )
 		left join sys_dict_data a on (o.district = a.dict_value and a.dict_type='district' and a.project_id = o.project_id)
@@ -291,7 +291,7 @@
 		select t.* from (select o.id, o.name, o.type, o.project_id, o.address, o.high_risk_type,
 		o.district, o.street, o.community, o.hamlet, a.dict_label as district_name, b.dict_label as street_name, c.dict_label as community_name, d.dict_label as hamlet_name,
 		CASE WHEN r.detect_status is null THEN 0 ELSE r.detect_status END as status,  
-		CASE WHEN r.detect_data is null THEN now() ELSE r.detect_data END as detect_data  
+		r.detect_data  
 		from owner_unit o 
 		left join owner_unit_report r on (r.unit_id = o.id and r.type = '1' )
 		left join sys_dict_data a on (o.district = a.dict_value and a.dict_type='district' and a.project_id = o.project_id)
@@ -373,7 +373,7 @@
 		select count(1)
 		from owner_unit u
 		left join owner_unit_report r on (r.unit_id = u.id and r.type = '1' ) 
-		where u.project_id = 1 and date(r.detect_data) = date(now())
+		where u.project_id = #{projectId}  and date(r.detect_data) = CURDATE()
 		<if test="district != null and district != ''"> and u.district = #{district} </if>
 		<if test="street != null and street != ''"> and u.street = #{street} </if>
 		<if test="community != null and community != ''"> and u.community = #{community} </if>

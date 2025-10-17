@@ -125,4 +125,15 @@ public class OwnerUnitReviewVo {
 	 */
 	@ApiModelProperty("当前轮次")
 	private Integer rounds;
+	
+	public String getStatus() {
+		if(this.rectifications > 0) {
+			return "0";
+		} else if(this.reexaminations > 0) {
+			return "1";
+		} else if(this.dangers > 0 && this.dangers == this.finishs) {
+			return "2";
+		}
+		return "0";
+	}
 }
