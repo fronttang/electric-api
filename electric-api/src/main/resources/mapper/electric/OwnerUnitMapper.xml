@@ -56,7 +56,7 @@
 	        c.dict_label AS community_name,
 	        d.dict_label AS hamlet_name,
 	
-	        COALESCE(ad.doors, 0) AS doors,
+	        o.door_number AS doors,
 	        COALESCE(ah.households, 0) AS households,
 	        COALESCE(rf.rectifications, 0) AS rectifications,
 	        COALESCE(re.reexaminations, 0) AS reexaminations,

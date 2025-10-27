@@ -145,8 +145,10 @@ public class OwnerUnitServiceImpl extends ModelBaseServiceImpl<OwnerUnitMapper, 
 			report.setDetectStatus(InitialInspectionStatus.CHECKING.code());
 			report.setInspector(loginUser.getName());
 			report.setInspectorId(loginUser.getUserId());
-			ownerUnitReportService.saveOrUpdate(report);
+			
 		}
+		report.setCode(data.getInitialTestNo());
+		ownerUnitReportService.saveOrUpdate(report);
 
 		// 复检报告
 		OwnerUnitReport againReport = ownerUnitReportService.getReportByUnitIdAndType(unit.getId(),
@@ -160,8 +162,10 @@ public class OwnerUnitServiceImpl extends ModelBaseServiceImpl<OwnerUnitMapper, 
 			againReport.setDetectStatus(ReviewStatus.RECTIFIED.code());
 			againReport.setInspector(loginUser.getName());
 			againReport.setInspectorId(loginUser.getUserId());
-			ownerUnitReportService.saveOrUpdate(againReport);
 		}
+		againReport.setDetectData(data.getAgainTestData());
+		againReport.setCode(data.getAgainTestNo());
+		ownerUnitReportService.saveOrUpdate(againReport);
 
 		return true;
 	}
