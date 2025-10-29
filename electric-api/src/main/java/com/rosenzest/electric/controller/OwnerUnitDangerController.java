@@ -2,6 +2,7 @@ package com.rosenzest.electric.controller;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 import javax.validation.Valid;
 
@@ -118,7 +119,31 @@ public class OwnerUnitDangerController extends ElectricBaseController {
 			if ("B14".equalsIgnoreCase(danger.getFormCode())) {
 				danger.setFormId(dbDanger.getFormId());
 			}
-
+			
+			if ("B1".equalsIgnoreCase(danger.getFormCode())) {
+				com.alibaba.fastjson.JSONObject dbformb = dbDanger.getFormb();
+				com.alibaba.fastjson.JSONObject formb = danger.getFormb();
+				
+				String b1Result = null;
+				String b1InfraredPic = null;
+				
+				if (Objects.nonNull(dbformb)) {
+					com.alibaba.fastjson.JSONObject formbData = dbformb.getJSONObject("data");
+					if (formbData != null) {
+						b1Result = formbData.getString("result");
+						b1InfraredPic = formbData.getString("infraredPic");
+					}
+				}
+				
+				if (Objects.nonNull(formb)) {
+					com.alibaba.fastjson.JSONObject formbData = formb.getJSONObject("data");
+					if (formbData != null) {
+						formbData.put("result", b1Result);
+						formbData.put("infraredPic", b1InfraredPic);
+					}
+				}
+				vo.setFormb(formb);
+			}
 		}
 
 		if (ProjectType.URBAN_VILLAGE.code().equalsIgnoreCase(ownerUnit.getType())) {
@@ -172,8 +197,7 @@ public class OwnerUnitDangerController extends ElectricBaseController {
 			}
 			// 查询B类表
 			if (StrUtil.isNotBlank(danger.getFormCode())) {
-				IFormbDangerHandler formbDangerHander = FormbDangerHandlerFactory
-						.getFormbDangerHander(danger.getFormCode());
+				IFormbDangerHandler formbDangerHander = FormbDangerHandlerFactory.getFormbDangerHander(danger.getFormCode());
 				if (formbDangerHander != null) {
 					danger.setDescription(formbDangerHander.getDescription(vo));
 					danger.setSuggestions(formbDangerHander.getSuggestions(vo));
