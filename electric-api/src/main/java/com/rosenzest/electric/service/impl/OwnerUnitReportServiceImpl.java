@@ -59,7 +59,10 @@ public class OwnerUnitReportServiceImpl extends ModelBaseServiceImpl<OwnerUnitRe
 			unitReport.setInspector(loginUser.getName());
 			unitReport.setInspectorId(loginUser.getUserId());
 			unitReport.setUnitId(unitId);
-			unitReport.setDetectData(new Date());
+			
+			if (UnitReportType.INITIAL == type) {
+				unitReport.setDetectData(new Date());
+			}
 
 			// 没有编号的随机生成一个
 			unitReport.setCode(SnowFlakeUtil.uniqueString());
