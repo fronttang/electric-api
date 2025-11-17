@@ -4,7 +4,7 @@
 
 	<select id="queryUnitAreaByType" parameterType="com.rosenzest.electric.dto.OwnerUnitAreaQuery" resultType="com.rosenzest.electric.vo.OwnerUnitAreaVo">
 		select a.id, a.unit_id, a.building_id, a.name, a.floor, a.type, a.remark,
-		(select count(1) from owner_unit_danger d where d.unit_area_id =a.id and d.unit_id = a.unit_id and d.status != '9' and d.status != '') as dangers 
+		(select count(1) from owner_unit_danger d where d.unit_area_id =a.id and d.unit_id = a.unit_id and d.status &lt;&gt; '9' and d.status &lt;&gt; '') as dangers 
 		from owner_unit_area a where a.unit_id = #{unitId}
 		<if test="buildingId != null and buildingId != ''">
 			and a.building_id = #{buildingId}

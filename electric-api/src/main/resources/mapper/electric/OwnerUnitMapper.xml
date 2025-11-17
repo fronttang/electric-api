@@ -4,48 +4,36 @@
 
 
 	<select id="queryInitialList" parameterType="com.rosenzest.electric.dto.OwnerUnitQuery" resultType="com.rosenzest.electric.vo.InitialOwnerUnitVo">
-	    WITH
-	    area_doors AS (
-	        SELECT unit_id, COUNT(1) AS doors
-	        FROM owner_unit_area
-	        WHERE type = '2'
-	        GROUP BY unit_id
-	    ),
-	    area_dangers AS (
-	        SELECT ua.unit_id, COUNT(DISTINCT ua.id) AS households
-	        FROM owner_unit_area ua
-	        JOIN owner_unit_danger d ON d.unit_area_id = ua.id
-	        GROUP BY ua.unit_id
-	    ),
-	    rectifications AS (
-	        SELECT unit_id, rounds, COUNT(*) AS rectifications
-	        FROM owner_unit_danger
-	        WHERE status = '0'
-	        GROUP BY unit_id, rounds
-	    ),
-	    reexaminations AS (
-	        SELECT unit_id, rounds, COUNT(*) AS reexaminations
-	        FROM owner_unit_danger
-	        WHERE status = '1'
-	        GROUP BY unit_id, rounds
-	    ),
-	    finishs AS (
-	        SELECT unit_id, rounds, COUNT(*) AS finishs
-	        FROM owner_unit_danger
-	        WHERE status = '2'
-	        GROUP BY unit_id, rounds
-	    ),
-	    all_dangers AS (
-	        SELECT unit_id, rounds, COUNT(*) AS dangers
-	        FROM owner_unit_danger
-	        WHERE status != '9' and status is not null and status != ''
-	        GROUP BY unit_id, rounds
-	    ),
-	    piles AS (
-	        SELECT unit_id, rounds, COUNT(*) AS piles
-	        FROM charging_pile
-	        GROUP BY unit_id, rounds
-	    )
+	    WITH 
+	    danger_stats AS (
+		    SELECT 
+		        unit_id,
+		        rounds,
+		        COUNT(*) AS total_dangers,
+		        SUM(CASE WHEN status = '0' THEN 1 ELSE 0 END) AS rectifications,
+		        SUM(CASE WHEN status = '1' THEN 1 ELSE 0 END) AS reexaminations,
+		        SUM(CASE WHEN status = '2' THEN 1 ELSE 0 END) AS finishs,
+		        SUM(CASE WHEN status IS NOT NULL AND status &lt;&gt; '9' AND status &lt;&gt; '' THEN 1 ELSE 0 END) AS dangers
+		    FROM owner_unit_danger
+		    GROUP BY unit_id, rounds
+		),
+		area_doors AS (
+		    SELECT unit_id, COUNT(*) AS doors
+		    FROM owner_unit_area
+		    WHERE type='2'
+		    GROUP BY unit_id
+		),
+		area_dangers AS (
+		    SELECT a.unit_id, COUNT(DISTINCT d.unit_area_id) AS households
+			FROM owner_unit_danger d
+			JOIN owner_unit_area a ON d.unit_area_id = a.id
+			GROUP BY a.unit_id
+		),
+		piles AS (
+		    SELECT unit_id, rounds, COUNT(*) AS piles
+		    FROM charging_pile
+		    GROUP BY unit_id, rounds
+		)
 	
 	    SELECT 
 	        o.id, o.name, o.layers, o.address, o.high_risk_type, o.rounds, o.detect_module,
@@ -58,10 +46,10 @@
 	
 	        o.door_number AS doors,
 	        COALESCE(ah.households, 0) AS households,
-	        COALESCE(rf.rectifications, 0) AS rectifications,
-	        COALESCE(re.reexaminations, 0) AS reexaminations,
-	        COALESCE(fs.finishs, 0) AS finishs,
-	        COALESCE(dn.dangers, 0) AS dangers,
+	        COALESCE(ds.rectifications, 0) AS rectifications,
+	        COALESCE(ds.reexaminations, 0) AS reexaminations,
+	        COALESCE(ds.finishs, 0) AS finishs,
+	        COALESCE(ds.dangers, 0) AS dangers,
 	        COALESCE(pl.piles, 0) AS piles,
 	
 	        o.project_id,
@@ -79,10 +67,7 @@
 	
 	    LEFT JOIN area_doors ad ON ad.unit_id = o.id
 	    LEFT JOIN area_dangers ah ON ah.unit_id = o.id
-	    LEFT JOIN rectifications rf ON rf.unit_id = o.id AND rf.rounds = o.rounds
-	    LEFT JOIN reexaminations re ON re.unit_id = o.id AND re.rounds = o.rounds
-	    LEFT JOIN finishs fs ON fs.unit_id = o.id AND fs.rounds = o.rounds
-	    LEFT JOIN all_dangers dn ON dn.unit_id = o.id AND dn.rounds = o.rounds
+	    LEFT JOIN danger_stats ds ON ds.unit_id=o.id AND ds.rounds=o.rounds
 	    LEFT JOIN piles pl ON pl.unit_id = o.id AND pl.rounds = o.rounds
 	
 	    WHERE o.project_id = #{projectId} AND o.type = #{type}
@@ -167,7 +152,7 @@
 		(select count(1) as dangers from owner_unit_danger ud1 where ud1.unit_id = o.id and ud1.status = '0' and ud1.rounds = o.rounds) as rectifications,
 		(select count(1) as dangers from owner_unit_danger ud2 where ud2.unit_id = o.id and ud2.status = '1' and ud2.rounds = o.rounds) as reexaminations,
 		(select count(1) as dangers from owner_unit_danger ud3 where ud3.unit_id = o.id and ud3.status = '2' and ud3.rounds = o.rounds) as finishs,
-		(select count(1) from owner_unit_danger t where t.unit_id = o.id and t.rounds = o.rounds and t.status != '9' and t.status != '' and t.status is not null ) as dangers, 
+		(select count(1) from owner_unit_danger t where t.unit_id = o.id and t.rounds = o.rounds and t.status &lt;&gt; '9' and t.status &lt;&gt; '' and t.status is not null ) as dangers, 
 		(select count(1) as piles from charging_pile cp where cp.unit_id = o.id and cp.rounds = o.rounds ) as piles,
 		CASE WHEN ur.detect_status is null THEN 0 ELSE ur.detect_status END as status,
 		o.project_id

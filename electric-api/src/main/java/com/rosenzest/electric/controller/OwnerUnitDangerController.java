@@ -138,8 +138,12 @@ public class OwnerUnitDangerController extends ElectricBaseController {
 				if (Objects.nonNull(formb)) {
 					com.alibaba.fastjson.JSONObject formbData = formb.getJSONObject("data");
 					if (formbData != null) {
-						formbData.put("result", b1Result);
-						formbData.put("infraredPic", b1InfraredPic);
+						if(StrUtil.isNotBlank(b1Result)) {
+							formbData.put("result", b1Result);
+						}
+						if(StrUtil.isNotBlank(b1InfraredPic)) {
+							formbData.put("infraredPic", b1InfraredPic);
+						}
 					}
 				}
 				vo.setFormb(formb);
