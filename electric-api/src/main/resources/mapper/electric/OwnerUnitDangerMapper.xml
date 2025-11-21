@@ -196,7 +196,7 @@
 		select d.id,d.level,d.status
 		from owner_unit_danger d 
 		left join owner_unit u on u.id = d.unit_id
-		where u.project_id = #{projectId} and date(d.create_time) = date(now())
+		where u.project_id = #{projectId} AND d.create_time &gt;= CURDATE() AND d.create_time &lt; CURDATE() + INTERVAL 1 DAY 
 		<if test="district != null and district != ''"> and u.district = #{district} </if>
 		<if test="street != null and street != ''"> and u.street = #{street} </if>
 		<if test="community != null and community != ''"> and u.community = #{community} </if>

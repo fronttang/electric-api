@@ -145,14 +145,15 @@ public class OwnerUnitServiceImpl extends ModelBaseServiceImpl<OwnerUnitMapper, 
 			report.setDetectStatus(InitialInspectionStatus.CHECKING.code());
 			report.setInspector(loginUser.getName());
 			report.setInspectorId(loginUser.getUserId());
-			
+		} else if (Objects.isNull(report.getInspectorId())) {
+			report.setInspector(loginUser.getName());
+			report.setInspectorId(loginUser.getUserId());
 		}
 		report.setCode(data.getInitialTestNo());
 		ownerUnitReportService.saveOrUpdate(report);
 
 		// 复检报告
-		OwnerUnitReport againReport = ownerUnitReportService.getReportByUnitIdAndType(unit.getId(),
-				UnitReportType.REVIEW);
+		OwnerUnitReport againReport = ownerUnitReportService.getReportByUnitIdAndType(unit.getId(), UnitReportType.REVIEW);
 		if (againReport == null) {
 			againReport = new OwnerUnitReport();
 			againReport.setUnitId(unit.getId());
@@ -160,6 +161,9 @@ public class OwnerUnitServiceImpl extends ModelBaseServiceImpl<OwnerUnitMapper, 
 			againReport.setCode(data.getAgainTestNo());
 			againReport.setDetectData(data.getAgainTestData());
 			againReport.setDetectStatus(ReviewStatus.RECTIFIED.code());
+			againReport.setInspector(loginUser.getName());
+			againReport.setInspectorId(loginUser.getUserId());
+		} else if (Objects.isNull(againReport.getInspectorId())) {
 			againReport.setInspector(loginUser.getName());
 			againReport.setInspectorId(loginUser.getUserId());
 		}

@@ -17,16 +17,10 @@
 		    FROM owner_unit_danger
 		    GROUP BY unit_id, rounds
 		),
-		area_doors AS (
-		    SELECT unit_id, COUNT(*) AS doors
-		    FROM owner_unit_area
-		    WHERE type='2'
-		    GROUP BY unit_id
-		),
 		area_dangers AS (
 		    SELECT a.unit_id, COUNT(DISTINCT d.unit_area_id) AS households
 			FROM owner_unit_danger d
-			JOIN owner_unit_area a ON d.unit_area_id = a.id
+			JOIN owner_unit_area a ON d.unit_area_id = a.id and a.type = '2'
 			GROUP BY a.unit_id
 		),
 		piles AS (
@@ -65,7 +59,6 @@
 	    LEFT JOIN sys_dict_data c ON o.community = c.dict_value AND c.dict_type = 'community' AND c.project_id = o.project_id
 	    LEFT JOIN sys_dict_data d ON o.hamlet = d.dict_value AND d.dict_type = 'hamlet' AND d.project_id = o.project_id
 	
-	    LEFT JOIN area_doors ad ON ad.unit_id = o.id
 	    LEFT JOIN area_dangers ah ON ah.unit_id = o.id
 	    LEFT JOIN danger_stats ds ON ds.unit_id=o.id AND ds.rounds=o.rounds
 	    LEFT JOIN piles pl ON pl.unit_id = o.id AND pl.rounds = o.rounds
